@@ -38,21 +38,6 @@ static const luaL_Reg tallylib[] = {
 	{ NULL, NULL },
 };
 
-void
-lua_prepare(lua_State *L, lua_CFunction f, const char *name)
-/* Opens the given Lua library and inserts it into Lua's package.loaded table. This function is akin to calling require 'name' in Lua without capturing the result — simply preloading the package for a future require() where the result actually does get captured.
-The main purpose of this is to avoid exporting a global variable from C code, to prevent awkward namespace collisions.
-The first parameter is the Lua state to call into. The second is the luaopen_ function to call, and the third is the name under which the library should be stored. */
-{
-	lua_getglobal(L, "package");
-	lua_getfield(L, -1, "loaded");
-	lua_remove(L, -2);
-	lua_pushstring(L, name);
-	f(L);
-	lua_settable(L, -3);
-	lua_remove(L, -1);
-}
-
 int
 main()
 {
@@ -61,12 +46,18 @@ main()
 	int lua_result;
 
 	L = luaL_newstate();
-	lua_openlibs(L);
-	lua_prepare(L, tallylib, "tallylib");
+	luaL_openlibs(L);
+	lua_getglobal(L, "package");
+	lua_getfield(L, -1, "loaded");
+	lua_remove(L, -2);
+	lua_pushstring(L, "tallylib");
+	luaL_newlib(L, tallylib);
+	lua_settable(L, -3);
+	lua_remove(L, -1);
 
 	tally_bytecode_len = ((size_t)_binary_tally_bytecode_end) - ((size_t)_binary_tally_bytecode_start);
 
-	lua_result = luaL_loadbuffer(L, _binary_tally_bytecode_start, tally_bytecode_length, app_id);
+	lua_result = luaL_loadbuffer(L, _binary_tally_bytecode_start, tally_bytecode_len, app_id);
 	switch (lua_result) {
 	case LUA_OK:
 		lua_call(L, 0, 0);

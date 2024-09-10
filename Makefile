@@ -1,7 +1,11 @@
+PREFIX = /app
+
 BIN = tally
-CSRCS = tally.c tally_lua.o
+CSRCS = tally.c
+OBJS = tally_bytecode.o
 LSRCS = tally.lua
-CFLAGS = -llua -ldl -lm -Wl,-E
+LIBS = -llua -ldl -lm -Wl,-E
+CFLAGS = -L$(PREFIX)/lib $(LIBS)
 
 APPID = ca.vlacroix.Tally
 ifdef DEVEL
@@ -9,21 +13,21 @@ CFLAGS += -DDEVEL
 APPID = ca.vlacroix.Tally.Devel
 endif
 
-PREFIX ?= ~/.local
-
 all: $(BIN)
 
-$(BIN): $(CSRCS)
-	cc -o $@ $(CSRCS) -L/app/lib $(CFLAGS)
+$(BIN): $(CSRCS) $(OBJS)
+	cc -o $@ $^ -L/app/lib $(CFLAGS)
 
-cheveret_lua.o: $(LSRCS)
-	luac -o tally.lc -- $<
-	ld -r -b binary -o $@ tally.lc
+%_bytecode.o: %.bytecode
+	ld -r -b binary -o $@ $^
+
+%.bytecode: %.lua
+	luac -o $@ -- $^
 
 .PHONY: clean install
 
 clean:
-	rm -f tally tally_lua.o tally.lc
+	rm -f tally tally_bytecode.o tally.bytecode
 
 install: $(BIN) $(DESKTOP_FILE) $(ICON_FILE) $(SYMICON)
 	install -D -m 0755 -t $(PREFIX)/bin $<
