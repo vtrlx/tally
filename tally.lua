@@ -18,9 +18,10 @@ local app = Adw.Application {
 	application_id = app_id,
 }
 
---[[ Class system
+--[[
+SECTION: Class system
 
-Simple object-orientation implementation. Adapted from http://lua-users.org/wiki/SimpleLuaClasses to rely more heavily on Lua metatables. Resulting objects only have two predefined methods, :init() to (re)initialize and :isa() to compare against other objects.
+Simple object-orientation implementation. Adapted from http://lua-users.org/wiki/SimpleLuaClasses to rely more heavily on Lua metatables. Resulting objects only have two predefined methods, :init() to (re)initialize and :isa() to compare against other objects. The resulting table can be called as a function to construct new object instances, or have values on it to define class methods and class-static variables.
 ]]--
 
 local function newclass(base, init)
@@ -85,12 +86,57 @@ local function newclass(base, init)
 	return setmetatable(c, mt)
 end
 
--- Tally counter row widget
+--[[
+SECTION: Tally counter class
+]]--
 
--- The wonders of being able to reference a class before its definition.
-local function tallymenu(tally)
+local tallies = {}
+
+local tally = newclass(function(self, name, value)
+	self.value = 0
+	self.name = name or "unnamed"
+	self.row = Adw.SpinRow.new_with_range(value or 0, 1000000, 1)
+
+	self.entry = Gtk.Text {
+		text = self.name,
+		placeholder_text = self.name,
+		margin_top = 6,
+		margin_bottom = 6,
+	}
+	function self.entry.on_activate()
+		if #self.entry.text == 0 then
+			self.entry.text = self.name
+			return
+		end
+		self.name = self.entry.text
+		self.entry.placeholder_text = self.entry.text
+	end
+	self.row:add_prefix(self.entry)
+	function self.row:on_activate()
+		self.entry:grab_focus()
+	end
+
+	local menubtn = Gtk.MenuButton {
+		icon_name = "view-more-horizontal-symbolic",
+		margin_top = 6,
+		margin_bottom = 6,
+		popover = self:menu(),
+	}
+	menubtn:add_css_class "flat"
+	self.row:add_suffix(menubtn)
+
+	self:update()
+	table.insert(tallies, self)
+end)
+
+function tally:update()
+	self.entry.text = self.name
+	self.row.value = self.value
+end
+
+function tally:menu()
 	local namerow = Adw.EntryRow {
-		text = tally.name,
+		text = self.name,
 		title = "Name",
 	}
 	local function namevalid()
@@ -98,7 +144,7 @@ local function tallymenu(tally)
 	end
 
 	local valuerow = Adw.EntryRow {
-		text = tally.value,
+		text = self.value,
 		title = "Value",
 	}
 	local function valuevalid()
@@ -116,11 +162,22 @@ local function tallymenu(tally)
 	pgroup:add(namerow)
 	pgroup:add(valuerow)
 
+	local delbtn = Gtk.Button {
+		label = "Delete",
+		halign = "START",
+	}
+	delbtn:add_css_class "destructive-action"
+
 	local savebtn = Gtk.Button {
 		label = "Apply",
 		halign = "END",
 	}
 	savebtn:add_css_class "suggested-action"
+
+	local bbox = Gtk.CenterBox {
+		start_widget = delbtn,
+		end_widget = savebtn,
+	}
 
 	function namerow:on_changed()
 		if not namevalid() then
@@ -150,42 +207,24 @@ local function tallymenu(tally)
 		margin_bottom = 6,
 	}
 	box:append(pgroup)
-	box:append(savebtn)
+	box:append(bbox)
 
 	local popover = Gtk.Popover {
 		child = box,
 	}
 
-	function savebtn:on_clicked()
-		tally.name = namerow.text
-		tally.value = math.floor(tonumber(valuerow.text))
-		tally:update()
+	function delbtn.on_clicked()
 		popover:popdown()
+		self:delete()
+	end
+	function savebtn.on_clicked()
+		popover:popdown()
+		self.name = namerow.text
+		self.value = math.floor(tonumber(valuerow.text))
+		self:update()
 	end
 
 	return popover
-end
-
-local tally = newclass(function(self, name)
-	self.value = 0
-	self.name = name or "Counter"
-	self.row = Adw.SpinRow.new_with_range(0, 1000000, 1)
-	self.row.title = self.name
-	self.drag_x, self.drag_y = 0, 0
-
-	local menubtn = Gtk.MenuButton {
-		icon_name = "view-more-horizontal-symbolic",
-		margin_top = 6,
-		margin_bottom = 6,
-		popover = tallymenu(self),
-	}
-	menubtn:add_css_class "flat"
-	self.row:add_suffix(menubtn)
-end)
-
-function tally:update()
-	self.row.title = self.name
-	self.row.value = self.value
 end
 
 function tally:duplicate()
@@ -243,6 +282,8 @@ function tally:enable_drag(box)
 		-- FIXME: save order in global list
 		box:remove(widget)
 		box:insert(widget, target_position)
+		table.remove(tallies, source_position + 1)
+		table.insert(tallies, self, target_position + 1)
 		return true
 	end
 
@@ -252,36 +293,75 @@ function tally:enable_drag(box)
 	self.row:add_prefix(img)
 end
 
--- Window management
+--[[
+SECTION: Window construction
+]]--
+
+local tallyrows = {}
 
 local function new_window()
 	-- Force the window to be unique.
 	if app.active_window then return app.active_window end
 
 	local newbtn = Gtk.Button.new_from_icon_name "list-add-symbolic"
+	local searchbtn = Gtk.ToggleButton {
+		icon_name = "system-search-symbolic",
+	}
 
 	local header = Adw.HeaderBar {
 		title_widget = Adw.WindowTitle.new("Tally", ""),
 	}
 	header:pack_start(newbtn)
+	header:pack_start(searchbtn)
 
-	-- Adw.PreferencesGroup can't insert at arbitrary positions, so it's Gtk.ListBox instead.
+	local searchentry = Gtk.SearchEntry {
+		placeholder_text = "Filter by name…",
+	}
+
+	local searchbar = Gtk.SearchBar {
+		child = searchentry,
+	}
+	searchbar:connect_entry(searchentry)
+	searchbar:bind_property("search-mode-enabled", searchbtn, "active", "BIDIRECTIONAL")
+
 	local lbox = Gtk.ListBox {
 		selection_mode = "NONE",
 		valign = "START",
 		visible = false,
 	}
 	lbox:add_css_class "boxed-list"
+	lbox:set_filter_func(function(row)
+		if #searchentry.text == 0 then return true end
+		local t = tallyrows[row]
+		local title = t.name:lower()
+		local entry = searchentry.text:lower()
+		return (title:find(entry, 1, true))
+	end)
+	lbox:set_placeholder(Gtk.Label {
+		label = "no matches",
+		margin_top = 12,
+		margin_bottom = 12,
+	})
 	function newbtn:on_clicked()
 		local t = tally()
+		tallyrows[t.row] = t
+		function t:delete()
+			lbox:remove(t.row)
+			if not lbox:get_row_at_index(0) then
+				lbox.visible = false
+			end
+		end
 		t:enable_drag(lbox)
 		lbox:append(t.row)
-		lbox.visible = true
+		if not lbox.visible then lbox.visible = true end
+	end
+	function searchentry:on_search_changed()
+		lbox:invalidate_filter()
 	end
 
 	local clamp = Adw.Clamp {
 		child = lbox,
-		maximum_size = 400,
+		maximum_size = 500,
 		margin_start = 18,
 		margin_end = 18,
 		margin_top = 18,
@@ -297,21 +377,29 @@ local function new_window()
 		content = scroll,
 	}
 	tbview:add_top_bar(header)
+	tbview:add_top_bar(searchbar)
 
 	local window = Adw.ApplicationWindow {
 		application = app,
 		content = tbview,
-		height_request = 300,
-		width_request = 400,
+		height_request = 350,
+		width_request = 500,
 	}
 	if is_devel then
 		window:add_css_class "devel"
+	end
+	searchbar.key_capture_widget = window
+	searchbar.on_notify.search_mode_enabled = function()
+		searchentry.text = ""
+		lbox:invalidate_filter()
 	end
 
 	window:present()
 end
 
--- App management
+--[[
+SECTION: App callbacks
+]]--
 
 function app:on_activate()
 	if app.active_window then app.active_window:present() end
