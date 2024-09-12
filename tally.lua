@@ -1,8 +1,72 @@
 --[[ tally.lua — Tally counter for GNOME ]]--
 
--- Load packages from flatpak.
-package.cpath = "/app/lib/lua/5.4/?.so;" .. package.cpath
-package.path = "/app/share/lua/5.4/?.lua;" .. package.path
+--[[
+SECTION: Support library
+
+Functions which will be used throughout the application.
+]]--
+
+local function fileexists(path)
+	local ok, err, code = os.rename(path, path)
+	if not ok and code == 13 then
+		-- In Linux, error code 13 when moving a file means the it failed because the directory cannot be made its own child. Any other error means the file does not exist.
+		return true
+	end
+	return ok
+end
+
+local function isdir(path)
+	if path == "/" then return true end
+	-- If the given path points to a directory, then adding a "/" suffix will show the file as still existing.
+	return fileexists(path .. "/")
+end
+
+local function mkdir(path)
+	assert(type(path) == "string")
+	local cmd = ("mkdir %q"):format(path)
+	os.execute(cmd)
+end
+
+local function initcfg()
+	local cfgdir = os.getenv "XDG_CONFIG_HOME"
+	local tallydir = cfgdir .. "/tally"
+	if not fileexists(tallydir) then
+		mkdir(tallydir)
+	elseif not isdir(tallydir) then
+		error "Tally installation is broken"
+	end
+	local tallyfile = tallydir .. "/tally"
+	if not fileexists(tallyfile) then
+		io.open(tallyfile, "w"):write(""):close()
+	end
+end
+
+-- Simple class implementation without inheritance.
+local function newclass(init)
+	local c = {}
+	local mt = {}
+	c.__index = c
+
+	function mt:__call(...)
+		local obj = setmetatable({}, c)
+		init(obj, ...)
+		return obj
+	end
+
+	function c:isa(klass)
+		return getmetatable(self) == klass
+	end
+
+	return setmetatable(c, mt)
+end
+
+--[[
+SECTION: Imports and app initialization
+]]--
+
+-- Load packages from Flatpak only. If the Flatpak is broken, the application should not even attempt to load libraries from the system.
+package.cpath = "/app/lib/lua/5.4/?.so"
+package.path = "/app/share/lua/5.4/?.lua"
 
 local lib = require "tallylib"
 
@@ -11,6 +75,7 @@ local Adw = lgi.require "Adw"
 local Gtk = lgi.require "Gtk"
 local Gdk = lgi.require "Gdk"
 local GObject = lgi.require "GObject"
+local GLib = lgi.require "GLib"
 
 local app_id = lib.get_app_id()
 local is_devel = lib.get_is_devel()
@@ -19,97 +84,28 @@ local app = Adw.Application {
 }
 
 --[[
-SECTION: Class system
-
-Simple object-orientation implementation. Adapted from http://lua-users.org/wiki/SimpleLuaClasses to rely more heavily on Lua metatables. Resulting objects only have two predefined methods, :init() to (re)initialize and :isa() to compare against other objects. The resulting table can be called as a function to construct new object instances, or have values on it to define class methods and class-static variables.
-]]--
-
-local function newclass(base, init)
-	local c = {}
-	local mt = {}
-	local metaevents = {
-		--[[ Excluded: __call, __index, __newindex ]]--
-		"__add", "__sub", "__mul", "__div",
-		"__mod", "__pow", "__concat",
-		"__eq", "__lt", "__le",
-		"__unm", "__len",
-		"__tostring",
-	}
-	if not init and type(base) == "function" then
-		init = base
-		base = nil
-	elseif type(base) == "table" then
-		mt.__index = base
-		for _, v in ipairs(metaevents) do
-			c[v] = base[v]
-		end
-	end
-	c.__index = c
-
-	function c:init(...)
-		if init then
-			init(self, ...)
-		elseif base then
-			base.init(self, ...)
-		end
-	end
-
-	function mt:__call(...)
-		local obj = setmetatable({}, c)
-		obj:init(...)
-		return obj
-	end
-
-	-- Invoke the same constructor as this object instance. If no arguments are given, clones the object instead. To explicitly invoke a constructor with no arguments, pass nil.
-	function c:__call(...)
-		if select('#', ...) > 0 then
-			-- This invokes __call() as defined on the metatable.
-			return c(...)
-		else
-			local copy = setmetatable({}, c)
-			for k, v in pairs(self) do
-				copy[k] = v
-			end
-			return copy
-		end
-	end
-
-	function c:isa(klass)
-		local m = getmetatable(self)
-		while m do
-			if m == klass then return true end
-			m = getmetatable(m).__index
-		end
-		return false
-	end
-
-	return setmetatable(c, mt)
-end
-
---[[
 SECTION: Tally counter class
 ]]--
 
 local tallies = {}
 
 local tally = newclass(function(self, name, value)
-	self.value = 0
+	self.value = value or 0
 	self.name = name or "unnamed"
-	self.row = Adw.SpinRow.new_with_range(value or 0, 1000000, 1)
+	self.row = Adw.SpinRow.new_with_range(self.value, 1000000, 1)
 
 	self.entry = Gtk.Text {
 		text = self.name,
-		placeholder_text = self.name,
 		margin_top = 6,
 		margin_bottom = 6,
 	}
-	function self.entry.on_activate()
+	function self.entry.on_changed()
 		if #self.entry.text == 0 then
-			self.entry.text = self.name
-			return
+			self.row:add_css_class "error"
+		else
+			self.row:remove_css_class "error"
+			self.name = self.entry.text
 		end
-		self.name = self.entry.text
-		self.entry.placeholder_text = self.entry.text
 	end
 	self.row:add_prefix(self.entry)
 	function self.row:on_activate()
@@ -125,15 +121,16 @@ local tally = newclass(function(self, name, value)
 	menubtn:add_css_class "flat"
 	self.row:add_suffix(menubtn)
 
-	self:update()
+	self:read()
 	table.insert(tallies, self)
 end)
 
-function tally:update()
+function tally:read()
 	self.entry.text = self.name
 	self.row.value = self.value
 end
 
+-- FIXME: Change the menu so that it's only delete and move-to-top move-to-bottombel
 function tally:menu()
 	local namerow = Adw.EntryRow {
 		text = self.name,
@@ -221,7 +218,7 @@ function tally:menu()
 		popover:popdown()
 		self.name = namerow.text
 		self.value = math.floor(tonumber(valuerow.text))
-		self:update()
+		self:read()
 	end
 
 	return popover
@@ -238,7 +235,7 @@ function tally:duplicate()
 	return r
 end
 
-function tally:enable_drag(box)
+function tally:enabledrag(box)
 	local img = Gtk.Image.new_from_icon_name "list-drag-handle-symbolic"
 	img:add_css_class "drag-handle"
 
@@ -284,10 +281,15 @@ function tally:enable_drag(box)
 		box:insert(widget, target_position)
 		table.remove(tallies, source_position + 1)
 		table.insert(tallies, self, target_position + 1)
+		print "Reordered:"
+		for _, v in ipairs(tallies) do
+			print(v.name)
+		end
+		print()
 		return true
 	end
 
-	self.row:add_controller(src)
+	img:add_controller(src)
 	self.row:add_controller(tgt)
 
 	self.row:add_prefix(img)
@@ -299,7 +301,7 @@ SECTION: Window construction
 
 local tallyrows = {}
 
-local function new_window()
+local function newwin()
 	-- Force the window to be unique.
 	if app.active_window then return app.active_window end
 
@@ -351,8 +353,9 @@ local function new_window()
 				lbox.visible = false
 			end
 		end
-		t:enable_drag(lbox)
+		t:enabledrag(lbox)
 		lbox:append(t.row)
+		t.entry:grab_focus()
 		if not lbox.visible then lbox.visible = true end
 	end
 	function searchentry:on_search_changed()
@@ -372,6 +375,17 @@ local function new_window()
 		hscrollbar_policy = "NEVER",
 		child = clamp,
 	}
+	local old_upper = 0
+	local function scroll_to_bottom()
+		scroll.vadjustment.value = scroll.vadjustment.upper
+	end
+	function scroll.vadjustment.on_notify.upper()
+		local upper = scroll.vadjustment.upper
+		if upper > old_upper then
+			GLib.timeout_add(GLib.PRIORITY_DEFAULT, 1, scroll_to_bottom)
+		end
+		old_upper = upper
+	end
 
 	local tbview = Adw.ToolbarView {
 		content = scroll,
@@ -406,7 +420,7 @@ function app:on_activate()
 end
 
 function app:on_startup()
-	new_window()
+	newwin()
 end
 
 return app:run()
