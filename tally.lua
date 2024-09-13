@@ -84,7 +84,8 @@ local tally = newclass(function(self, param)
 		self.value = param.value or self.value
 	end
 
-	self.row = Adw.SpinRow.new_with_range(self.value, 1000000, 1)
+	self.row = Adw.SpinRow.new_with_range(0, 1000000, 1)
+	self.row.value = self.value
 	function self.row.on_notify.value()
 		self.value = self.row.value
 	end
@@ -385,7 +386,7 @@ local function newwin()
 			tallyrows[t.row] = nil
 		end
 	end
-	if #tallies then lbox.visible = true end
+	if #tallies > 0 then lbox.visible = true end
 
 	local clamp = Adw.Clamp {
 		child = lbox,
