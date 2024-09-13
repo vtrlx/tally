@@ -27,20 +27,6 @@ local function mkdir(path)
 	os.execute(cmd)
 end
 
-local function initcfg()
-	local cfgdir = os.getenv "XDG_CONFIG_HOME"
-	local tallydir = cfgdir .. "/tally"
-	if not fileexists(tallydir) then
-		mkdir(tallydir)
-	elseif not isdir(tallydir) then
-		error "Tally installation is broken"
-	end
-	local tallyfile = tallydir .. "/tally"
-	if not fileexists(tallyfile) then
-		io.open(tallyfile, "w"):write(""):close()
-	end
-end
-
 -- Simple class implementation without inheritance.
 local function newclass(init)
 	local c = {}
@@ -87,12 +73,21 @@ local app = Adw.Application {
 SECTION: Tally counter class
 ]]--
 
-local tallies = {}
+local tallies = {} -- Global Lua table containing all tallies.
+local tallyrows = {} -- Global Lua table associating Gtk.ListBoxRow items to their respective tally.
 
-local tally = newclass(function(self, name, value)
-	self.value = value or 0
-	self.name = name or "unnamed"
+local tally = newclass(function(self, param)
+	self.name = "unnamed"
+	self.value = 0
+	if type(param) == "table" then
+		self.name = param.name or self.name
+		self.value = param.value or self.value
+	end
+
 	self.row = Adw.SpinRow.new_with_range(self.value, 1000000, 1)
+	function self.row.on_notify.value()
+		self.value = self.row.value
+	end
 
 	self.entry = Gtk.Text {
 		text = self.name,
@@ -122,7 +117,6 @@ local tally = newclass(function(self, name, value)
 	self.row:add_suffix(menubtn)
 
 	self:read()
-	table.insert(tallies, self)
 end)
 
 function tally:read()
@@ -130,95 +124,57 @@ function tally:read()
 	self.row.value = self.value
 end
 
--- FIXME: Change the menu so that it's only delete and move-to-top move-to-bottombel
 function tally:menu()
-	local namerow = Adw.EntryRow {
-		text = self.name,
-		title = "Name",
+	local topbtn = Gtk.Button {
+		label = "Move to Top",
 	}
-	local function namevalid()
-		return #namerow.text
-	end
 
-	local valuerow = Adw.EntryRow {
-		text = self.value,
-		title = "Value",
+	local bottombtn = Gtk.Button {
+		label = "Move to Bottom",
 	}
-	local function valuevalid()
-		return #valuerow.text
-			and type(tonumber(valuerow.text)) == "number"
-			-- Prevent decimal points.
-			and not (valuerow.text:match "%.")
-	end
-
-	local function isvalid()
-		return namevalid() and valuevalid()
-	end
-
-	local pgroup = Adw.PreferencesGroup()
-	pgroup:add(namerow)
-	pgroup:add(valuerow)
 
 	local delbtn = Gtk.Button {
 		label = "Delete",
-		halign = "START",
 	}
 	delbtn:add_css_class "destructive-action"
 
-	local savebtn = Gtk.Button {
-		label = "Apply",
-		halign = "END",
-	}
-	savebtn:add_css_class "suggested-action"
-
-	local bbox = Gtk.CenterBox {
-		start_widget = delbtn,
-		end_widget = savebtn,
-	}
-
-	function namerow:on_changed()
-		if not namevalid() then
-			namerow:add_css_class "error"
-			savebtn.sensitive = false
-		else
-			namerow:remove_css_class "error"
-			if isvalid() then savebtn.sensitive = true end
-		end
-	end
-	function valuerow:on_changed()
-		if not valuevalid() then
-			valuerow:add_css_class "error"
-			savebtn.sensitive = false
-		else
-			valuerow:remove_css_class "error"
-			if isvalid() then savebtn.sensitive = true end
-		end
-	end
-
 	local box = Gtk.Box {
 		orientation = "VERTICAL",
-		spacing = 12,
+		spacing = 6,
 		margin_start = 12,
 		margin_end = 12,
-		margin_top = 6,
-		margin_bottom = 6,
+		margin_top = 12,
+		margin_bottom = 12,
 	}
-	box:append(pgroup)
-	box:append(bbox)
+	box:append(topbtn)
+	box:append(bottombtn)
+	box:append(delbtn)
 
 	local popover = Gtk.Popover {
 		child = box,
 	}
 
+	function topbtn.on_clicked()
+		popover:popdown()
+		table.remove(tallies, self.row:get_index() + 1)
+		table.insert(tallies, 1, self)
+		local lbox = self.row.parent
+		lbox:remove(self.row)
+		lbox:prepend(self.row)
+	end
+
+	function bottombtn.on_clicked()
+		popover:popdown()
+		table.remove(tallies, self.row:get_index() + 1)
+		table.insert(tallies, self)
+		local lbox = self.row.parent
+		lbox:remove(self.row)
+		lbox:append(self.row)
+	end
+
 	function delbtn.on_clicked()
 		popover:popdown()
 		self:delete()
-	end
-	function savebtn.on_clicked()
-		popover:popdown()
-		self.name = namerow.text
-		self.value = math.floor(tonumber(valuerow.text))
-		self:read()
 	end
 
 	return popover
@@ -276,16 +232,11 @@ function tally:enabledrag(box)
 		local source_position = widget:get_index()
 		local target_position = self.row:get_index()
 		if source_position == target_position then return false end
-		-- FIXME: save order in global list
 		box:remove(widget)
 		box:insert(widget, target_position)
 		table.remove(tallies, source_position + 1)
-		table.insert(tallies, self, target_position + 1)
-		print "Reordered:"
-		for _, v in ipairs(tallies) do
-			print(v.name)
-		end
-		print()
+		local sourcetally = tallyrows[widget]
+		table.insert(tallies, target_position + 1, sourcetally)
 		return true
 	end
 
@@ -295,11 +246,70 @@ function tally:enabledrag(box)
 	self.row:add_prefix(img)
 end
 
+function tally:serialize()
+	local r = ""
+	for k, v in pairs(self) do
+		if type(v) == "string" or type(v) == "number" or type(v) == "boolean" then
+			r = r .. ("\t[%q] = %q,\n"):format(k, v)
+		end
+	end
+	return ("{\n%s},\n"):format(r)
+end
+
+--[[
+SECTION: Saving/loading
+]]--
+
+local cfgdir = os.getenv "XDG_CONFIG_HOME"
+local tallydir = cfgdir .. "/tally"
+local tallyfile = tallydir .. "/tally"
+
+local function writecfg()
+	local cfg = ""
+	for _, t in ipairs(tallies) do
+		cfg = cfg .. t:serialize()
+	end
+	cfg = ("return {\n%s\n}"):format(cfg)
+	io.open(tallyfile, "w"):write(cfg):close()
+end
+
+local function readcfg()
+	local cfg = io.open(tallyfile):read "a"
+	local f, err = load(cfg)
+	if not f then
+		print("Cannot load saved tallies", err)
+		return
+	end
+	local saved = f()
+	assert(type(saved) == "table")
+	for _, v in ipairs(saved) do
+		local t = tally(v)
+		table.insert(tallies, t)
+		tallyrows[t.row] = t
+	end
+end
+
+do -- Initialize configuration if it doesn't exist, load if it does.
+	if not fileexists(tallydir) then
+		mkdir(tallydir)
+	elseif not isdir(tallydir) then
+		error "installation is broken"
+	end
+	if not fileexists(tallyfile) then
+		io.open(tallyfile, "w"):write("return {}\n"):close()
+	end
+	readcfg()
+end
+
+local function tallydelete(t, lbox)
+	table.remove(tallies, t.row:get_index() + 1)
+	lbox:remove(t.row)
+	if not lbox:get_row_at_index(0) then lbox.visible = false end
+end
+
 --[[
 SECTION: Window construction
 ]]--
-
-local tallyrows = {}
 
 local function newwin()
 	-- Force the window to be unique.
@@ -325,6 +335,9 @@ local function newwin()
 	}
 	searchbar:connect_entry(searchentry)
 	searchbar:bind_property("search-mode-enabled", searchbtn, "active", "BIDIRECTIONAL")
+	function searchbar.on_notify.search_mode_enabled()
+		searchentry.text = ""
+	end
 
 	local lbox = Gtk.ListBox {
 		selection_mode = "NONE",
@@ -346,12 +359,12 @@ local function newwin()
 	})
 	function newbtn:on_clicked()
 		local t = tally()
+		table.insert(tallies, t)
 		tallyrows[t.row] = t
 		function t:delete()
-			lbox:remove(t.row)
-			if not lbox:get_row_at_index(0) then
-				lbox.visible = false
-			end
+			tallydelete(t, lbox)
+			searchentry:grab_focus()
+			tallyrows[t.row] = nil
 		end
 		t:enabledrag(lbox)
 		lbox:append(t.row)
@@ -361,6 +374,18 @@ local function newwin()
 	function searchentry:on_search_changed()
 		lbox:invalidate_filter()
 	end
+
+	-- Initialize loaded tallies.
+	for _, t in ipairs(tallies) do
+		lbox:append(t.row)
+		t:enabledrag(lbox)
+		function t:delete()
+			tallydelete(t, lbox)
+			searchentry:grab_focus()
+			tallyrows[t.row] = nil
+		end
+	end
+	if #tallies then lbox.visible = true end
 
 	local clamp = Adw.Clamp {
 		child = lbox,
@@ -399,15 +424,13 @@ local function newwin()
 		height_request = 350,
 		width_request = 500,
 	}
+
+	searchbar.key_capture_widget = window
 	if is_devel then
 		window:add_css_class "devel"
 	end
-	searchbar.key_capture_widget = window
-	searchbar.on_notify.search_mode_enabled = function()
-		searchentry.text = ""
-		lbox:invalidate_filter()
-	end
 
+	searchentry:grab_focus()
 	window:present()
 end
 
@@ -421,6 +444,10 @@ end
 
 function app:on_startup()
 	newwin()
+end
+
+function app:on_shutdown()
+	writecfg()
 end
 
 return app:run()
