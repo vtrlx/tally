@@ -350,6 +350,16 @@ end
 SECTION: Window construction
 ]]--
 
+local aboutwin = Adw.AboutDialog {
+	application_name = "Tally",
+	copyright = "© 2024 Victoria Lacroix",
+	developer_name = "Victoria Lacroix",
+	issue_url = "https://github.com/vtrlx/tally/issues/",
+	license_type = "GPL_3_0",
+	version = "alpha",
+	website = "https://github.com/vtrlx/tally/",
+}
+
 local function newwin()
 	-- Force the window to be unique.
 	if app.active_window then return app.active_window end
@@ -358,12 +368,14 @@ local function newwin()
 	local searchbtn = Gtk.ToggleButton {
 		icon_name = "system-search-symbolic",
 	}
+	local infobtn = Gtk.Button.new_from_icon_name "help-about-symbolic"
 
 	local header = Adw.HeaderBar {
 		title_widget = Adw.WindowTitle.new("Tally", ""),
 	}
 	header:pack_start(newbtn)
 	header:pack_start(searchbtn)
+	header:pack_end(infobtn)
 
 	local searchentry = Gtk.SearchEntry {
 		placeholder_text = "Filter by name…",
@@ -458,9 +470,13 @@ local function newwin()
 	local window = Adw.ApplicationWindow {
 		application = app,
 		content = tbview,
-		height_request = 350,
-		width_request = 500,
+		height_request = 500,
+		width_request = 600,
 	}
+
+	function infobtn.on_clicked()
+		aboutwin:present(window)
+	end
 
 	searchbar.key_capture_widget = window
 	if is_devel then
