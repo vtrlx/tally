@@ -108,91 +108,6 @@ local tally = newclass(function(self, param)
 		self.entry:grab_focus()
 	end
 
-	local menubtn = Gtk.MenuButton {
-		icon_name = "view-more-horizontal-symbolic",
-		margin_top = 6,
-		margin_bottom = 6,
-		popover = self:menu(),
-	}
-	menubtn:add_css_class "flat"
-	self.row:add_suffix(menubtn)
-
-	self:read()
-end)
-
-function tally:read()
-	self.entry.text = self.name
-	self.row.value = self.value
-end
-
-function tally:menu()
-	local topbtn = Gtk.Button {
-		label = "Move to Top",
-	}
-
-	local bottombtn = Gtk.Button {
-		label = "Move to Bottom",
-	}
-
-	local delbtn = Gtk.Button {
-		label = "Delete",
-	}
-	delbtn:add_css_class "destructive-action"
-
-	local box = Gtk.Box {
-		orientation = "VERTICAL",
-		spacing = 6,
-		margin_start = 12,
-		margin_end = 12,
-		margin_top = 12,
-		margin_bottom = 12,
-	}
-	box:append(topbtn)
-	box:append(bottombtn)
-	box:append(delbtn)
-
-	local popover = Gtk.Popover {
-		child = box,
-	}
-
-	function topbtn.on_clicked()
-		popover:popdown()
-		table.remove(tallies, self.row:get_index() + 1)
-		table.insert(tallies, 1, self)
-		local lbox = self.row.parent
-		lbox:remove(self.row)
-		lbox:prepend(self.row)
-	end
-
-	function bottombtn.on_clicked()
-		popover:popdown()
-		table.remove(tallies, self.row:get_index() + 1)
-		table.insert(tallies, self)
-		local lbox = self.row.parent
-		lbox:remove(self.row)
-		lbox:append(self.row)
-	end
-
-	function delbtn.on_clicked()
-		popover:popdown()
-		self:delete()
-	end
-
-	return popover
-end
-
-function tally:duplicate()
-	local r = Adw.SpinRow.new_with_range(0, 1000000, 1)
-	r.title = self.name
-	r.value = self.value
-	r:add_suffix(Gtk.Button.new_from_icon_name "view-more-horizontal-symbolic")
-	local img = Gtk.Image.new_from_icon_name "list-drag-handle-symbolic"
-	img:add_css_class "drag-handle"
-	r:add_prefix(img)
-	return r
-end
-
-function tally:enabledrag(box)
 	local img = Gtk.Image.new_from_icon_name "list-drag-handle-symbolic"
 	img:add_css_class "drag-handle"
 
@@ -233,8 +148,9 @@ function tally:enabledrag(box)
 		local source_position = widget:get_index()
 		local target_position = self.row:get_index()
 		if source_position == target_position then return false end
-		box:remove(widget)
-		box:insert(widget, target_position)
+		local lbox = self.row.parent
+		lbox:remove(widget)
+		lbox:insert(widget, target_position)
 		table.remove(tallies, source_position + 1)
 		local sourcetally = tallyrows[widget]
 		table.insert(tallies, target_position + 1, sourcetally)
@@ -245,6 +161,128 @@ function tally:enabledrag(box)
 	self.row:add_controller(tgt)
 
 	self.row:add_prefix(img)
+
+	local menubtn = Gtk.MenuButton {
+		icon_name = "view-more-horizontal-symbolic",
+		margin_top = 6,
+		margin_bottom = 6,
+		direction = "RIGHT",
+		popover = self:menu(),
+	}
+	menubtn:add_css_class "flat"
+	self.row:add_suffix(menubtn)
+
+	self:read()
+end)
+
+function tally:read()
+	self.entry.text = self.name
+	self.row.value = self.value
+end
+
+function tally:menu()
+	-- FIXME: Generate the popover menu through a callback instead of on construction.
+
+	local upbtn = Gtk.Button {
+		icon_name = "go-up-symbolic",
+	}
+	local downbtn = Gtk.Button {
+		icon_name = "go-down-symbolic",
+	}
+	local udbox = Gtk.Box { orientation = "HORIZONTAL" }
+	udbox:add_css_class "linked"
+	udbox:append(upbtn)
+	udbox:append(downbtn)
+
+	local topbtn = Gtk.Button {
+		icon_name = "go-top-symbolic",
+	}
+	local bottombtn = Gtk.Button {
+		icon_name = "go-bottom-symbolic",
+	}
+	local tbbox = Gtk.Box { orientation = "HORIZONTAL" }
+	tbbox:add_css_class "linked"
+	tbbox:append(topbtn)
+	tbbox:append(bottombtn)
+
+	local delbtn = Gtk.Button {
+		icon_name = "edit-delete-symbolic",
+	}
+	delbtn:add_css_class "destructive-action"
+
+	local box = Gtk.Box {
+		orientation = "HORIZONTAL",
+		spacing = 6,
+		margin_start = 6,
+		margin_end = 6,
+		margin_top = 6,
+		margin_bottom = 6,
+	}
+	box:append(udbox)
+	box:append(tbbox)
+	box:append(delbtn)
+
+	local popover = Gtk.Popover {
+		child = box,
+	}
+
+	function upbtn.on_clicked()
+		local rindex = self.row:get_index()
+		local tindex = rindex + 1
+		if tindex == 1 then return end
+		table.remove(tallies, tindex)
+		table.insert(tallies, tindex - 1, self)
+		local lbox = self.row.parent
+		lbox:remove(self.row)
+		lbox:insert(self.row, rindex - 1)
+	end
+
+	function downbtn.on_clicked()
+		local rindex = self.row:get_index()
+		local tindex = rindex + 1
+		if tindex == #tallies then return end
+		table.remove(tallies, tindex)
+		table.insert(tallies, tindex + 1, self)
+		local lbox = self.row.parent
+		lbox:remove(self.row)
+		lbox:insert(self.row, rindex + 1)
+	end
+
+	function topbtn.on_clicked()
+		popover:popdown()
+		table.remove(tallies, self.row:get_index() + 1)
+		table.insert(tallies, 1, self)
+		local lbox = self.row.parent
+		lbox:remove(self.row)
+		lbox:prepend(self.row)
+	end
+
+	function bottombtn.on_clicked()
+		popover:popdown()
+		table.remove(tallies, self.row:get_index() + 1)
+		table.insert(tallies, self)
+		local lbox = self.row.parent
+		lbox:remove(self.row)
+		lbox:append(self.row)
+	end
+
+	function delbtn.on_clicked()
+		popover:popdown()
+		self:delete()
+	end
+
+	return popover
+end
+
+function tally:duplicate()
+	local r = Adw.SpinRow.new_with_range(0, 1000000, 1)
+	r.title = self.name
+	r.value = self.value
+	r:add_suffix(Gtk.Button.new_from_icon_name "view-more-horizontal-symbolic")
+	local img = Gtk.Image.new_from_icon_name "list-drag-handle-symbolic"
+	img:add_css_class "drag-handle"
+	r:add_prefix(img)
+	return r
 end
 
 function tally:serialize()
@@ -367,7 +405,6 @@ local function newwin()
 			searchentry:grab_focus()
 			tallyrows[t.row] = nil
 		end
-		t:enabledrag(lbox)
 		lbox:append(t.row)
 		t.entry:grab_focus()
 		if not lbox.visible then lbox.visible = true end
@@ -379,7 +416,6 @@ local function newwin()
 	-- Initialize loaded tallies.
 	for _, t in ipairs(tallies) do
 		lbox:append(t.row)
-		t:enabledrag(lbox)
 		function t:delete()
 			tallydelete(t, lbox)
 			searchentry:grab_focus()
@@ -391,10 +427,10 @@ local function newwin()
 	local clamp = Adw.Clamp {
 		child = lbox,
 		maximum_size = 500,
-		margin_start = 18,
-		margin_end = 18,
-		margin_top = 18,
-		margin_bottom = 18,
+		margin_start = 48,
+		margin_end = 48,
+		margin_top = 24,
+		margin_bottom = 24,
 	}
 
 	local scroll = Gtk.ScrolledWindow {
