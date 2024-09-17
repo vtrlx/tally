@@ -229,23 +229,36 @@ function tally:menu()
 	function upbtn.on_clicked()
 		local rindex = self.row:get_index()
 		local tindex = rindex + 1
-		if tindex == 1 then return end
-		table.remove(tallies, tindex)
-		table.insert(tallies, tindex - 1, self)
 		local lbox = self.row.parent
-		lbox:remove(self.row)
-		lbox:insert(self.row, rindex - 1)
+		while rindex > 0 do
+			rindex = rindex - 1
+			local row = lbox:get_row_at_index(rindex)
+			if row.mapped then
+				table.remove(tallies, tindex)
+				table.insert(tallies, rindex + 1, self)
+				lbox:remove(self.row)
+				lbox:insert(self.row, rindex)
+				return
+			end
+		end
 	end
 
 	function downbtn.on_clicked()
 		local rindex = self.row:get_index()
 		local tindex = rindex + 1
-		if tindex == #tallies then return end
-		table.remove(tallies, tindex)
-		table.insert(tallies, tindex + 1, self)
 		local lbox = self.row.parent
-		lbox:remove(self.row)
-		lbox:insert(self.row, rindex + 1)
+		rindex = rindex + 1
+		while rindex < #tallies do
+			local row = lbox:get_row_at_index(rindex)
+			if row.mapped then
+				table.remove(tallies, tindex)
+				table.insert(tallies, rindex + 1, self)
+				lbox:remove(self.row)
+				lbox:insert(self.row, rindex)
+				return
+			end
+			rindex = rindex + 1
+		end
 	end
 
 	function topbtn.on_clicked()
