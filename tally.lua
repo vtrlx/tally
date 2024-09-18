@@ -369,7 +369,7 @@ local aboutwin = Adw.AboutDialog {
 	developer_name = "Victoria Lacroix",
 	issue_url = "https://github.com/vtrlx/tally/issues/",
 	license_type = "GPL_3_0",
-	version = "alpha",
+	version = lib.get_app_ver(),
 	website = "https://github.com/vtrlx/tally/",
 }
 

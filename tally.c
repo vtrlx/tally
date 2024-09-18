@@ -5,6 +5,13 @@
 #include <lualib.h>
 #include <lauxlib.h>
 
+#ifndef DEVEL
+#define APP_ID "ca.vlacroix.Tally"
+#else
+#define APP_ID "ca.vlacroix.Tally.Devel"
+#endif
+#define APP_VER "alpha"
+
 static int
 lua_get_is_devel(lua_State *L)
 {
@@ -16,27 +23,29 @@ lua_get_is_devel(lua_State *L)
 	return 1;
 }
 
-#ifndef DEVEL
-const char *app_id = "ca.vlacroix.Tally";
-#else
-const char *app_id = "ca.vlacroix.Tally.Devel";
-#endif
-
 static int
 lua_get_app_id(lua_State *L)
 {
-	lua_pushstring(L, app_id);
+	lua_pushstring(L, APP_ID);
 	return 1;
 }
 
-extern char _binary_tally_bytecode_start[];
-extern char _binary_tally_bytecode_end[];
+static int
+lua_get_app_ver(lua_State *L)
+{
+	lua_pushstring(L, APP_VER);
+	return 1;
+}
 
 static const luaL_Reg tallylib[] = {
 	{ "get_is_devel", lua_get_is_devel },
 	{ "get_app_id", lua_get_app_id },
+	{ "get_app_ver", lua_get_app_ver },
 	{ NULL, NULL },
 };
+
+extern char _binary_tally_bytecode_start[];
+extern char _binary_tally_bytecode_end[];
 
 int
 main()
@@ -57,7 +66,7 @@ main()
 
 	tally_bytecode_len = ((size_t)_binary_tally_bytecode_end) - ((size_t)_binary_tally_bytecode_start);
 
-	lua_result = luaL_loadbuffer(L, _binary_tally_bytecode_start, tally_bytecode_len, app_id);
+	lua_result = luaL_loadbuffer(L, _binary_tally_bytecode_start, tally_bytecode_len, APP_ID);
 	switch (lua_result) {
 	case LUA_OK:
 		lua_call(L, 0, 0);
