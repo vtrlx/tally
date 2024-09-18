@@ -483,8 +483,8 @@ local function newwin()
 	local window = Adw.ApplicationWindow {
 		application = app,
 		content = tbview,
-		height_request = 500,
-		width_request = 600,
+		height_request = 600,
+		width_request = 500,
 	}
 
 	function infobtn.on_clicked()
