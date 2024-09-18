@@ -1,0 +1,13 @@
+[Desktop Entry]
+Categories=GNOME;GTK;Utility;
+Name=Tally
+Name[en]=Tally
+Keywords=count;counter;tally;
+Keywords[en]=count;counter;tally;
+Comment=Counter for GNOME
+Comment[en]=Counter for GNOME
+Type=Application
+Exec=tally
+Terminal=false
+Icon=ca.vlacroix.Tally
+StartupNotify=false

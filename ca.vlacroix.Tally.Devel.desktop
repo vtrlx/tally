@@ -1,0 +1,13 @@
+[Desktop Entry]
+Categories=GNOME;GTK;Utility;
+Name=Tally Nightly
+Name[en]=Tally Nightly
+Keywords=count;counter;tally;
+Keywords[en]=count;counter;tally;
+Comment=Counter for GNOME (Development Version)
+Comment[en]=Counter for GNOME (Development Version)
+Type=Application
+Exec=tally
+Terminal=false
+Icon=ca.vlacroix.Tally.Devel
+StartupNotify=false
