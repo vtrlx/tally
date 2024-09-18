@@ -1,9 +1,10 @@
 PREFIX = /app
 
-BIN = tally
 CSRCS = tally.c
-OBJS = tally_bytecode.o
 LSRCS = tally.lua
+
+BIN = tally
+OBJS = $(patsubst %.lua, %_bytecode.o, $(LSRCS))
 LIBS = -llua -ldl -lm -Wl,-E
 CFLAGS = -L$(PREFIX)/lib $(LIBS)
 
