@@ -1,7 +1,7 @@
 {
 	"app-id": "ca.vlacroix.Tally.Devel",
 	"runtime": "org.gnome.Platform",
-	"runtime-version": "46",
+	"runtime-version": "47",
 	"sdk": "org.gnome.Sdk",
 	"command": "tally",
 	"finish-args": [
