@@ -482,6 +482,7 @@ local function newwin()
 
 	local window = Adw.ApplicationWindow {
 		application = app,
+		title = "Tally",
 		content = tbview,
 		height_request = 600,
 		width_request = 500,
