@@ -89,6 +89,9 @@ local tally = newclass(function(self, param)
 	function self.row.on_notify.value()
 		self.value = self.row.value
 	end
+	if param and param.color then
+		self:setcolor(param.color)
+	end
 
 	self.entry = Gtk.Text {
 		text = self.name,
@@ -180,8 +183,47 @@ function tally:read()
 	self.row.value = self.value
 end
 
+function tally:setcolor(color)
+	if self.color then
+		self.row:remove_css_class(self.color)
+	end
+	self.color = color
+	if color then
+		self.row:add_css_class(color)
+	end
+end
+
+function tally:gencolorcheck(color, group)
+	local checkbtn = Gtk.CheckButton {
+		group = group,
+	}
+	if color then checkbtn:add_css_class(color) end
+	function checkbtn.on_notify.active()
+		self:setcolor(color)
+	end
+	return checkbtn
+end
+
+function tally:colorrow()
+	local box = Gtk.Box {
+		orientation = "HORIZONTAL",
+		spacing = 6,
+	}
+	box:add_css_class "colorselector"
+	local system = self:gencolorcheck()
+	box:append(system)
+	for _, color in ipairs { "red", "orange", "yellow", "green", "blue", "purple" } do
+		local check = self:gencolorcheck(color, system)
+		if self.color == color then check.active = true end
+		box:append(check)
+	end
+	if not self.color then system.active = true end
+	return box
+end
+
 function tally:menu()
 	-- FIXME: Generate the popover menu through a callback instead of on construction.
+	local cbox = self:colorrow()
 
 	local upbtn = Gtk.Button {
 		icon_name = "go-up-symbolic",
@@ -210,17 +252,24 @@ function tally:menu()
 	}
 	delbtn:add_css_class "destructive-action"
 
-	local box = Gtk.Box {
+	local mbox = Gtk.Box {
 		orientation = "HORIZONTAL",
 		spacing = 6,
+	}
+	mbox:append(udbox)
+	mbox:append(tbbox)
+	mbox:append(delbtn)
+
+	local box = Gtk.Box {
+		orientation = "VERTICAL",
+		spacing = 12,
 		margin_start = 6,
 		margin_end = 6,
 		margin_top = 6,
 		margin_bottom = 6,
 	}
-	box:append(udbox)
-	box:append(tbbox)
-	box:append(delbtn)
+	box:append(cbox)
+	box:append(mbox)
 
 	local popover = Gtk.Popover {
 		child = box,
@@ -289,6 +338,7 @@ end
 
 function tally:duplicate()
 	local r = Adw.SpinRow.new_with_range(0, 1000000, 1)
+	if self.color then r:add_css_class(self.color) end
 	r.title = self.name
 	r.value = self.value
 	r:add_suffix(Gtk.Button.new_from_icon_name "view-more-horizontal-symbolic")
@@ -416,11 +466,13 @@ local function newwin()
 		local entry = searchentry.text:lower()
 		return (title:find(entry, 1, true))
 	end)
+--[[
 	lbox:set_placeholder(Gtk.Label {
 		label = "no matches",
 		margin_top = 12,
 		margin_bottom = 12,
 	})
+]]--
 	function newbtn:on_clicked()
 		local t = tally()
 		table.insert(tallies, t)
@@ -499,6 +551,193 @@ local function newwin()
 
 	searchentry:grab_focus()
 	window:present()
+end
+
+--[[
+SECTION: Styles
+]]--
+
+-- FIXME: Add dark styles
+local cssbase = [[
+.colorselector checkbutton {
+	padding: 0;
+	min-height: 32px;
+	min-width: 32px;
+	padding: 1px;
+	background-clip: content-box;
+	border-radius: 9999px;
+	box-shadow: inset 0 0 0 1px @borders;
+	background: linear-gradient(-45deg, black 49.99%, white 50.01%);
+}
+.colorselector checkbutton:checked {
+	box-shadow: inset 0 0 0 2px @accent_bg_color;
+}
+.colorselector checkbutton radio {
+	-gtk-icon-source: none;
+	border: none;
+	box-shadow: none;
+	min-width: 8px;
+	min-height: 8px;
+	transform: translate(19px, 10px);
+	padding: 2px;
+}
+.colorselector checkbutton radio:checked {
+	-gtk-icon-source: -gtk-icontheme("object-select-symbolic");
+	background-color: @accent_bg_color;
+	color: @accent_fg_color;
+}
+.colorselector checkbutton.red {
+	background: none;
+	background-color: var(--red-3);
+}
+.colorselector checkbutton.orange {
+	background: none;
+	background-color: var(--orange-3);
+}
+.colorselector checkbutton.yellow {
+	background: none;
+	background-color: var(--yellow-3);
+}
+.colorselector checkbutton.green {
+	background: none;
+	background-color: var(--green-3);
+}
+.colorselector checkbutton.blue {
+	background: none;
+	background-color: var(--blue-3);
+}
+.colorselector checkbutton.purple {
+	background: none;
+	background-color: var(--purple-3);
+}
+]]
+
+local csslight = [[
+list.boxed-list row.red {
+	background-color: color-mix(in srgb, var(--red-1) 15%, transparent);
+	color: color-mix(in srgb, var(--red-5) 80%, transparent);
+}
+list.boxed-list row.red:hover {
+	background-color: color-mix(in srgb, var(--red-2) 15%, transparent);
+	color: color-mix(in srgb, var(--red-5) 80%, transparent);
+}
+list.boxed-list row.orange {
+	background-color: color-mix(in srgb, var(--orange-1) 20%, transparent);
+	color: var(--orange-5);
+}
+list.boxed-list row.orange:hover {
+	background-color: color-mix(in srgb, var(--orange-2) 20%, transparent);
+	color: var(--orange-5);
+}
+list.boxed-list row.yellow {
+	background-color: color-mix(in srgb, var(--yellow-1) 30%, transparent);
+	color: color-mix(in srgb, var(--yellow-5) 60%, black);
+}
+list.boxed-list row.yellow:hover {
+	background-color: color-mix(in srgb, var(--yellow-2) 30%, transparent);
+	color: color-mix(in srgb, var(--yellow-5) 60%, black);
+}
+list.boxed-list row.green {
+	background-color: color-mix(in srgb, var(--green-1) 25%, transparent);
+	color: color-mix(in srgb, var(--green-5) 80%, black);
+}
+list.boxed-list row.green:hover {
+	background-color: color-mix(in srgb, var(--green-2) 25%, transparent);
+	color: color-mix(in srgb, var(--green-5) 80%, black);
+}
+list.boxed-list row.blue {
+	background-color: color-mix(in srgb, var(--blue-1) 20%, transparent);
+	color: var(--blue-5);
+}
+list.boxed-list row.blue:hover {
+	background-color: color-mix(in srgb, var(--blue-2) 20%, transparent);
+	color: var(--blue-5);
+}
+list.boxed-list row.purple {
+	background-color: color-mix(in srgb, var(--purple-1) 20%, transparent);
+	color: var(--purple-5);
+}
+list.boxed-list row.purple:hover {
+	background-color: color-mix(in srgb, var(--purple-2) 20%, transparent);
+	color: var(--purple-5);
+}
+]]
+
+local cssdark = [[
+list.boxed-list row.red {
+	background-color: color-mix(in srgb, var(--red-3) 90%, white);
+	color: white;
+}
+list.boxed-list row.red:hover {
+	background-color: color-mix(in srgb, var(--red-2) 90%, white);
+	color: white;
+}
+list.boxed-list row.orange {
+	background-color: var(--orange-3);
+	color: white;
+}
+list.boxed-list row.orange:hover {
+	background-color: var(--orange-2);
+	color: white;
+}
+list.boxed-list row.yellow {
+	background-color: color-mix(in srgb, var(--yellow-3) 80%, transparent);
+	color: white;
+}
+list.boxed-list row.yellow:hover {
+	background-color: color-mix(in srgb, var(--yellow-2) 80%, transparent);
+	color: white;
+}
+list.boxed-list row.green {
+	background-color: color-mix(in srgb, var(--green-3) 90%, transparent);
+	color: white;
+}
+list.boxed-list row.green:hover {
+	background-color: color-mix(in srgb, var(--green-2) 90%, transparent);
+	color: white;
+}
+list.boxed-list row.blue {
+	background-color: var(--blue-3);
+	color: white;
+}
+list.boxed-list row.blue:hover {
+	background-color: var(--blue-2);
+	color: white;
+}
+list.boxed-list row.purple {
+	background-color: var(--purple-3);
+	color: white;
+}
+list.boxed-list row.purple:hover {
+	background-color: var(--purple-2);
+	color: white;
+}
+]]
+
+do
+	local styleman = Adw.StyleManager.get_default()
+	local display = Gdk.Display.get_default()
+	local providerlight = Gtk.CssProvider()
+	providerlight:load_from_string(cssbase .. csslight)
+	local providerdark = Gtk.CssProvider()
+	providerdark:load_from_string(cssbase .. cssdark)
+	if styleman.dark then
+		Gtk.StyleContext.add_provider_for_display(display, providerdark, 1000000)
+	else
+		Gtk.StyleContext.add_provider_for_display(display, providerlight, 1000000)
+	end
+	local function refresh()
+		if styleman.dark then
+			Gtk.StyleContext.remove_provider_for_display(display, providerlight)
+			Gtk.StyleContext.add_provider_for_display(display, providerdark, 1000000)
+		else
+			Gtk.StyleContext.remove_provider_for_display(display, providerdark)
+			Gtk.StyleContext.add_provider_for_display(display, providerlight, 1000000)
+		end
+	end
+	function styleman.on_notify.dark()
+		refresh()
+	end
 end
 
 --[[
