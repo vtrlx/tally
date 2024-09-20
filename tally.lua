@@ -418,6 +418,7 @@ SECTION: Window construction
 ]]--
 
 local aboutwin = Adw.AboutDialog {
+	application_icon = app_id,
 	application_name = "Tally",
 	copyright = "© 2024 Victoria Lacroix",
 	developer_name = "Victoria Lacroix",
