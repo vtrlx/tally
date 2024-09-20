@@ -183,6 +183,10 @@ function tally:read()
 	self.row.value = self.value
 end
 
+function tally:getcolor()
+	return self.color or "system"
+end
+
 function tally:setcolor(color)
 	if self.color then
 		self.row:remove_css_class(self.color)
@@ -444,13 +448,31 @@ local function newwin()
 		placeholder_text = "Filter by name…",
 	}
 
+	local colorbox = Gtk.Box {
+		orientation = "HORIZONTAL",
+		spacing = 6,
+	}
+	colorbox:add_css_class "colorselector"
+	local filtcolors = {}
+	local colorchecks = {}
+
+	local searchbox = Gtk.Box {
+		orientation = "VERTICAL",
+		spacing = 6,
+		margin_top = 6,
+		margin_bottom = 6,
+	}
+	searchbox:append(searchentry)
+	searchbox:append(colorbox)
+
 	local searchbar = Gtk.SearchBar {
-		child = searchentry,
+		child = searchbox,
 	}
 	searchbar:connect_entry(searchentry)
 	searchbar:bind_property("search-mode-enabled", searchbtn, "active", "BIDIRECTIONAL")
-	function searchbar.on_notify.search_mode_enabled()
-		searchentry.text = ""
+	-- Despite mapping property names with underscores and providing a lovely syntax for defining signal event handlers, LGI doesn't do both at the same time.
+	searchbar.on_notify["search-mode-enabled"] = function()
+		for _, cb in ipairs(colorchecks) do cb.active = false end
 	end
 
 	local lbox = Gtk.ListBox {
@@ -460,12 +482,29 @@ local function newwin()
 	}
 	lbox:add_css_class "boxed-list"
 	lbox:set_filter_func(function(row)
-		if #searchentry.text == 0 then return true end
+		if not searchbar.search_mode_enabled then return true end
+		if #searchentry.text == 0 and not filtcolors.active then return true end
 		local t = tallyrows[row]
 		local title = t.name:lower()
 		local entry = searchentry.text:lower()
-		return (title:find(entry, 1, true))
+		local showcolor = true
+		if filtcolors.active then
+			showcolor = filtcolors[t:getcolor()]
+		end
+		return showcolor and (title:find(entry, 1, true))
 	end)
+	for _, c in ipairs { "system", "red", "orange", "yellow", "green", "blue", "purple" } do
+		local checkbtn = Gtk.CheckButton()
+		checkbtn:add_css_class(c)
+		function checkbtn.on_notify.active()
+			filtcolors[c] = checkbtn.active
+			filtcolors.active = filtcolors.system or filtcolors.red or filtcolors.orange or
+				filtcolors.yellow or filtcolors.green or filtcolors.blue or filtcolors.purple
+			lbox:invalidate_filter()
+		end
+		table.insert(colorchecks, checkbtn)
+		colorbox:append(checkbtn)
+	end
 --[[
 	lbox:set_placeholder(Gtk.Label {
 		label = "no matches",
@@ -572,7 +611,7 @@ local cssbase = [[
 .colorselector checkbutton:checked {
 	box-shadow: inset 0 0 0 2px @accent_bg_color;
 }
-.colorselector checkbutton radio {
+.colorselector checkbutton radio, .colorselector checkbutton check {
 	-gtk-icon-source: none;
 	border: none;
 	box-shadow: none;
@@ -581,7 +620,7 @@ local cssbase = [[
 	transform: translate(19px, 10px);
 	padding: 2px;
 }
-.colorselector checkbutton radio:checked {
+.colorselector checkbutton radio:checked, .colorselector checkbutton check:checked {
 	-gtk-icon-source: -gtk-icontheme("object-select-symbolic");
 	background-color: @accent_bg_color;
 	color: @accent_fg_color;
@@ -661,6 +700,10 @@ list.boxed-list row.purple:hover {
 	background-color: color-mix(in srgb, var(--purple-2) 20%, transparent);
 	color: var(--purple-5);
 }
+.colorselector checkbutton.system {
+	background: none;
+	background-color: white;
+}
 ]]
 
 local cssdark = [[
@@ -711,6 +754,10 @@ list.boxed-list row.purple {
 list.boxed-list row.purple:hover {
 	background-color: var(--purple-4);
 	color: white;
+}
+.colorselector checkbox.system {
+	background: none;
+	background-color: black;
 }
 ]]
 
