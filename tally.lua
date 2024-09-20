@@ -614,44 +614,44 @@ local cssbase = [[
 
 local csslight = [[
 list.boxed-list row.red {
-	background-color: color-mix(in srgb, var(--red-1) 15%, transparent);
-	color: color-mix(in srgb, var(--red-5) 80%, transparent);
+	background-color: color-mix(in srgb, var(--red-1) 10%, transparent);
+	color: color-mix(in srgb, var(--red-5) 90%, black);
 }
 list.boxed-list row.red:hover {
-	background-color: color-mix(in srgb, var(--red-2) 15%, transparent);
-	color: color-mix(in srgb, var(--red-5) 80%, transparent);
+	background-color: color-mix(in srgb, var(--red-2) 10%, transparent);
+	color: color-mix(in srgb, var(--red-5) 90%, black);
 }
 list.boxed-list row.orange {
 	background-color: color-mix(in srgb, var(--orange-1) 20%, transparent);
-	color: var(--orange-5);
+	color: color-mix(in srgb, var(--orange-5) 70%, black);
 }
 list.boxed-list row.orange:hover {
 	background-color: color-mix(in srgb, var(--orange-2) 20%, transparent);
-	color: var(--orange-5);
+	color: color-mix(in srgb, var(--orange-5) 70%, black);
 }
 list.boxed-list row.yellow {
 	background-color: color-mix(in srgb, var(--yellow-1) 30%, transparent);
-	color: color-mix(in srgb, var(--yellow-5) 60%, black);
+	color: color-mix(in srgb, var(--yellow-5) 40%, black);
 }
 list.boxed-list row.yellow:hover {
 	background-color: color-mix(in srgb, var(--yellow-2) 30%, transparent);
-	color: color-mix(in srgb, var(--yellow-5) 60%, black);
+	color: color-mix(in srgb, var(--yellow-5) 40%, black);
 }
 list.boxed-list row.green {
 	background-color: color-mix(in srgb, var(--green-1) 25%, transparent);
-	color: color-mix(in srgb, var(--green-5) 80%, black);
+	color: color-mix(in srgb, var(--green-5) 55%, black);
 }
 list.boxed-list row.green:hover {
 	background-color: color-mix(in srgb, var(--green-2) 25%, transparent);
-	color: color-mix(in srgb, var(--green-5) 80%, black);
+	color: color-mix(in srgb, var(--green-5) 55%, black);
 }
 list.boxed-list row.blue {
 	background-color: color-mix(in srgb, var(--blue-1) 20%, transparent);
-	color: var(--blue-5);
+	color: color-mix(in srgb, var(--blue-5) 70%, black);
 }
 list.boxed-list row.blue:hover {
 	background-color: color-mix(in srgb, var(--blue-2) 20%, transparent);
-	color: var(--blue-5);
+	color: color-mix(in srgb, var(--blue-5) 70%, black);
 }
 list.boxed-list row.purple {
 	background-color: color-mix(in srgb, var(--purple-1) 20%, transparent);
@@ -665,51 +665,51 @@ list.boxed-list row.purple:hover {
 
 local cssdark = [[
 list.boxed-list row.red {
-	background-color: color-mix(in srgb, var(--red-3) 90%, white);
+	background-color: color-mix(in srgb, var(--red-5) 90%, transparent);
 	color: white;
 }
 list.boxed-list row.red:hover {
-	background-color: color-mix(in srgb, var(--red-2) 90%, white);
+	background-color: color-mix(in srgb, var(--red-4) 90%, transparent);
 	color: white;
 }
 list.boxed-list row.orange {
-	background-color: var(--orange-3);
+	background-color: color-mix(in srgb, var(--orange-5) 55%, transparent);
 	color: white;
 }
 list.boxed-list row.orange:hover {
-	background-color: var(--orange-2);
+	background-color: color-mix(in srgb, var(--orange-4) 55%, transparent);
 	color: white;
 }
 list.boxed-list row.yellow {
-	background-color: color-mix(in srgb, var(--yellow-3) 80%, transparent);
+	background-color: color-mix(in srgb, var(--yellow-5) 25%, transparent);
 	color: white;
 }
 list.boxed-list row.yellow:hover {
-	background-color: color-mix(in srgb, var(--yellow-2) 80%, transparent);
+	background-color: color-mix(in srgb, var(--yellow-4) 25%, transparent);
 	color: white;
 }
 list.boxed-list row.green {
-	background-color: color-mix(in srgb, var(--green-3) 90%, transparent);
+	background-color: color-mix(in srgb, var(--green-5) 40%, transparent);
 	color: white;
 }
 list.boxed-list row.green:hover {
-	background-color: color-mix(in srgb, var(--green-2) 90%, transparent);
+	background-color: color-mix(in srgb, var(--green-4) 40%, transparent);
 	color: white;
 }
 list.boxed-list row.blue {
-	background-color: var(--blue-3);
+	background-color: color-mix(in srgb, var(--blue-5) 70%, transparent);
 	color: white;
 }
 list.boxed-list row.blue:hover {
-	background-color: var(--blue-2);
+	background-color: color-mix(in srgb, var(--blue-4) 70%, transparent);
 	color: white;
 }
 list.boxed-list row.purple {
-	background-color: var(--purple-3);
+	background-color: var(--purple-5);
 	color: white;
 }
 list.boxed-list row.purple:hover {
-	background-color: var(--purple-2);
+	background-color: var(--purple-4);
 	color: white;
 }
 ]]
