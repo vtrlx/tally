@@ -15,9 +15,8 @@ APPID = ca.vlacroix.Tally.Devel
 endif
 
 DESKTOP_FILE = $(APPID).desktop
-ICON = $(APPID).png
-# Hardcoded to non-nightly version because the icons are identical.
-SYMBOLIC = ca.vlacroix.Tally-symbolic.svg
+ICON = $(APPID).svg
+SYMBOLIC = $(APPID)-symbolic.svg
 
 all: $(BIN)
 
@@ -38,5 +37,5 @@ clean:
 install: $(BIN) $(DESKTOP_FILE) $(ICON_FILE) $(SYMICON)
 	install -D -m 0755 -t $(PREFIX)/bin $<
 	install -D -m 0644 -t $(PREFIX)/share/applications $(DESKTOP_FILE)
-	install -D -m 0644 -t $(PREFIX)/share/icons/hicolor/128x128/apps icons/$(ICON)
+	install -D -m 0644 -t $(PREFIX)/share/icons/hicolor/symbolic/apps icons/$(ICON)
 	install -D -m 0644 -t $(PREFIX)/share/icons/hicolor/symbolic/apps icons/$(SYMBOLIC)
