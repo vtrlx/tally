@@ -382,10 +382,8 @@ end
 local function readcfg()
 	local cfg = io.open(tallyfile):read "a"
 	local f, err = load(cfg)
-	if not f then
-		print("Cannot load saved tallies", err)
-		return
-	end
+	-- Unable to read saved tallies, so just start the program with an empty list.
+	if not f then return end
 	local saved = f()
 	assert(type(saved) == "table")
 	for _, v in ipairs(saved) do
@@ -396,11 +394,11 @@ local function readcfg()
 end
 
 do -- Initialize configuration if it doesn't exist, load if it does.
-	if not fileexists(tallydir) then
-		mkdir(tallydir)
-	elseif not isdir(tallydir) then
-		error "installation is broken"
+	if fileexists(tallydir) and not isdir(tallydir) then
+		-- Tally configuration is broken due to external influence. Because this app runs in a Flatpak sandbox, any files inside of it should be expected to be under control of the app, so deleting it shouldn't violate any expectations.
+		os.remove(tallydir)
 	end
+	if not fileexists(tallydir) then mkdir(tallydir) end
 	if not fileexists(tallyfile) then
 		io.open(tallyfile, "w"):write("return {}\n"):close()
 	end
@@ -420,7 +418,7 @@ SECTION: Window construction
 local aboutwin = Adw.AboutDialog {
 	application_icon = app_id,
 	application_name = "Tally",
-	copyright = "© 2024 Victoria Lacroix",
+	copyright = "Copyright © 2024 Victoria Lacroix",
 	developer_name = "Victoria Lacroix",
 	issue_url = "https://github.com/vtrlx/tally/issues/",
 	license_type = "GPL_3_0",
