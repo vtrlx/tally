@@ -84,10 +84,24 @@ local tally = newclass(function(self, param)
 		self.value = param.value or self.value
 	end
 
+	self.namelabel = Gtk.Label {
+		label = self.name,
+		visible = false,
+		halign = "START",
+		hexpand = true,
+	}
+	self.countlabel = Gtk.Label {
+		label = ("%d"):format(self.value),
+		visible = false,
+		halign = "END",
+	}
+
 	self.row = Adw.SpinRow.new_with_range(0, 1000000, 1)
+	self.spinbtn = self.row.child:get_last_child():get_first_child()
 	self.row.value = self.value
 	function self.row.on_notify.value()
 		self.value = self.row.value
+		self.countlabel.label = ("%d"):format(self.value)
 	end
 	if param and param.color then
 		self:setcolor(param.color)
@@ -116,6 +130,7 @@ local tally = newclass(function(self, param)
 		else
 			self.row:remove_css_class "error"
 			self.name = self.entry.text
+			self.namelabel.label = self.entry.text
 		end
 	end
 	self.row:add_prefix(self.entry)
@@ -175,6 +190,7 @@ local tally = newclass(function(self, param)
 	self.draghdl:add_controller(src)
 	self.row:add_controller(tgt)
 
+	self.row:add_prefix(self.namelabel)
 	self.row:add_prefix(self.draghdl)
 	self.row:add_prefix(self.checkbox)
 
@@ -186,6 +202,8 @@ local tally = newclass(function(self, param)
 		popover = self:menu(),
 	}
 	self.menubtn:add_css_class "flat"
+
+	self.row:add_suffix(self.countlabel)
 	self.row:add_suffix(self.menubtn)
 
 	self:read()
@@ -197,16 +215,27 @@ function tally:read()
 end
 
 function tally:setcheckmode(enabled)
+	self.checkmode = enabled
 	if enabled then
 		self.checkbox.visible = true
 		self.checkbox.active = false
+		self.namelabel.visible = true
+		self.countlabel.visible = true
+		self.entry.visible = false
+		self.spinbtn.visible = false
 		self.menubtn.visible = false
 		self.draghdl.visible = false
+		-- self.row.activatable_widget = self.checkbox
 	else
 		self.checkbox.visible = false
 		self.checkbox.active = false
+		self.namelabel.visible = false
+		self.countlabel.visible = false
+		self.entry.visible = true
+		self.spinbtn.visible = true
 		self.menubtn.visible = true
 		self.draghdl.visible = true
+		-- self.row.activatable_widget = self.entry
 	end
 end
 
@@ -582,6 +611,12 @@ local function newwin()
 	end
 	function searchentry:on_search_changed()
 		lbox:invalidate_filter()
+	end
+	function lbox:on_row_activated(row)
+		local t = tallyrows[row]
+		if t.checkmode then
+			t.checkbox.active = t.checkbox.active ~= true
+		end
 	end
 
 	-- Place loaded tallies into the list.
