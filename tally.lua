@@ -379,6 +379,14 @@ function tally:duplicate()
 	return r
 end
 
+function tally:delete()
+	local lbox = self.row.parent
+	if not lbox then return end
+	table.remove(tallies, self.row:get_index() + 1)
+	lbox:remove(self.row)
+	if not lbox:get_row_at_index(0) then lbox.visible = false end
+end
+
 function tally:serialize()
 	local r = ""
 	for k, v in pairs(self) do
@@ -430,12 +438,6 @@ do -- Initialize configuration if it doesn't exist, load if it does.
 		io.open(tallyfile, "w"):write("return {}\n"):close()
 	end
 	readcfg()
-end
-
-local function tallydelete(t, lbox)
-	table.remove(tallies, t.row:get_index() + 1)
-	lbox:remove(t.row)
-	if not lbox:get_row_at_index(0) then lbox.visible = false end
 end
 
 --[[
@@ -552,11 +554,6 @@ local function newwin()
 		local t = tally()
 		table.insert(tallies, t)
 		tallyrows[t.row] = t
-		function t:delete()
-			tallydelete(t, lbox)
-			searchentry:grab_focus()
-			tallyrows[t.row] = nil
-		end
 		lbox:append(t.row)
 		t.entry:grab_focus()
 		if not lbox.visible then lbox.visible = true end
@@ -587,14 +584,9 @@ local function newwin()
 		lbox:invalidate_filter()
 	end
 
-	-- Initialize loaded tallies.
+	-- Place loaded tallies into the list.
 	for _, t in ipairs(tallies) do
 		lbox:append(t.row)
-		function t:delete()
-			tallydelete(t, lbox)
-			searchentry:grab_focus()
-			tallyrows[t.row] = nil
-		end
 	end
 	if #tallies > 0 then lbox.visible = true end
 
