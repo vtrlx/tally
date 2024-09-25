@@ -93,6 +93,18 @@ local tally = newclass(function(self, param)
 		self:setcolor(param.color)
 	end
 
+	self.checkbox = Gtk.CheckButton {
+		visible = false,
+	}
+	function self.checkbox.on_notify.active()
+		self.checked = self.checkbox.active
+		if self.checked then
+			self.row:add_css_class "checked"
+		else
+			self.row:remove_css_class "checked"
+		end
+	end
+
 	self.entry = Gtk.Text {
 		text = self.name,
 		margin_top = 6,
@@ -111,8 +123,8 @@ local tally = newclass(function(self, param)
 		self.entry:grab_focus()
 	end
 
-	local img = Gtk.Image.new_from_icon_name "list-drag-handle-symbolic"
-	img:add_css_class "drag-handle"
+	self.draghdl = Gtk.Image.new_from_icon_name "list-drag-handle-symbolic"
+	self.draghdl:add_css_class "drag-handle"
 
 	local src = Gtk.DragSource {
 		actions = "MOVE",
@@ -160,20 +172,21 @@ local tally = newclass(function(self, param)
 		return true
 	end
 
-	img:add_controller(src)
+	self.draghdl:add_controller(src)
 	self.row:add_controller(tgt)
 
-	self.row:add_prefix(img)
+	self.row:add_prefix(self.draghdl)
+	self.row:add_prefix(self.checkbox)
 
-	local menubtn = Gtk.MenuButton {
+	self.menubtn = Gtk.MenuButton {
 		icon_name = "view-more-horizontal-symbolic",
 		margin_top = 6,
 		margin_bottom = 6,
 		direction = "RIGHT",
 		popover = self:menu(),
 	}
-	menubtn:add_css_class "flat"
-	self.row:add_suffix(menubtn)
+	self.menubtn:add_css_class "flat"
+	self.row:add_suffix(self.menubtn)
 
 	self:read()
 end)
@@ -181,6 +194,20 @@ end)
 function tally:read()
 	self.entry.text = self.name
 	self.row.value = self.value
+end
+
+function tally:setcheckmode(enabled)
+	if enabled then
+		self.checkbox.visible = true
+		self.checkbox.active = false
+		self.menubtn.visible = false
+		self.draghdl.visible = false
+	else
+		self.checkbox.visible = false
+		self.checkbox.active = false
+		self.menubtn.visible = true
+		self.draghdl.visible = true
+	end
 end
 
 function tally:getcolor()
@@ -431,17 +458,27 @@ local function newwin()
 	if app.active_window then return app.active_window end
 
 	local newbtn = Gtk.Button.new_from_icon_name "list-add-symbolic"
+	local delbtn = Gtk.Button {
+		icon_name = "edit-delete-symbolic",
+		visible = false,
+	}
+	delbtn:add_css_class "destructive-action"
 	local searchbtn = Gtk.ToggleButton {
 		icon_name = "system-search-symbolic",
 	}
 	local infobtn = Gtk.Button.new_from_icon_name "help-about-symbolic"
+	local checkbtn = Gtk.ToggleButton {
+		icon_name = "checkbox-checked-symbolic",
+	}
 
 	local header = Adw.HeaderBar {
 		title_widget = Adw.WindowTitle.new("Tally", ""),
 	}
 	header:pack_start(newbtn)
-	header:pack_start(searchbtn)
+	header:pack_start(delbtn)
+	header:pack_start(checkbtn)
 	header:pack_end(infobtn)
+	header:pack_end(searchbtn)
 
 	local searchentry = Gtk.SearchEntry {
 		placeholder_text = "Filter by name…",
@@ -524,6 +561,28 @@ local function newwin()
 		t.entry:grab_focus()
 		if not lbox.visible then lbox.visible = true end
 	end
+	function checkbtn.on_notify.active()
+		if checkbtn.active then
+			newbtn.visible = false
+			delbtn.visible = true
+		else
+			newbtn.visible = true
+			delbtn.visible = false
+		end
+		for _, t in ipairs(tallies) do
+			t:setcheckmode(checkbtn.active)
+		end
+	end
+	function delbtn:on_clicked()
+		if not checkbtn.active then return end
+		local count = #tallies -- Cache the length because it's about to shrink.
+		for i = 1, count do
+			local idx = 1 + count - i
+			local t = tallies[idx]
+			if t.checked then t:delete() end
+		end
+		checkbtn.active = false
+	end
 	function searchentry:on_search_changed()
 		lbox:invalidate_filter()
 	end
@@ -541,7 +600,7 @@ local function newwin()
 
 	local clamp = Adw.Clamp {
 		child = lbox,
-		maximum_size = 500,
+		maximum_size = 600,
 		margin_start = 48,
 		margin_end = 48,
 		margin_top = 24,
