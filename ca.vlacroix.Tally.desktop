@@ -1,11 +1,9 @@
 [Desktop Entry]
-Categories=GNOME;GTK;Utility;
+Categories=Utility
 Name=Tally
 Name[en]=Tally
-Keywords=count;counter;tally;
-Keywords[en]=count;counter;tally;
-Comment=Counter for GNOME
-Comment[en]=Counter for GNOME
+Comment=Count anything
+Comment[en]=Count anything
 Type=Application
 Exec=tally
 Terminal=false

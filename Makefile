@@ -17,6 +17,7 @@ endif
 DESKTOP_FILE = $(APPID).desktop
 ICON = $(APPID).svg
 SYMBOLIC = $(APPID)-symbolic.svg
+METAINFO = $(APPID).metainfo.xml
 
 all: $(BIN)
 
@@ -34,8 +35,9 @@ $(BIN): $(CSRCS) $(OBJS)
 clean:
 	rm -f tally tally_bytecode.o tally.bytecode
 
-install: $(BIN) $(DESKTOP_FILE) $(ICON_FILE) $(SYMICON)
+install: $(BIN)
 	install -D -m 0755 -t $(PREFIX)/bin $<
 	install -D -m 0644 -t $(PREFIX)/share/applications $(DESKTOP_FILE)
-	install -D -m 0644 -t $(PREFIX)/share/icons/hicolor/symbolic/apps icons/$(ICON)
+	install -D -m 0644 -t $(PREFIX)/share/icons/hicolor/scalable/apps icons/$(ICON)
 	install -D -m 0644 -t $(PREFIX)/share/icons/hicolor/symbolic/apps icons/$(SYMBOLIC)
+	install -D -m 0644 -t $(PREFIX)/share/metainfo $(METAINFO)

@@ -1,11 +1,9 @@
 [Desktop Entry]
-Categories=GNOME;GTK;Utility;
+Categories=Utility
 Name=Tally Nightly
 Name[en]=Tally Nightly
-Keywords=count;counter;tally;
-Keywords[en]=count;counter;tally;
-Comment=Counter for GNOME (Development Version)
-Comment[en]=Counter for GNOME (Development Version)
+Comment=Count anything
+Comment[en]=Count anything
 Type=Application
 Exec=tally
 Terminal=false

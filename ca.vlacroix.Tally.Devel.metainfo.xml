@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+	<id>ca.vlacroix.Tally.Devel</id>
+
+	<name>Tally Nightly</name>
+	<summary>Count anything (development version)</summary>
+
+	<categories>
+		<category>Utility</category>
+	</categories>
+
+	<keywords>
+		<keyword>GNOME</keyword>
+		<keyword>Gtk</keyword>
+		<keyword>Counter</keyword>
+	</keywords>
+
+	<developer id="ca.vlacroix">
+		<name>Victoria Lacroix</name>
+	</developer>
+
+	<metadata_license>FSFAP</metadata_license>
+	<project_license>GPL-3.0-or-later</project_license>
+
+	<recommends>
+		<display_length compare="ge">600</display_length>
+	</recommends>
+	<supports>
+		<control>pointing</control>
+		<control>keyboard</control>
+		<control>touch</control>
+	</supports>
+
+	<description>
+		<p>
+			Keep and organize a list of tally counters.
+		</p>
+	</description>
+
+	<launchable type="desktop-id">ca.vlacroix.Tally.Devel.desktop</launchable>
+	<screenshots>
+		<screenshot type="default">
+			<image>https://www.vlacroix.ca/images/tally-1.png</image>
+		</screenshot>
+		<screenshot>
+			<image>https://www.vlacroix.ca/images/tally-2.png</image>
+		</screenshot>
+		<screenshot>
+			<image>https://www.vlacroix.ca/images/tally-3.png</image>
+		</screenshot>
+	</screenshots>
+</component>
