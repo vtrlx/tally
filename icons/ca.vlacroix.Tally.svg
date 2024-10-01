@@ -23,14 +23,14 @@
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#d1d1d1"
      inkscape:zoom="4.25"
-     inkscape:cx="63.882353"
+     inkscape:cx="64.117647"
      inkscape:cy="64"
      inkscape:window-width="1281"
      inkscape:window-height="788"
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="1"
-     inkscape:current-layer="g33" />
+     inkscape:current-layer="g31" />
   <linearGradient
      id="a"
      gradientUnits="userSpaceOnUse"
@@ -77,7 +77,8 @@
      id="path8" />
   <g
      id="g31"
-     style="fill:#eeae2c;fill-opacity:1">
+     style="fill:#eeae2c;fill-opacity:1"
+     inkscape:label="g31">
     <path
        d="m 20 81 v -14 l 2 -2 l 2 2 v 14 l -2 2 z m 0 0"
        id="path15"
@@ -102,11 +103,11 @@
     <path
        d="m 40 61 v -14 l 2 -2 l 2 2 v 14 l -2 2 z m 0 0"
        id="path13"
-       style="fill:#eeae2c;fill-opacity:1" />
+       style="fill:#000000;fill-opacity:1" />
     <path
        d="m 40 81 v -14 l 2 -2 l 2 2 v 14 l -2 2 z m 0 0"
        id="path14"
-       style="fill:#eeae2c;fill-opacity:1" />
+       style="fill:#000000;fill-opacity:1" />
   </g>
   <g
      id="g32">
@@ -117,7 +118,7 @@
     <path
        d="m 57,62 h 14 l 2,2 -2,2 H 57 l -2,-2 z m 0,0"
        id="path17"
-       style="fill:#e5a50a" />
+       style="fill:#000000;fill-opacity:1" />
     <path
        d="m 57,82 h 14 l 2,2 -2,2 H 57 l -2,-2 z m 0,0"
        id="path18"
@@ -125,10 +126,11 @@
     <path
        d="M 52,61 V 47 l 2,-2 2,2 v 14 l -2,2 z m 0,0"
        id="path19"
-       style="fill:#000000;fill-opacity:1" />
+       style="fill:#eeae2c;fill-opacity:1" />
     <path
        d="m 72 81 v -14 l 2 -2 l 2 2 v 14 l -2 2 z m 0 0"
-       id="path21" />
+       id="path21"
+       style="fill:#eeae2c;fill-opacity:1" />
     <path
        d="m 52 81 v -14 l 2 -2 l 2 2 v 14 l -2 2 z m 0 0"
        fill="#e5a50a"
@@ -142,7 +144,8 @@
      id="g33">
     <path
        d="m 84 81 v -14 l 2 -2 l 2 2 v 14 l -2 2 z m 0 0"
-       id="path29" />
+       id="path29"
+       style="fill:#eeae2c;fill-opacity:1" />
     <path
        d="m 89 42 h 14 l 2 2 l -2 2 h -14 l -2 -2 z m 0 0"
        id="path23" />
@@ -164,15 +167,15 @@
     <path
        d="m 104 81 v -14 l 2 -2 l 2 2 v 14 l -2 2 z m 0 0"
        id="path28"
-       style="fill:#eeae2c;fill-opacity:1" />
+       style="fill:#000000;fill-opacity:1" />
   </g>
   <path
      d="m 50 84 c 0 1.105469 -0.894531 2 -2 2 s -2 -0.894531 -2 -2 s 0.894531 -2 2 -2 s 2 0.894531 2 2 z m 0 0"
      id="path30"
-     style="fill:#eeae2c;fill-opacity:1" />
+     style="fill:#ffbe6f;fill-opacity:1" />
   <path
      d="m 82 84 c 0 1.105469 -0.894531 2 -2 2 s -2 -0.894531 -2 -2 s 0.894531 -2 2 -2 s 2 0.894531 2 2 z m 0 0"
      fill="#e5a50a"
      id="path31"
-     style="fill:#000000;fill-opacity:1" />
+     style="fill:#ffbe6f;fill-opacity:1" />
 </svg>
