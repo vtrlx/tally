@@ -4,6 +4,19 @@
 
 	<name>Tally</name>
 	<summary>Count anything</summary>
+	<url type="bugtracker">https://github.com/vtrlx/tally/issues</url>
+	<url type="contact">https://www.vlacroix.ca/about</url>
+	<url type="homepage">https://www.vlacroix.ca/apps/tally/</url>
+
+	<content_rating type="oars-1.1" />
+
+	<releases>
+		<release version="0.1" date="2024-10-01">
+			<description>
+				<p>Initial release.</p>
+			</description>
+		</release>
+	</releases>
 
 	<categories>
 		<category>Utility</category>
