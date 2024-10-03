@@ -4,6 +4,10 @@
 
 A counter for GNOME.
 
+## Installing
+
+Install the stable version of Tally through [Flathub](https://flathub.org/apps/ca.vlacroix.Tally).
+
 ## Building
 
 Build with [Flatpak Builder](https://docs.flatpak.org/en/latest/flatpak-builder.html).
