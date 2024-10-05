@@ -6,7 +6,7 @@ A counter for GNOME.
 
 ## Installing
 
-Install the stable version of Tally through [Flathub](https://flathub.org/apps/ca.vlacroix.Tally).
+[![Get it on Flathub](https://flathub.org/api/badge?svg&locale=en)](https://flathub.org/apps/ca.vlacroix.Tally)
 
 ## Building
 
