@@ -279,7 +279,6 @@ function tally:menu()
 	}
 	local udbox = Gtk.Box {
 		orientation = "HORIZONTAL",
-		halign = "START",
 	}
 	udbox:add_css_class "linked"
 	udbox:append(upbtn)
@@ -291,17 +290,11 @@ function tally:menu()
 	local bottombtn = Gtk.Button {
 		icon_name = "go-bottom-symbolic",
 	}
-	local tbbox = Gtk.Box {
-		orientation = "HORIZONTAL",
-		halign = "CENTER",
-	}
-	tbbox:add_css_class "linked"
-	tbbox:append(topbtn)
-	tbbox:append(bottombtn)
 
 	local delbtn = Gtk.Button {
 		icon_name = "edit-delete-symbolic",
 		halign = "END",
+		hexpand = true,
 	}
 	delbtn:add_css_class "destructive-action"
 
@@ -311,8 +304,9 @@ function tally:menu()
 		hexpand = true,
 		halign = "FILL",
 	}
+	mbox:append(topbtn)
 	mbox:append(udbox)
-	mbox:append(tbbox)
+	mbox:append(bottombtn)
 	mbox:append(delbtn)
 
 	local box = Gtk.Box {
