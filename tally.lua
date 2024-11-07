@@ -277,7 +277,10 @@ function tally:menu()
 	local downbtn = Gtk.Button {
 		icon_name = "go-down-symbolic",
 	}
-	local udbox = Gtk.Box { orientation = "HORIZONTAL" }
+	local udbox = Gtk.Box {
+		orientation = "HORIZONTAL",
+		halign = "START",
+	}
 	udbox:add_css_class "linked"
 	udbox:append(upbtn)
 	udbox:append(downbtn)
@@ -288,19 +291,25 @@ function tally:menu()
 	local bottombtn = Gtk.Button {
 		icon_name = "go-bottom-symbolic",
 	}
-	local tbbox = Gtk.Box { orientation = "HORIZONTAL" }
+	local tbbox = Gtk.Box {
+		orientation = "HORIZONTAL",
+		halign = "CENTER",
+	}
 	tbbox:add_css_class "linked"
 	tbbox:append(topbtn)
 	tbbox:append(bottombtn)
 
 	local delbtn = Gtk.Button {
 		icon_name = "edit-delete-symbolic",
+		halign = "END",
 	}
 	delbtn:add_css_class "destructive-action"
 
 	local mbox = Gtk.Box {
 		orientation = "HORIZONTAL",
-		spacing = 6,
+		spacing = 12,
+		hexpand = true,
+		halign = "FILL",
 	}
 	mbox:append(udbox)
 	mbox:append(tbbox)
@@ -507,13 +516,13 @@ local function newwin()
 		placeholder_text = "Filter by name…",
 	}
 
-	local colorbox = Gtk.Box {
+	local searchcolorbox = Gtk.Box {
 		orientation = "HORIZONTAL",
 		spacing = 6,
 	}
-	colorbox:add_css_class "colorselector"
+	searchcolorbox:add_css_class "colorselector"
 	local filtcolors = {}
-	local colorchecks = {}
+	local searchcolorchecks = {}
 
 	local searchbox = Gtk.Box {
 		orientation = "VERTICAL",
@@ -522,7 +531,7 @@ local function newwin()
 		margin_bottom = 6,
 	}
 	searchbox:append(searchentry)
-	searchbox:append(colorbox)
+	searchbox:append(searchcolorbox)
 
 	local searchbar = Gtk.SearchBar {
 		child = searchbox,
@@ -531,7 +540,7 @@ local function newwin()
 	searchbar:bind_property("search-mode-enabled", searchbtn, "active", "BIDIRECTIONAL")
 	-- Despite mapping property names with underscores and providing a lovely syntax for defining signal event handlers, LGI doesn't do both at the same time.
 	searchbar.on_notify["search-mode-enabled"] = function()
-		for _, cb in ipairs(colorchecks) do cb.active = false end
+		for _, cb in ipairs(searchcolorchecks) do cb.active = false end
 	end
 
 	local lbox = Gtk.ListBox {
@@ -561,15 +570,17 @@ local function newwin()
 				filtcolors.yellow or filtcolors.green or filtcolors.blue or filtcolors.purple
 			lbox:invalidate_filter()
 		end
-		table.insert(colorchecks, checkbtn)
-		colorbox:append(checkbtn)
+		table.insert(searchcolorchecks, checkbtn)
+		searchcolorbox:append(checkbtn)
 	end
 
+	local newtallycolor
 	local createbtn = Gtk.Button.new_from_icon_name "list-add-symbolic"
 	createbtn:add_css_class "suggested-action"
 	createbtn.sensitive = false
 	local nameentry = Gtk.Entry {
 		placeholder_text = "Name",
+		hexpand = true,
 	}
 	function nameentry:on_changed()
 		if #self.text == 0 then
@@ -580,10 +591,34 @@ local function newwin()
 			createbtn.sensitive = true
 		end
 	end
-	local namebox = Gtk.Box { orientation = "HORIZONTAL" }
+	local namebox = Gtk.Box {
+		orientation = "HORIZONTAL",
+		halign = "FILL",
+	}
 	namebox:append(nameentry)
 	namebox:append(createbtn)
 	namebox:add_css_class "linked"
+
+	local tallycolorbox = Gtk.Box {
+		orientation = "HORIZONTAL",
+		spacing = 6,
+	}
+	tallycolorbox:add_css_class "colorselector"
+	local newsystemcheckbtn = Gtk.CheckButton {}
+	tallycolorbox:append(newsystemcheckbtn)
+	function newsystemcheckbtn.on_notify.active()
+		newtallycolor = nil
+	end
+	for _, c in ipairs { "red", "orange", "yellow", "green", "blue", "purple" } do
+		local checkbtn = Gtk.CheckButton { group = newsystemcheckbtn }
+		checkbtn:add_css_class(c)
+		function checkbtn.on_notify.active()
+			if checkbtn.active then
+				newtallycolor = c
+			end
+		end
+		tallycolorbox:append(checkbtn)
+	end
 
 	local pbox = Gtk.Box {
 		orientation = "VERTICAL",
@@ -594,6 +629,7 @@ local function newwin()
 		margin_end = 12,
 	}
 	pbox:append(namebox)
+	pbox:append(tallycolorbox)
 	local popover = Gtk.Popover {
 		child = pbox,
 	}
@@ -601,10 +637,14 @@ local function newwin()
 		nameentry.text = ""
 		-- Prevent showing the error CSS when popping up the popover.
 		nameentry:remove_css_class "error"
+		newsystemcheckbtn.active = true
 	end
 	local function do_create()
 		if #nameentry.text == 0 then return end
-		local t = tally { name = nameentry.text }
+		local t = tally {
+			name = nameentry.text,
+			color = newtallycolor,
+		}
 		table.insert(tallies, t)
 		tallyrows[t.row] = t
 		lbox:append(t.row)
