@@ -488,7 +488,9 @@ local function newwin()
 	-- Force the window to be unique.
 	if app.active_window then return app.active_window end
 
-	local newbtn = Gtk.Button.new_from_icon_name "list-add-symbolic"
+	local newbtn = Gtk.MenuButton {
+		icon_name = "list-add-symbolic",
+	}
 	local delbtn = Gtk.Button {
 		icon_name = "edit-delete-symbolic",
 		visible = false,
@@ -572,21 +574,57 @@ local function newwin()
 		table.insert(colorchecks, checkbtn)
 		colorbox:append(checkbtn)
 	end
---[[
-	lbox:set_placeholder(Gtk.Label {
-		label = "no matches",
+
+	local createbtn = Gtk.Button.new_from_icon_name "list-add-symbolic"
+	createbtn:add_css_class "suggested-action"
+	createbtn.sensitive = false
+	local nameentry = Gtk.Entry {
+		placeholder_text = "Name",
+	}
+	function nameentry:on_changed()
+		if #self.text == 0 then
+			self:add_css_class "error"
+			createbtn.sensitive = false
+		else
+			self:remove_css_class "error"
+			createbtn.sensitive = true
+		end
+	end
+	local namebox = Gtk.Box { orientation = "HORIZONTAL" }
+	namebox:append(nameentry)
+	namebox:append(createbtn)
+	namebox:add_css_class "linked"
+
+	local pbox = Gtk.Box {
+		orientation = "VERTICAL",
+		spacing = 12,
 		margin_top = 12,
 		margin_bottom = 12,
-	})
-]]--
-	function newbtn:on_clicked()
-		local t = tally()
+		margin_start = 12,
+		margin_end = 12,
+	}
+	pbox:append(namebox)
+	local popover = Gtk.Popover {
+		child = pbox,
+	}
+	function popover.on_notify.visible()
+		nameentry.text = ""
+		-- Prevent showing the error CSS when popping up the popover.
+		nameentry:remove_css_class "error"
+	end
+	local function do_create()
+		if #nameentry.text == 0 then return end
+		local t = tally { name = nameentry.text }
 		table.insert(tallies, t)
 		tallyrows[t.row] = t
 		lbox:append(t.row)
-		t.entry:grab_focus()
 		if not lbox.visible then lbox.visible = true end
+		popover:popdown()
 	end
+	nameentry.on_activate = do_create
+	createbtn.on_clicked = do_create
+	newbtn.popover = popover
+
 	function checkbtn.on_notify.active()
 		if checkbtn.active then
 			newbtn.visible = false
