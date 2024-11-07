@@ -84,19 +84,15 @@ local tally = newclass(function(self, param)
 		self.value = param.value or self.value
 	end
 
-	self.namelabel = Gtk.Label {
-		label = self.name,
-		visible = false,
-		halign = "START",
-		hexpand = true,
-	}
 	self.countlabel = Gtk.Label {
 		label = ("%d"):format(self.value),
 		visible = false,
+		hexpand = false,
 		halign = "END",
 	}
 
 	self.row = Adw.SpinRow.new_with_range(0, 1000000, 1)
+	self.row.title = self.name
 	self.spinbtn = self.row.child:get_last_child():get_first_child()
 	self.row.value = self.value
 	function self.row.on_notify.value()
@@ -117,25 +113,6 @@ local tally = newclass(function(self, param)
 		else
 			self.row:remove_css_class "checked"
 		end
-	end
-
-	self.entry = Gtk.Text {
-		text = self.name,
-		margin_top = 6,
-		margin_bottom = 6,
-	}
-	function self.entry.on_changed()
-		if #self.entry.text == 0 then
-			self.row:add_css_class "error"
-		else
-			self.row:remove_css_class "error"
-			self.name = self.entry.text
-			self.namelabel.label = self.entry.text
-		end
-	end
-	self.row:add_prefix(self.entry)
-	function self.row:on_activate()
-		self.entry:grab_focus()
 	end
 
 	self.draghdl = Gtk.Image.new_from_icon_name "list-drag-handle-symbolic"
@@ -190,7 +167,6 @@ local tally = newclass(function(self, param)
 	self.draghdl:add_controller(src)
 	self.row:add_controller(tgt)
 
-	self.row:add_prefix(self.namelabel)
 	self.row:add_prefix(self.draghdl)
 	self.row:add_prefix(self.checkbox)
 
@@ -206,11 +182,15 @@ local tally = newclass(function(self, param)
 	self.row:add_suffix(self.countlabel)
 	self.row:add_suffix(self.menubtn)
 
+	-- Force the contents of the suffix box to align right when the spinbutton is made invisible.
+	local suffixbox = self.row.child:get_last_child()
+	suffixbox.hexpand = true
+	suffixbox.halign = "END"
+
 	self:read()
 end)
 
 function tally:read()
-	self.entry.text = self.name
 	self.row.value = self.value
 end
 
@@ -219,23 +199,17 @@ function tally:setcheckmode(enabled)
 	if enabled then
 		self.checkbox.visible = true
 		self.checkbox.active = false
-		self.namelabel.visible = true
 		self.countlabel.visible = true
-		self.entry.visible = false
 		self.spinbtn.visible = false
 		self.menubtn.visible = false
 		self.draghdl.visible = false
-		-- self.row.activatable_widget = self.checkbox
 	else
 		self.checkbox.visible = false
 		self.checkbox.active = false
-		self.namelabel.visible = false
 		self.countlabel.visible = false
-		self.entry.visible = true
 		self.spinbtn.visible = true
 		self.menubtn.visible = true
 		self.draghdl.visible = true
-		-- self.row.activatable_widget = self.entry
 	end
 end
 
@@ -282,7 +256,19 @@ function tally:colorrow()
 end
 
 function tally:menu()
-	-- FIXME: Generate the popover menu through a callback instead of on construction.
+	local entry = Gtk.Entry {
+		text = self.name,
+	}
+	function entry.on_changed()
+		if #entry.text == 0 then
+			self.row:add_css_class "error"
+			return
+		end
+		self.row:remove_css_class "error"
+		self.name = entry.text
+		self.row.title = entry.text
+	end
+
 	local cbox = self:colorrow()
 
 	local upbtn = Gtk.Button {
@@ -328,12 +314,16 @@ function tally:menu()
 		margin_top = 6,
 		margin_bottom = 6,
 	}
+	box:append(entry)
 	box:append(cbox)
 	box:append(mbox)
 
 	local popover = Gtk.Popover {
 		child = box,
 	}
+	function popover.on_notify.visible()
+		entry.text = self.name
+	end
 
 	function upbtn.on_clicked()
 		local rindex = self.row:get_index()
