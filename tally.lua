@@ -88,6 +88,7 @@ local tally = newclass(function(self, param)
 		label = ("%d"):format(self.value),
 		visible = false,
 		hexpand = false,
+		margin_start = 18,
 		halign = "END",
 	}
 
