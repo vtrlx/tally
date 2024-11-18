@@ -11,6 +11,21 @@
 	<content_rating type="oars-1.1" />
 
 	<releases>
+		<release version="0.3" date="2024-11-18">
+			<description>
+<p>
+Various tweaks have been made to improve the user experience:
+</p>
+<ul>
+<li>Can now name a counter and assign it a colour before adding it to the list.</li>
+<li>Long counter names are no longer cut off.</li>
+<li>The option to rename a counter has been moved to its overflow menu.</li>
+<li>Buttons for reordering counters have been given a different layout to make it less likely to misclick them.</li>
+<li>Counters are now scrolled into view after being reordered.</li>
+<li>In mass delete mode, there is now a larger gap between a counter's name and its value.</li>
+</ul>
+			</description>
+		</release>
 		<release version="0.2" date="2024-11-04">
 			<description>
 				<p>Adds brand colour to store page.</p>
