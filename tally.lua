@@ -213,6 +213,12 @@ function tally:setcheckmode(enabled)
 	end
 end
 
+function tally:scroll()
+	local box = self.row.parent
+	local viewport = box.parent.parent
+	viewport:scroll_to(self.row)
+end
+
 function tally:getcolor()
 	return self.color or "system"
 end
@@ -340,6 +346,7 @@ function tally:menu()
 				table.insert(tallies, rindex + 1, self)
 				lbox:remove(self.row)
 				lbox:insert(self.row, rindex)
+				GLib.timeout_add(GLib.PRIORITY_DEFAULT, 20, function() self:scroll() end)
 				return
 			end
 		end
@@ -357,6 +364,7 @@ function tally:menu()
 				table.insert(tallies, rindex + 1, self)
 				lbox:remove(self.row)
 				lbox:insert(self.row, rindex)
+				GLib.timeout_add(GLib.PRIORITY_DEFAULT, 20, function() self:scroll() end)
 				return
 			end
 			rindex = rindex + 1
@@ -364,21 +372,21 @@ function tally:menu()
 	end
 
 	function topbtn.on_clicked()
-		popover:popdown()
 		table.remove(tallies, self.row:get_index() + 1)
 		table.insert(tallies, 1, self)
 		local lbox = self.row.parent
 		lbox:remove(self.row)
 		lbox:prepend(self.row)
+		GLib.timeout_add(GLib.PRIORITY_DEFAULT, 20, function() self:scroll() end)
 	end
 
 	function bottombtn.on_clicked()
-		popover:popdown()
 		table.remove(tallies, self.row:get_index() + 1)
 		table.insert(tallies, self)
 		local lbox = self.row.parent
 		lbox:remove(self.row)
 		lbox:append(self.row)
+		GLib.timeout_add(GLib.PRIORITY_DEFAULT, 20, function() self:scroll() end)
 	end
 
 	function delbtn.on_clicked()
@@ -633,20 +641,6 @@ local function newwin()
 		nameentry:remove_css_class "error"
 		newsystemcheckbtn.active = true
 	end
-	local function do_create()
-		if #nameentry.text == 0 then return end
-		local t = tally {
-			name = nameentry.text,
-			color = newtallycolor,
-		}
-		table.insert(tallies, t)
-		tallyrows[t.row] = t
-		lbox:append(t.row)
-		if not lbox.visible then lbox.visible = true end
-		popover:popdown()
-	end
-	nameentry.on_activate = do_create
-	createbtn.on_clicked = do_create
 	newbtn.popover = popover
 
 	function checkbtn.on_notify.active()
@@ -700,17 +694,24 @@ local function newwin()
 		hscrollbar_policy = "NEVER",
 		child = clamp,
 	}
-	local old_upper = 0
 	local function scroll_to_bottom()
 		scroll.vadjustment.value = scroll.vadjustment.upper
 	end
-	function scroll.vadjustment.on_notify.upper()
-		local upper = scroll.vadjustment.upper
-		if upper > old_upper then
-			GLib.timeout_add(GLib.PRIORITY_DEFAULT, 1, scroll_to_bottom)
-		end
-		old_upper = upper
+	local function do_create()
+		if #nameentry.text == 0 then return end
+		local t = tally {
+			name = nameentry.text,
+			color = newtallycolor,
+		}
+		table.insert(tallies, t)
+		tallyrows[t.row] = t
+		lbox:append(t.row)
+		if not lbox.visible then lbox.visible = true end
+		GLib.timeout_add(GLib.PRIORITY_DEFAULT, 20, scroll_to_bottom)
+		popover:popdown()
 	end
+	nameentry.on_activate = do_create
+	createbtn.on_clicked = do_create
 
 	local tbview = Adw.ToolbarView {
 		content = scroll,
