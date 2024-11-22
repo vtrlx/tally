@@ -227,10 +227,12 @@ end
 function tally:setcolor(color)
 	if self.color then
 		self.row:remove_css_class(self.color)
+		if self.zoomwin then self.zoomwin.content:remove_css_class(self.color) end
 	end
 	self.color = color
 	if color then
 		self.row:add_css_class(color)
+		if self.zoomwin then self.zoomwin.content:add_css_class(color) end
 	end
 end
 
@@ -401,15 +403,18 @@ function tally:popout()
 	if self.zoomwin then
 		return self.zoomwin
 	end
-	local title = Adw.WindowTitle.new(self.entry.text, "")
-	self.entry:bind_property("text", title, "title", "BIDIRECTIONAL")
+	local title = Adw.WindowTitle.new("Tally", "")
 	local headerbar = Adw.HeaderBar {
 		title_widget = title,
 	}
+	local namelabel = Gtk.Label {
+		label = self.name,
+	}
+	namelabel:add_css_class "title-1"
+	self.entry:bind_property("text", namelabel, "label", "BIDIRECTIONAL")
 	local countlabel = Gtk.Label {
 		label = ("%d"):format(self.row.value),
-		width_request = 300,
-		margin_start = 24,
+		width_request = 200,
 		margin_end = 24,
 		xalign = 1,
 	}
@@ -433,20 +438,27 @@ function tally:popout()
 		decbtn.sensitive = self.row.value > 0
 		incbtn.sensitive = self.row.value < 1000000
 	end
-	local box = Gtk.Box {
+	local numbox = Gtk.Box {
 		orientation = "HORIZONTAL",
 		spacing = 24,
+		valign = "CENTER",
+	}
+	numbox:append(countlabel)
+	numbox:append(decbtn)
+	numbox:append(incbtn)
+	numbox:add_css_class "popout"
+	local box = Gtk.Box {
+		orientation = "VERTICAL",
+		spacing = 36,
 		margin_top = 24,
 		margin_bottom = 24,
 		margin_start = 24,
 		margin_end = 24,
-		halign = "CENTER",
 		valign = "CENTER",
+		halign = "CENTER",
 	}
-	box:append(countlabel)
-	box:append(decbtn)
-	box:append(incbtn)
-	box:add_css_class "popout"
+	box:append(namelabel)
+	box:append(numbox)
 	local content = Adw.ToolbarView {
 		content = box,
 	}
@@ -456,6 +468,7 @@ function tally:popout()
 		content = content,
 		hide_on_close = true,
 	}
+	if self.color then content:add_css_class(self.color) end
 	if is_devel then self.zoomwin:add_css_class "devel" end
 	return self.zoomwin
 end
@@ -877,7 +890,7 @@ local cssbase = [[
 ]]
 
 local csslight = [[
-list.boxed-list row.red {
+list.boxed-list row.red, toolbarview.red {
 	background-color: color-mix(in srgb, var(--red-1) 10%, transparent);
 	color: color-mix(in srgb, var(--red-5) 90%, black);
 }
@@ -885,7 +898,7 @@ list.boxed-list row.red:hover {
 	background-color: color-mix(in srgb, var(--red-2) 10%, transparent);
 	color: color-mix(in srgb, var(--red-5) 90%, black);
 }
-list.boxed-list row.orange {
+list.boxed-list row.orange, toolbarview.orange {
 	background-color: color-mix(in srgb, var(--orange-1) 20%, transparent);
 	color: color-mix(in srgb, var(--orange-5) 70%, black);
 }
@@ -893,7 +906,7 @@ list.boxed-list row.orange:hover {
 	background-color: color-mix(in srgb, var(--orange-2) 20%, transparent);
 	color: color-mix(in srgb, var(--orange-5) 70%, black);
 }
-list.boxed-list row.yellow {
+list.boxed-list row.yellow, toolbarview.yellow {
 	background-color: color-mix(in srgb, var(--yellow-1) 30%, transparent);
 	color: color-mix(in srgb, var(--yellow-5) 40%, black);
 }
@@ -901,7 +914,7 @@ list.boxed-list row.yellow:hover {
 	background-color: color-mix(in srgb, var(--yellow-2) 30%, transparent);
 	color: color-mix(in srgb, var(--yellow-5) 40%, black);
 }
-list.boxed-list row.green {
+list.boxed-list row.green, toolbarview.green {
 	background-color: color-mix(in srgb, var(--green-1) 25%, transparent);
 	color: color-mix(in srgb, var(--green-5) 55%, black);
 }
@@ -909,7 +922,7 @@ list.boxed-list row.green:hover {
 	background-color: color-mix(in srgb, var(--green-2) 25%, transparent);
 	color: color-mix(in srgb, var(--green-5) 55%, black);
 }
-list.boxed-list row.blue {
+list.boxed-list row.blue, toolbarview.blue {
 	background-color: color-mix(in srgb, var(--blue-1) 20%, transparent);
 	color: color-mix(in srgb, var(--blue-5) 70%, black);
 }
@@ -917,7 +930,7 @@ list.boxed-list row.blue:hover {
 	background-color: color-mix(in srgb, var(--blue-2) 20%, transparent);
 	color: color-mix(in srgb, var(--blue-5) 70%, black);
 }
-list.boxed-list row.purple {
+list.boxed-list row.purple, toolbarview.purple {
 	background-color: color-mix(in srgb, var(--purple-1) 20%, transparent);
 	color: var(--purple-5);
 }
@@ -932,7 +945,7 @@ list.boxed-list row.purple:hover {
 ]]
 
 local cssdark = [[
-list.boxed-list row.red {
+list.boxed-list row.red, toolbarview.red {
 	background-color: color-mix(in srgb, var(--red-5) 90%, transparent);
 	color: white;
 }
@@ -940,7 +953,7 @@ list.boxed-list row.red:hover {
 	background-color: color-mix(in srgb, var(--red-4) 90%, transparent);
 	color: white;
 }
-list.boxed-list row.orange {
+list.boxed-list row.orange, toolbarview.orange {
 	background-color: color-mix(in srgb, var(--orange-5) 55%, transparent);
 	color: white;
 }
@@ -948,7 +961,7 @@ list.boxed-list row.orange:hover {
 	background-color: color-mix(in srgb, var(--orange-4) 55%, transparent);
 	color: white;
 }
-list.boxed-list row.yellow {
+list.boxed-list row.yellow, toolbarview.yellow {
 	background-color: color-mix(in srgb, var(--yellow-5) 25%, transparent);
 	color: white;
 }
@@ -956,7 +969,7 @@ list.boxed-list row.yellow:hover {
 	background-color: color-mix(in srgb, var(--yellow-4) 25%, transparent);
 	color: white;
 }
-list.boxed-list row.green {
+list.boxed-list row.green, toolbarview.green {
 	background-color: color-mix(in srgb, var(--green-5) 40%, transparent);
 	color: white;
 }
@@ -964,7 +977,7 @@ list.boxed-list row.green:hover {
 	background-color: color-mix(in srgb, var(--green-4) 40%, transparent);
 	color: white;
 }
-list.boxed-list row.blue {
+list.boxed-list row.blue, toolbarview.blue {
 	background-color: color-mix(in srgb, var(--blue-5) 70%, transparent);
 	color: white;
 }
@@ -972,7 +985,7 @@ list.boxed-list row.blue:hover {
 	background-color: color-mix(in srgb, var(--blue-4) 70%, transparent);
 	color: white;
 }
-list.boxed-list row.purple {
+list.boxed-list row.purple, toolbarview.purple {
 	background-color: var(--purple-5);
 	color: white;
 }
