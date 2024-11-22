@@ -263,17 +263,17 @@ function tally:colorrow()
 end
 
 function tally:menu()
-	local entry = Gtk.Entry {
+	self.entry = Gtk.Entry {
 		text = self.name,
 	}
-	function entry.on_changed()
-		if #entry.text == 0 then
+	function self.entry.on_changed()
+		if #self.entry.text == 0 then
 			self.row:add_css_class "error"
 			return
 		end
 		self.row:remove_css_class "error"
-		self.name = entry.text
-		self.row.title = entry.text
+		self.name = self.entry.text
+		self.row.title = self.entry.text
 	end
 
 	local cbox = self:colorrow()
@@ -298,12 +298,11 @@ function tally:menu()
 		icon_name = "go-bottom-symbolic",
 	}
 
-	local delbtn = Gtk.Button {
-		icon_name = "edit-delete-symbolic",
+	local popoutbtn = Gtk.Button {
+		icon_name = "window-new-symbolic",
 		halign = "END",
 		hexpand = true,
 	}
-	delbtn:add_css_class "destructive-action"
 
 	local mbox = Gtk.Box {
 		orientation = "HORIZONTAL",
@@ -314,7 +313,7 @@ function tally:menu()
 	mbox:append(topbtn)
 	mbox:append(udbox)
 	mbox:append(bottombtn)
-	mbox:append(delbtn)
+	mbox:append(popoutbtn)
 
 	local box = Gtk.Box {
 		orientation = "VERTICAL",
@@ -324,7 +323,7 @@ function tally:menu()
 		margin_top = 6,
 		margin_bottom = 6,
 	}
-	box:append(entry)
+	box:append(self.entry)
 	box:append(cbox)
 	box:append(mbox)
 
@@ -332,7 +331,7 @@ function tally:menu()
 		child = box,
 	}
 	function popover.on_notify.visible()
-		entry.text = self.name
+		self.entry.text = self.name
 	end
 
 	function upbtn.on_clicked()
@@ -390,12 +389,75 @@ function tally:menu()
 		GLib.timeout_add(GLib.PRIORITY_DEFAULT, 20, function() self:scroll() end)
 	end
 
-	function delbtn.on_clicked()
+	function popoutbtn.on_clicked()
 		popover:popdown()
-		self:delete()
+		self:popout():present()
 	end
 
 	return popover
+end
+
+function tally:popout()
+	if self.zoomwin then
+		return self.zoomwin
+	end
+	local title = Adw.WindowTitle.new(self.entry.text, "")
+	self.entry:bind_property("text", title, "title", "BIDIRECTIONAL")
+	local headerbar = Adw.HeaderBar {
+		title_widget = title,
+	}
+	local countlabel = Gtk.Label {
+		label = ("%d"):format(self.row.value),
+		width_request = 300,
+		margin_start = 24,
+		margin_end = 24,
+		xalign = 1,
+	}
+	countlabel:add_css_class "numeric"
+	local decbtn = Gtk.Button {
+		icon_name = "value-decrease-symbolic",
+	}
+	decbtn:add_css_class "circular"
+	function decbtn.on_clicked()
+		self.row.value = self.row.value - 1
+	end
+	local incbtn = Gtk.Button {
+		icon_name = "value-increase-symbolic",
+	}
+	incbtn:add_css_class "circular"
+	function incbtn.on_clicked()
+		self.row.value = self.row.value + 1
+	end
+	function self.row.on_notify.value()
+		countlabel.label = ("%d"):format(self.row.value)
+		decbtn.sensitive = self.row.value > 0
+		incbtn.sensitive = self.row.value < 1000000
+	end
+	local box = Gtk.Box {
+		orientation = "HORIZONTAL",
+		spacing = 24,
+		margin_top = 24,
+		margin_bottom = 24,
+		margin_start = 24,
+		margin_end = 24,
+		halign = "CENTER",
+		valign = "CENTER",
+	}
+	box:append(countlabel)
+	box:append(decbtn)
+	box:append(incbtn)
+	box:add_css_class "popout"
+	local content = Adw.ToolbarView {
+		content = box,
+	}
+	content:add_top_bar(headerbar)
+	self.zoomwin = Adw.Window {
+		application = app,
+		content = content,
+		hide_on_close = true,
+	}
+	if is_devel then self.zoomwin:add_css_class "devel" end
+	return self.zoomwin
 end
 
 function tally:duplicate()
@@ -737,6 +799,12 @@ local function newwin()
 		window:add_css_class "devel"
 	end
 
+	function window:on_close_request()
+		for _, t in ipairs(tallies) do
+			if t.zoomwin then t.zoomwin:destroy() end
+		end
+	end
+
 	searchentry:grab_focus()
 	window:present()
 end
@@ -797,6 +865,14 @@ local cssbase = [[
 .colorselector checkbutton.purple {
 	background: none;
 	background-color: var(--purple-3);
+}
+.popout {
+	font-size: 400%;
+}
+.popout .circular {
+	min-height: 68px;
+	min-width: 68px;
+	-gtk-icon-size: 32px;
 }
 ]]
 
