@@ -560,6 +560,7 @@ local aboutwin = Adw.AboutDialog {
 	version = lib.get_app_ver(),
 	website = "https://github.com/vtrlx/tally/",
 }
+aboutwin:add_link("Send a tip!", "https://liberapay.com/vtrlx/")
 
 local function newwin()
 	-- Force the window to be unique.
