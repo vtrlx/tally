@@ -11,6 +11,11 @@
 	<content_rating type="oars-1.1" />
 
 	<releases>
+		<release version="0.4" date="2024-11-26">
+			<description>
+				<p>Individual counters can now be shown in separate windows with enlarged text and buttons.</p>
+			</description>
+		</release>
 		<release version="0.3" date="2024-11-18">
 			<description>
 <p>
@@ -79,6 +84,9 @@ Various tweaks have been made to improve the user experience:
 	<screenshots>
 		<screenshot type="default">
 			<image>https://www.vlacroix.ca/images/tally-1.png</image>
+		</screenshot>
+		<screenshot>
+			<image>https://www.vlacroix.ca/images/tally-4.png</image>
 		</screenshot>
 		<screenshot>
 			<image>https://www.vlacroix.ca/images/tally-2.png</image>

@@ -10,7 +10,7 @@
 #else
 #define APP_ID "ca.vlacroix.Tally.Devel"
 #endif
-#define APP_VER "0.3"
+#define APP_VER "0.4"
 
 static int
 lua_get_is_devel(lua_State *L)

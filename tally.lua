@@ -563,6 +563,9 @@ local aboutwin = Adw.AboutDialog {
 	website = "https://github.com/vtrlx/tally/",
 }
 aboutwin:add_link("Send a tip!", "https://liberapay.com/vtrlx/")
+aboutwin.release_notes = [[
+<p>Individual counters can now be shown in separate windows with enlarged text and buttons.</p>
+]]
 
 local function newwin()
 	-- Force the window to be unique.
