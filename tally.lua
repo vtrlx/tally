@@ -421,6 +421,7 @@ function tally:popout()
 	countlabel:add_css_class "numeric"
 	local decbtn = Gtk.Button {
 		icon_name = "value-decrease-symbolic",
+		sensitive = self.row.value > 0,
 	}
 	decbtn:add_css_class "circular"
 	function decbtn.on_clicked()
@@ -428,6 +429,7 @@ function tally:popout()
 	end
 	local incbtn = Gtk.Button {
 		icon_name = "value-increase-symbolic",
+		sensitive = self.row.value < 1000000,
 	}
 	incbtn:add_css_class "circular"
 	function incbtn.on_clicked()
