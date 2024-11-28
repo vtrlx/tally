@@ -488,6 +488,12 @@ function tally:duplicate()
 end
 
 function tally:delete()
+	if self.zoomwin then
+		-- Prevent zombie windows from keeping the app alive.
+		self.zoomwin:close()
+		self.zoomwin:destroy()
+		self.zoomwin = nil
+	end
 	local lbox = self.row.parent
 	if not lbox then return end
 	table.remove(tallies, self.row:get_index() + 1)
@@ -566,6 +572,7 @@ aboutwin:add_link("Send a tip!", "https://liberapay.com/vtrlx/")
 aboutwin.release_notes = [[
 <p>Individual counters can now be shown in separate windows with enlarged text and buttons.</p>
 ]]
+aboutwin.release_notes_version = "0.4"
 
 local function newwin()
 	-- Force the window to be unique.
@@ -820,8 +827,13 @@ local function newwin()
 
 	function window:on_close_request()
 		for _, t in ipairs(tallies) do
-			if t.zoomwin then t.zoomwin:destroy() end
+			if t.zoomwin then
+				t.zoomwin:close()
+				t.zoomwin:destroy()
+				t.zoomwin = nil
+			end
 		end
+		app:quit()
 	end
 
 	searchentry:grab_focus()
