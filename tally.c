@@ -1,5 +1,7 @@
 /* tally.c — support library for Tally */
 
+#include <libintl.h>
+#include <locale.h>
 #include <lua.h>
 
 #include <lualib.h>
@@ -37,10 +39,28 @@ lua_get_app_ver(lua_State *L)
 	return 1;
 }
 
+static int
+lua_gettext(lua_State *L)
+{
+	const char *msgid;
+	char *msg;
+
+	msgid = luaL_checkstring(L, 1);
+	if (!msgid) {
+		luaL_pushfail(L);
+		return 1;
+	}
+
+	msg = gettext(msgid);
+	lua_pushstring(L, msg);
+	return 1;
+}
+
 static const luaL_Reg tallylib[] = {
 	{ "get_is_devel", lua_get_is_devel },
 	{ "get_app_id", lua_get_app_id },
 	{ "get_app_ver", lua_get_app_ver },
+	{ "gettext", lua_gettext },
 	{ NULL, NULL },
 };
 
@@ -53,6 +73,10 @@ main()
 	lua_State *L;
 	size_t tally_bytecode_len;
 	int lua_result;
+
+	setlocale(LC_ALL, "");
+	bindtextdomain("messages", "/app/share/locale");
+	textdomain("messages");
 
 	L = luaL_newstate();
 	luaL_openlibs(L);

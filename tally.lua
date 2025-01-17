@@ -2,9 +2,10 @@
 
 --[[
 SECTION: Support library
-
 Functions which will be used throughout the application.
 ]]--
+
+local lib = require "tallylib"
 
 local function fileexists(path)
 	local ok, err, code = os.rename(path, path)
@@ -25,6 +26,10 @@ local function mkdir(path)
 	assert(type(path) == "string")
 	local cmd = ("mkdir %q"):format(path)
 	os.execute(cmd)
+end
+
+local function _(...)
+	return lib.gettext(...)
 end
 
 -- Simple class implementation without inheritance.
@@ -53,8 +58,6 @@ SECTION: Imports and app initialization
 -- Load packages from Flatpak only. If the Flatpak is broken, the application should not even attempt to load libraries from the system.
 package.cpath = "/app/lib/lua/5.4/?.so"
 package.path = "/app/share/lua/5.4/?.lua"
-
-local lib = require "tallylib"
 
 local lgi = require "lgi"
 local Adw = lgi.require "Adw"
@@ -403,7 +406,7 @@ function tally:popout()
 	if self.zoomwin then
 		return self.zoomwin
 	end
-	local title = Adw.WindowTitle.new("Tally", "")
+	local title = Adw.WindowTitle.new(_ "Tally", "")
 	local headerbar = Adw.HeaderBar {
 		title_widget = title,
 	}
@@ -560,15 +563,15 @@ SECTION: Window construction
 
 local aboutwin = Adw.AboutDialog {
 	application_icon = app_id,
-	application_name = "Tally",
-	copyright = "Copyright © 2024 Victoria Lacroix",
+	application_name = _ "Tally",
+	copyright = "Copyright © 2024–2025 Victoria Lacroix",
 	developer_name = "Victoria Lacroix",
 	issue_url = "https://github.com/vtrlx/tally/issues/",
 	license_type = "GPL_3_0",
 	version = lib.get_app_ver(),
-	website = "https://github.com/vtrlx/tally/",
+	website = "https://www.vlacroix.ca/apps/tally/",
 }
-aboutwin:add_link("Send a tip!", "https://liberapay.com/vtrlx/")
+aboutwin:add_link(_ "Send a tip!", "https://liberapay.com/vtrlx/")
 aboutwin.release_notes = [[
 <p>Individual counters can now be shown in separate windows with enlarged text and buttons.</p>
 ]]
@@ -595,7 +598,7 @@ local function newwin()
 	}
 
 	local header = Adw.HeaderBar {
-		title_widget = Adw.WindowTitle.new("Tally", ""),
+		title_widget = Adw.WindowTitle.new(_ "Tally", ""),
 	}
 	header:pack_start(newbtn)
 	header:pack_start(delbtn)
@@ -604,7 +607,7 @@ local function newwin()
 	header:pack_end(searchbtn)
 
 	local searchentry = Gtk.SearchEntry {
-		placeholder_text = "Filter by name…",
+		placeholder_text = _ "Filter by name…",
 	}
 
 	local searchcolorbox = Gtk.Box {
@@ -670,7 +673,7 @@ local function newwin()
 	createbtn:add_css_class "suggested-action"
 	createbtn.sensitive = false
 	local nameentry = Gtk.Entry {
-		placeholder_text = "Name",
+		placeholder_text = _ "Name",
 		hexpand = true,
 	}
 	function nameentry:on_changed()
@@ -810,7 +813,7 @@ local function newwin()
 
 	local window = Adw.ApplicationWindow {
 		application = app,
-		title = "Tally",
+		title = _ "Tally",
 		content = tbview,
 		height_request = 600,
 		width_request = 500,
