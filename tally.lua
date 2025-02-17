@@ -421,8 +421,8 @@ function tally:popout()
 	self.entry:bind_property("text", namelabel, "label", "BIDIRECTIONAL")
 	local countlabel = Gtk.Label {
 		label = ("%d"):format(self.row.value),
-		width_request = 200,
-		margin_end = 24,
+		width_request = 100,
+		margin_end = 12,
 		xalign = 1,
 	}
 	countlabel:add_css_class "numeric"
@@ -780,10 +780,10 @@ local function newwin()
 	local clamp = Adw.Clamp {
 		child = lbox,
 		maximum_size = 600,
-		margin_start = 48,
-		margin_end = 48,
-		margin_top = 24,
-		margin_bottom = 24,
+		margin_start = 24,
+		margin_end = 24,
+		margin_top = 12,
+		margin_bottom = 12,
 	}
 
 	local scroll = Gtk.ScrolledWindow {
@@ -819,8 +819,10 @@ local function newwin()
 		application = app,
 		title = _ "Tally",
 		content = tbview,
-		height_request = 600,
-		width_request = 500,
+		default_height = 600,
+		default_width = 500,
+		height_request = 294,
+		width_request = 360,
 	}
 
 	function infobtn.on_clicked()
@@ -853,8 +855,8 @@ SECTION: Styles
 local cssbase = [[
 .colorselector checkbutton {
 	padding: 0;
-	min-height: 32px;
-	min-width: 32px;
+	min-height: 28px;
+	min-width: 28px;
 	padding: 1px;
 	background-clip: content-box;
 	border-radius: 9999px;
