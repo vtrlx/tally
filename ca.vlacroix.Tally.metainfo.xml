@@ -16,6 +16,11 @@
 				<p>Tally now works on a wider range of mobile devices.</p>
 			</description>
 		</release>
+		<release version="0.4.1" date="2024-11-28">
+			<description>
+				<p>Fixed an issue that prevented Tally from shutting down after using a counter popout window.</p>
+			</description>
+		</release>
 		<release version="0.4" date="2024-11-26">
 			<description>
 				<p>Individual counters can now be shown in separate windows with enlarged text and buttons.</p>
