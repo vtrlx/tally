@@ -652,6 +652,7 @@ local function newwin()
 		valign = "START",
 		visible = false,
 	}
+	lbox:add_css_class "tally-list"
 	lbox:add_css_class "boxed-list"
 	lbox:set_filter_func(function(row)
 		if not searchbar.search_mode_enabled then return true end
@@ -949,51 +950,51 @@ local cssbase = [[
 ]]
 
 local csslight = [[
-list.boxed-list row.red, toolbarview.red {
+list.tally-list row.red, toolbarview.red {
 	background-color: color-mix(in srgb, var(--red-1) 10%, transparent);
 	color: color-mix(in srgb, var(--red-5) 90%, black);
 }
-list.boxed-list row.red:hover {
+list.tally-list row.red:hover {
 	background-color: color-mix(in srgb, var(--red-2) 10%, transparent);
 	color: color-mix(in srgb, var(--red-5) 90%, black);
 }
-list.boxed-list row.orange, toolbarview.orange {
+list.tally-list row.orange, toolbarview.orange {
 	background-color: color-mix(in srgb, var(--orange-1) 20%, transparent);
 	color: color-mix(in srgb, var(--orange-5) 70%, black);
 }
-list.boxed-list row.orange:hover {
+list.tally-list row.orange:hover {
 	background-color: color-mix(in srgb, var(--orange-2) 20%, transparent);
 	color: color-mix(in srgb, var(--orange-5) 70%, black);
 }
-list.boxed-list row.yellow, toolbarview.yellow {
+list.tally-list row.yellow, toolbarview.yellow {
 	background-color: color-mix(in srgb, var(--yellow-1) 30%, transparent);
 	color: color-mix(in srgb, var(--yellow-5) 40%, black);
 }
-list.boxed-list row.yellow:hover {
+list.tally-list row.yellow:hover {
 	background-color: color-mix(in srgb, var(--yellow-2) 30%, transparent);
 	color: color-mix(in srgb, var(--yellow-5) 40%, black);
 }
-list.boxed-list row.green, toolbarview.green {
+list.tally-list row.green, toolbarview.green {
 	background-color: color-mix(in srgb, var(--green-1) 25%, transparent);
 	color: color-mix(in srgb, var(--green-5) 55%, black);
 }
-list.boxed-list row.green:hover {
+list.tally-list row.green:hover {
 	background-color: color-mix(in srgb, var(--green-2) 25%, transparent);
 	color: color-mix(in srgb, var(--green-5) 55%, black);
 }
-list.boxed-list row.blue, toolbarview.blue {
+list.tally-list row.blue, toolbarview.blue {
 	background-color: color-mix(in srgb, var(--blue-1) 20%, transparent);
 	color: color-mix(in srgb, var(--blue-5) 70%, black);
 }
-list.boxed-list row.blue:hover {
+list.tally-list row.blue:hover {
 	background-color: color-mix(in srgb, var(--blue-2) 20%, transparent);
 	color: color-mix(in srgb, var(--blue-5) 70%, black);
 }
-list.boxed-list row.purple, toolbarview.purple {
+list.tally-list row.purple, toolbarview.purple {
 	background-color: color-mix(in srgb, var(--purple-1) 20%, transparent);
 	color: var(--purple-5);
 }
-list.boxed-list row.purple:hover {
+list.tally-list row.purple:hover {
 	background-color: color-mix(in srgb, var(--purple-2) 20%, transparent);
 	color: var(--purple-5);
 }
@@ -1004,51 +1005,51 @@ list.boxed-list row.purple:hover {
 ]]
 
 local cssdark = [[
-list.boxed-list row.red, toolbarview.red {
+list.tally-list row.red, toolbarview.red {
 	background-color: color-mix(in srgb, var(--red-5) 90%, transparent);
 	color: white;
 }
-list.boxed-list row.red:hover {
+list.tally-list row.red:hover {
 	background-color: color-mix(in srgb, var(--red-4) 90%, transparent);
 	color: white;
 }
-list.boxed-list row.orange, toolbarview.orange {
+list.tally-list row.orange, toolbarview.orange {
 	background-color: color-mix(in srgb, var(--orange-5) 55%, transparent);
 	color: white;
 }
-list.boxed-list row.orange:hover {
+list.tally-list row.orange:hover {
 	background-color: color-mix(in srgb, var(--orange-4) 55%, transparent);
 	color: white;
 }
-list.boxed-list row.yellow, toolbarview.yellow {
+list.tally-list row.yellow, toolbarview.yellow {
 	background-color: color-mix(in srgb, var(--yellow-5) 25%, transparent);
 	color: white;
 }
-list.boxed-list row.yellow:hover {
+list.tally-list row.yellow:hover {
 	background-color: color-mix(in srgb, var(--yellow-4) 25%, transparent);
 	color: white;
 }
-list.boxed-list row.green, toolbarview.green {
+list.tally-list row.green, toolbarview.green {
 	background-color: color-mix(in srgb, var(--green-5) 40%, transparent);
 	color: white;
 }
-list.boxed-list row.green:hover {
+list.tally-list row.green:hover {
 	background-color: color-mix(in srgb, var(--green-4) 40%, transparent);
 	color: white;
 }
-list.boxed-list row.blue, toolbarview.blue {
+list.tally-list row.blue, toolbarview.blue {
 	background-color: color-mix(in srgb, var(--blue-5) 70%, transparent);
 	color: white;
 }
-list.boxed-list row.blue:hover {
+list.tally-list row.blue:hover {
 	background-color: color-mix(in srgb, var(--blue-4) 70%, transparent);
 	color: white;
 }
-list.boxed-list row.purple, toolbarview.purple {
+list.tally-list row.purple, toolbarview.purple {
 	background-color: var(--purple-5);
 	color: white;
 }
-list.boxed-list row.purple:hover {
+list.tally-list row.purple:hover {
 	background-color: var(--purple-4);
 	color: white;
 }
