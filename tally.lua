@@ -410,20 +410,15 @@ function tally:popout()
 	if self.zoomwin then
 		return self.zoomwin
 	end
-	local title = Adw.WindowTitle.new(_ "Tally", "")
+	local title = Adw.WindowTitle.new(self.name, _ "Tally")
 	local headerbar = Adw.HeaderBar {
 		title_widget = title,
 	}
-	local namelabel = Gtk.Label {
-		label = self.name,
-	}
-	namelabel:add_css_class "title-1"
-	self.entry:bind_property("text", namelabel, "label", "BIDIRECTIONAL")
+	self.entry:bind_property("text", title, "title", "BIDIRECTIONAL")
 	local countlabel = Gtk.Label {
 		label = ("%d"):format(self.row.value),
-		width_request = 100,
-		margin_end = 12,
-		xalign = 1,
+		width_request = 240,
+		halign = "CENTER",
 	}
 	countlabel:add_css_class "numeric"
 	local decbtn = Gtk.Button {
@@ -447,14 +442,21 @@ function tally:popout()
 		decbtn.sensitive = self.row.value > 0
 		incbtn.sensitive = self.row.value < 1000000
 	end
-	local numbox = Gtk.Box {
+	local countbox = Gtk.Box {
 		orientation = "HORIZONTAL",
+		spacing = 48,
+		valign = "CENTER",
+		halign = "CENTER",
+	}
+	countbox:append(decbtn)
+	countbox:append(incbtn)
+	local numbox = Gtk.Box {
+		orientation = "VERTICAL",
 		spacing = 24,
 		valign = "CENTER",
 	}
 	numbox:append(countlabel)
-	numbox:append(decbtn)
-	numbox:append(incbtn)
+	numbox:append(countbox)
 	numbox:add_css_class "popout"
 	local box = Gtk.Box {
 		orientation = "VERTICAL",
@@ -466,16 +468,20 @@ function tally:popout()
 		valign = "CENTER",
 		halign = "CENTER",
 	}
-	box:append(namelabel)
 	box:append(numbox)
 	local content = Adw.ToolbarView {
 		content = box,
+		width_request = 300,
 	}
 	content:add_top_bar(headerbar)
 	self.zoomwin = Adw.Window {
 		application = app,
 		content = content,
 		hide_on_close = true,
+		default_width = 400,
+		default_height = 300,
+		height_request = 294,
+		width_request = 360,
 	}
 	if self.color then content:add_css_class(self.color) end
 	if is_devel then self.zoomwin:add_css_class "devel" end
@@ -933,7 +939,7 @@ local cssbase = [[
 	background-color: var(--purple-3);
 }
 .popout {
-	font-size: 400%;
+	font-size: 300%;
 }
 .popout .circular {
 	min-height: 68px;
