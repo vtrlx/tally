@@ -778,7 +778,7 @@ local function newwin()
 	if #tallies > 0 then lbox.visible = true end
 
 	local clamp = Adw.Clamp {
-		child = lbox,
+		child = Adw.LayoutSlot.new "list",
 		maximum_size = 600,
 		margin_start = 24,
 		margin_end = 24,
@@ -786,9 +786,17 @@ local function newwin()
 		margin_bottom = 12,
 	}
 
+	local biglayout = Adw.Layout.new(clamp)
+	local smalllayout = Adw.Layout.new(Adw.LayoutSlot.new "list")
+
+	local multi = Adw.MultiLayoutView()
+	multi:set_child("list", lbox)
+	multi:add_layout(biglayout)
+	multi:add_layout(smalllayout)
+
 	local scroll = Gtk.ScrolledWindow {
 		hscrollbar_policy = "NEVER",
-		child = clamp,
+		child = multi,
 	}
 	local function scroll_to_bottom()
 		scroll.vadjustment.value = scroll.vadjustment.upper
@@ -815,6 +823,20 @@ local function newwin()
 	tbview:add_top_bar(header)
 	tbview:add_top_bar(searchbar)
 
+	local function enlarge()
+		multi.layout = biglayout
+		lbox:remove_css_class "separators"
+		lbox:add_css_class "boxed-list"
+		tbview.top_bar_style = "FLAT"
+	end
+
+	local function shrink()
+		multi.layout = smalllayout
+		lbox:remove_css_class "boxed-list"
+		lbox:add_css_class "separators"
+		tbview.top_bar_style = "RAISED_BORDER"
+	end
+
 	local window = Adw.ApplicationWindow {
 		application = app,
 		title = _ "Tally",
@@ -824,6 +846,12 @@ local function newwin()
 		height_request = 294,
 		width_request = 360,
 	}
+
+	local bpcond = Adw.BreakpointCondition.new_length("MAX_WIDTH", 400, "PX")
+	local breakpoint = Adw.Breakpoint.new(bpcond)
+	breakpoint.on_apply = shrink
+	breakpoint.on_unapply = enlarge
+	window:add_breakpoint(breakpoint)
 
 	function infobtn.on_clicked()
 		aboutwin:present(window)
