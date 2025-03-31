@@ -629,14 +629,18 @@ local aboutwin = Adw.AboutDialog {
 	developer_name = "Victoria Lacroix",
 	issue_url = "https://github.com/vtrlx/tally/issues/",
 	license_type = "GPL_3_0",
+	release_notes_version = lib.get_app_ver(),
 	version = lib.get_app_ver(),
 	website = "https://www.vlacroix.ca/apps/tally/",
 }
 aboutwin:add_link(_ "Send a tip!", "https://liberapay.com/vtrlx/")
 aboutwin.release_notes = [[
-<p>Tally now displays properly on a wider range of mobile devices.</p>
+<ul>
+<li>Customization options for each counter can now be accessed by expaning the counter rather than using a popover menu.</li>
+<li>Buttons now have explanatory tooltip text and many have also been given labels.</li>
+<li>The application window will remember its previous size and maximized state when reopened.</li>
+</ul>
 ]]
-aboutwin.release_notes_version = "0.4.2"
 
 local function newwin()
 	-- Force the window to be unique.

@@ -5,12 +5,21 @@
 	<name>Tally</name>
 	<summary>Count anything</summary>
 	<url type="bugtracker">https://github.com/vtrlx/tally/issues</url>
-	<url type="contact">https://www.vlacroix.ca/about</url>
-	<url type="homepage">https://www.vlacroix.ca/apps/tally/</url>
+	<url type="contact">https://www.vtrlx.ca/about</url>
+	<url type="homepage">https://www.vtrlx.ca/apps/tally/</url>
 
 	<content_rating type="oars-1.1" />
 
 	<releases>
+		<release version="0.5" date="2025-03-31">
+			<description>
+<ul>
+<li>Customization options for each counter can now be accessed by expaning the counter rather than using a popover menu.</li>
+<li>Buttons now have explanatory tooltip text and many have also been given labels.</li>
+<li>The application window will remember its previous size and maximized state when reopened.</li>
+</ul>
+			</description>
+		</release>
 		<release version="0.4.2" date="2025-02-18">
 			<description>
 				<p>Tally now displays properly on a wider range of mobile devices.</p>
@@ -96,16 +105,16 @@ Various tweaks have been made to improve the user experience:
 	<launchable type="desktop-id">ca.vlacroix.Tally.desktop</launchable>
 	<screenshots>
 		<screenshot type="default">
-			<image>https://www.vlacroix.ca/images/tally-1.png</image>
+			<image>https://www.vtrlx.ca/images/tally-1.png</image>
 		</screenshot>
 		<screenshot>
-			<image>https://www.vlacroix.ca/images/tally-4.png</image>
+			<image>https://www.vtrlx.ca/images/tally-4.png</image>
 		</screenshot>
 		<screenshot>
-			<image>https://www.vlacroix.ca/images/tally-2.png</image>
+			<image>https://www.vtrlx.ca/images/tally-2.png</image>
 		</screenshot>
 		<screenshot>
-			<image>https://www.vlacroix.ca/images/tally-3.png</image>
+			<image>https://www.vtrlx.ca/images/tally-3.png</image>
 		</screenshot>
 	</screenshots>
 </component>
