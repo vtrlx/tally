@@ -99,12 +99,15 @@ local tally = newclass(function(self, param)
 		halign = "END",
 	}
 
-	self.row = Adw.SpinRow.new_with_range(0, 1000000, 1)
+	self.spinbtn = Gtk.SpinButton.new_with_range(0, 1000000, 1)
+	self.spinbtn:get_first_child().xalign = 1
+	self.spinbtn.valign = "CENTER"
+	self.row = Adw.ExpanderRow()
+	self.row:add_css_class "spin"
 	self.row.title = self.name
-	self.spinbtn = self.row.child:get_last_child():get_first_child()
-	self.row.value = self.value
-	function self.row.on_notify.value()
-		self.value = self.row.value
+	self.spinbtn.value = self.value
+	function self.spinbtn.on_notify.value()
+		self.value = self.spinbtn.value
 		self.countlabel.label = ("%d"):format(self.value)
 	end
 	if param and param.color then
@@ -132,7 +135,7 @@ local tally = newclass(function(self, param)
 	}
 	function src.on_prepare(src, x, y)
 		self.drag_x, self.drag_y = x, y
-		local v = GObject.Value(Adw.SpinRow, self.row)
+		local v = GObject.Value(Adw.ExpanderRow, self.row)
 		return Gdk.ContentProvider.new_for_value(v)
 	end
 	function src.on_drag_begin(src, drag)
@@ -152,7 +155,7 @@ local tally = newclass(function(self, param)
 
 	local tgt = Gtk.DropTarget {
 		actions = "MOVE",
-		formats = Gdk.ContentFormats.new_for_gtype(Adw.SpinRow),
+		formats = Gdk.ContentFormats.new_for_gtype(Adw.ExpanderRow),
 		preload = true,
 	}
 	function tgt.on_drop(tgt, src, x, y)
@@ -178,28 +181,21 @@ local tally = newclass(function(self, param)
 	self.row:add_prefix(self.draghdl)
 	self.row:add_prefix(self.checkbox)
 
-	self.menubtn = Gtk.MenuButton {
-		icon_name = "view-more-horizontal-symbolic",
-		margin_top = 6,
-		margin_bottom = 6,
-		direction = "RIGHT",
-		popover = self:menu(),
-	}
-	self.menubtn:add_css_class "flat"
-
 	self.row:add_suffix(self.countlabel)
-	self.row:add_suffix(self.menubtn)
+	self.row:add_suffix(self.spinbtn)
+
+	self:createmenu()
 
 	-- Force the contents of the suffix box to align right when the spinbutton is made invisible.
 	local suffixbox = self.row.child:get_last_child()
 	suffixbox.hexpand = true
-	suffixbox.halign = "END"
+--	suffixbox.halign = "END"
 
 	self:read()
 end)
 
 function tally:read()
-	self.row.value = self.value
+	self.spinbtn.value = self.value
 end
 
 function tally:setcheckmode(enabled)
@@ -209,22 +205,23 @@ function tally:setcheckmode(enabled)
 		self.checkbox.active = false
 		self.countlabel.visible = true
 		self.spinbtn.visible = false
-		self.menubtn.visible = false
 		self.draghdl.visible = false
+		self.row.expanded = false
+		self.row.enable_expansion = false
 	else
 		self.checkbox.visible = false
 		self.checkbox.active = false
 		self.countlabel.visible = false
 		self.spinbtn.visible = true
-		self.menubtn.visible = true
 		self.draghdl.visible = true
+		self.row.enable_expansion = true
+		self.row.expanded = false
 	end
 end
 
 function tally:scroll()
-	local box = self.row.parent
-	local viewport = box.parent.parent
-	viewport:scroll_to(self.row)
+	if not self.viewport then return end
+	self.viewport:scroll_to(self.row)
 end
 
 function tally:getcolor()
@@ -258,6 +255,7 @@ function tally:colorrow()
 	local box = Gtk.Box {
 		orientation = "HORIZONTAL",
 		spacing = 6,
+		valign = "CENTER",
 	}
 	box:add_css_class "colorselector"
 	local system = self:gencolorcheck()
@@ -271,9 +269,10 @@ function tally:colorrow()
 	return box
 end
 
-function tally:menu()
-	self.entry = Gtk.Entry {
+function tally:createmenu()
+	self.entry = Adw.EntryRow {
 		text = self.name,
+		title = _ "Name",
 	}
 	function self.entry.on_changed()
 		if #self.entry.text == 0 then
@@ -284,64 +283,91 @@ function tally:menu()
 		self.name = self.entry.text
 		self.row.title = self.entry.text
 	end
+	self.row:add_row(self.entry)
 
 	local cbox = self:colorrow()
+	local crow = Adw.ActionRow {
+		title = "Colour",
+	}
+	crow:add_suffix(cbox)
+	self.row:add_row(crow)
+
+	local topbtn = Gtk.Button {
+		child = Adw.ButtonContent {
+			icon_name = "go-top-symbolic",
+			label = _ "Move to top",
+			halign = "START",
+		},
+		tooltip_text = _ "Move counter to the top of the current list",
+	}
+	local bottombtn = Gtk.Button {
+		child = Adw.ButtonContent {
+			icon_name = "go-bottom-symbolic",
+			label = _ "Move to bottom",
+			halign = "START",
+		},
+		tooltip_text = _ "Move counter to the bottom of the current list",
+	}
+	local tbbox = Gtk.Box {
+		orientation = "VERTICAL",
+		margin_top = 6,
+		margin_bottom = 6,
+	}
+	tbbox:add_css_class "linked"
+	tbbox:append(topbtn)
+	tbbox:append(bottombtn)
 
 	local upbtn = Gtk.Button {
-		icon_name = "go-up-symbolic",
+		child = Adw.ButtonContent {
+			icon_name = "go-up-symbolic",
+			label = _ "Move up",
+			halign = "START",
+		},
+		tooltip_text = _ "Move counter to just above the previous row",
+		valign = "CENTER",
 	}
 	local downbtn = Gtk.Button {
-		icon_name = "go-down-symbolic",
+		child = Adw.ButtonContent {
+			icon_name = "go-down-symbolic",
+			label = _ "Move down",
+			halign = "START",
+		},
+		tooltip_text = _ "Move counter to just below the next row",
 	}
 	local udbox = Gtk.Box {
-		orientation = "HORIZONTAL",
+		orientation = "VERTICAL",
+		margin_top = 6,
+		margin_bottom = 6,
 	}
 	udbox:add_css_class "linked"
 	udbox:append(upbtn)
 	udbox:append(downbtn)
 
-	local topbtn = Gtk.Button {
-		icon_name = "go-top-symbolic",
-	}
-	local bottombtn = Gtk.Button {
-		icon_name = "go-bottom-symbolic",
-	}
-
-	local popoutbtn = Gtk.Button {
-		icon_name = "window-new-symbolic",
-		halign = "END",
-		hexpand = true,
-	}
-
 	local mbox = Gtk.Box {
 		orientation = "HORIZONTAL",
 		spacing = 12,
 		hexpand = true,
-		halign = "FILL",
+		homogeneous = true,
+		halign = "CENTER",
+		valign = "CENTER",
 	}
-	mbox:append(topbtn)
+	mbox:add_css_class "header"
+	mbox:append(tbbox)
 	mbox:append(udbox)
-	mbox:append(bottombtn)
-	mbox:append(popoutbtn)
+	self.row:add_row(mbox)
 
-	local box = Gtk.Box {
-		orientation = "VERTICAL",
-		spacing = 12,
-		margin_start = 6,
-		margin_end = 6,
-		margin_top = 6,
-		margin_bottom = 6,
+	local popoutbtn = Gtk.Button {
+		icon_name = "window-new-symbolic",
+		tooltip_text = _ "Create a new window for this counter",
+		halign = "END",
+		hexpand = true,
+		valign = "CENTER",
 	}
-	box:append(self.entry)
-	box:append(cbox)
-	box:append(mbox)
-
-	local popover = Gtk.Popover {
-		child = box,
+	local popoutrow = Adw.ActionRow {
+		title = _ "Show in a separate window",
 	}
-	function popover.on_notify.visible()
-		self.entry.text = self.name
-	end
+	popoutrow:add_suffix(popoutbtn)
+	self.row:add_row(popoutrow)
 
 	function upbtn.on_clicked()
 		local rindex = self.row:get_index()
@@ -399,11 +425,8 @@ function tally:menu()
 	end
 
 	function popoutbtn.on_clicked()
-		popover:popdown()
 		self:popout():present()
 	end
-
-	return popover
 end
 
 function tally:popout()
@@ -416,31 +439,31 @@ function tally:popout()
 	}
 	self.entry:bind_property("text", title, "title", "BIDIRECTIONAL")
 	local countlabel = Gtk.Label {
-		label = ("%d"):format(self.row.value),
+		label = ("%d"):format(self.spinbtn.value),
 		width_request = 240,
 		halign = "CENTER",
 	}
 	countlabel:add_css_class "numeric"
 	local decbtn = Gtk.Button {
 		icon_name = "value-decrease-symbolic",
-		sensitive = self.row.value > 0,
+		sensitive = self.spinbtn.value > 0,
 	}
 	decbtn:add_css_class "circular"
 	function decbtn.on_clicked()
-		self.row.value = self.row.value - 1
+		self.spinbtn.value = self.spinbtn.value - 1
 	end
 	local incbtn = Gtk.Button {
 		icon_name = "value-increase-symbolic",
-		sensitive = self.row.value < 1000000,
+		sensitive = self.spinbtn.value < 1000000,
 	}
 	incbtn:add_css_class "circular"
 	function incbtn.on_clicked()
-		self.row.value = self.row.value + 1
+		self.spinbtn.value = self.spinbtn.value + 1
 	end
-	function self.row.on_notify.value()
-		countlabel.label = ("%d"):format(self.row.value)
-		decbtn.sensitive = self.row.value > 0
-		incbtn.sensitive = self.row.value < 1000000
+	function self.spinbtn.on_notify.value()
+		countlabel.label = ("%d"):format(self.spinbtn.value)
+		decbtn.sensitive = self.spinbtn.value > 0
+		incbtn.sensitive = self.spinbtn.value < 1000000
 	end
 	local countbox = Gtk.Box {
 		orientation = "HORIZONTAL",
@@ -489,11 +512,12 @@ function tally:popout()
 end
 
 function tally:duplicate()
-	local r = Adw.SpinRow.new_with_range(0, 1000000, 1)
+	local spinner = Gtk.SpinButton.new_with_range(0, 1000000, 1)
+	local r = Adw.ExpanderRow()
+	r:add_suffix(spinner)
 	if self.color then r:add_css_class(self.color) end
 	r.title = self.name
-	r.value = self.value
-	r:add_suffix(Gtk.Button.new_from_icon_name "view-more-horizontal-symbolic")
+	spinner.value = self.value
 	local img = Gtk.Image.new_from_icon_name "list-drag-handle-symbolic"
 	img:add_css_class "drag-handle"
 	r:add_prefix(img)
@@ -593,18 +617,25 @@ local function newwin()
 
 	local newbtn = Gtk.MenuButton {
 		icon_name = "list-add-symbolic",
+		tooltip_text = _ "Create a new counter",
 	}
 	local delbtn = Gtk.Button {
 		icon_name = "edit-delete-symbolic",
+		tooltip_text = _ "Delete selected counters",
 		visible = false,
 	}
 	delbtn:add_css_class "destructive-action"
 	local searchbtn = Gtk.ToggleButton {
 		icon_name = "system-search-symbolic",
+		tooltip_text = _ "Filter counters by name and/or colour",
 	}
-	local infobtn = Gtk.Button.new_from_icon_name "help-about-symbolic"
+	local infobtn = Gtk.Button {
+		icon_name = "help-about-symbolic",
+		tooltip_text = _ "About Tally",
+	}
 	local checkbtn = Gtk.ToggleButton {
 		icon_name = "checkbox-checked-symbolic",
+		tooltip_text = _ "Select counters to delete",
 	}
 
 	local header = Adw.HeaderBar {
@@ -680,12 +711,20 @@ local function newwin()
 	end
 
 	local newtallycolor
-	local createbtn = Gtk.Button.new_from_icon_name "list-add-symbolic"
+	local createbtn = Gtk.Button {
+		child = Adw.ButtonContent {
+			icon_name = "list-add-symbolic",
+			label = _ "Add to list",
+		},
+		tooltip_text = _ "Add this counter to the list",
+		halign = "CENTER",
+	}
 	createbtn:add_css_class "suggested-action"
 	createbtn.sensitive = false
+
 	local nameentry = Gtk.Entry {
 		placeholder_text = _ "Name",
-		hexpand = true,
+		halign = "FILL",
 	}
 	function nameentry:on_changed()
 		if #self.text == 0 then
@@ -696,14 +735,6 @@ local function newwin()
 			createbtn.sensitive = true
 		end
 	end
-	local namebox = Gtk.Box {
-		orientation = "HORIZONTAL",
-		halign = "FILL",
-	}
-	namebox:append(nameentry)
-	namebox:append(createbtn)
-	namebox:add_css_class "linked"
-
 	local tallycolorbox = Gtk.Box {
 		orientation = "HORIZONTAL",
 		spacing = 6,
@@ -733,8 +764,9 @@ local function newwin()
 		margin_start = 12,
 		margin_end = 12,
 	}
-	pbox:append(namebox)
+	pbox:append(nameentry)
 	pbox:append(tallycolorbox)
+	pbox:append(createbtn)
 	local popover = Gtk.Popover {
 		child = pbox,
 	}
@@ -748,9 +780,11 @@ local function newwin()
 
 	function checkbtn.on_notify.active()
 		if checkbtn.active then
+			checkbtn.tooltip_text = _ "Stop selecting without deleting anything"
 			newbtn.visible = false
 			delbtn.visible = true
 		else
+			checkbtn.tooltip_text = _ "Select counters to delete"
 			newbtn.visible = true
 			delbtn.visible = false
 		end
@@ -814,6 +848,7 @@ local function newwin()
 			name = nameentry.text,
 			color = newtallycolor,
 		}
+		t.viewport = scroll:get_child()
 		table.insert(tallies, t)
 		tallyrows[t.row] = t
 		lbox:append(t.row)
@@ -823,6 +858,10 @@ local function newwin()
 	end
 	nameentry.on_activate = do_create
 	createbtn.on_clicked = do_create
+
+	for _, t in ipairs(tallies) do
+		t.viewport = scroll:get_child()
+	end
 
 	local tbview = Adw.ToolbarView {
 		content = scroll,
