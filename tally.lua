@@ -141,12 +141,15 @@ local tally = newclass(function(self, param)
 	function src.on_drag_begin(src, drag)
 		local allocation = self.row:get_allocation()
 		self.drag_widget = Gtk.ListBox()
+		self.drag_widget:add_css_class "tally-list"
 		self.drag_widget:add_css_class "boxed-list"
 		self.drag_widget:set_size_request(allocation.width, allocation.height)
 
 		local dragrow = self:duplicate()
 		self.drag_widget:append(dragrow)
 		self.drag_widget:drag_highlight_row(dragrow)
+
+		self:createmenu(dragrow, false)
 
 		local drag_icon = Gtk.DragIcon.get_for_drag(drag)
 		drag_icon.child = self.drag_widget
@@ -184,7 +187,7 @@ local tally = newclass(function(self, param)
 	self.row:add_suffix(self.countlabel)
 	self.row:add_suffix(self.spinbtn)
 
-	self:createmenu()
+	self:createmenu(self.row, true)
 
 	-- Force the contents of the suffix box to align right when the spinbutton is made invisible.
 	local suffixbox = self.row.child:get_last_child()
@@ -269,28 +272,20 @@ function tally:colorrow()
 	return box
 end
 
-function tally:createmenu()
+function tally:createmenu(row, sensitive)
 	self.entry = Adw.EntryRow {
 		text = self.name,
 		title = _ "Name",
 	}
-	function self.entry.on_changed()
-		if #self.entry.text == 0 then
-			self.row:add_css_class "error"
-			return
-		end
-		self.row:remove_css_class "error"
-		self.name = self.entry.text
-		self.row.title = self.entry.text
-	end
-	self.row:add_row(self.entry)
+	row:add_row(self.entry)
 
 	local cbox = self:colorrow()
 	local crow = Adw.ActionRow {
 		title = "Colour",
+		sensitive = sensitive,
 	}
 	crow:add_suffix(cbox)
-	self.row:add_row(crow)
+	row:add_row(crow)
 
 	local topbtn = Gtk.Button {
 		child = Adw.ButtonContent {
@@ -299,6 +294,7 @@ function tally:createmenu()
 			halign = "START",
 		},
 		tooltip_text = _ "Move counter to the top of the current list",
+		sensitive = sensitive,
 	}
 	local bottombtn = Gtk.Button {
 		child = Adw.ButtonContent {
@@ -307,6 +303,7 @@ function tally:createmenu()
 			halign = "START",
 		},
 		tooltip_text = _ "Move counter to the bottom of the current list",
+		sensitive = sensitive,
 	}
 	local tbbox = Gtk.Box {
 		orientation = "VERTICAL",
@@ -325,6 +322,7 @@ function tally:createmenu()
 		},
 		tooltip_text = _ "Move counter to just above the previous row",
 		valign = "CENTER",
+		sensitive = sensitive,
 	}
 	local downbtn = Gtk.Button {
 		child = Adw.ButtonContent {
@@ -333,6 +331,7 @@ function tally:createmenu()
 			halign = "START",
 		},
 		tooltip_text = _ "Move counter to just below the next row",
+		sensitive = sensitive,
 	}
 	local udbox = Gtk.Box {
 		orientation = "VERTICAL",
@@ -354,7 +353,7 @@ function tally:createmenu()
 	mbox:add_css_class "header"
 	mbox:append(tbbox)
 	mbox:append(udbox)
-	self.row:add_row(mbox)
+	row:add_row(mbox)
 
 	local popoutbtn = Gtk.Button {
 		icon_name = "window-new-symbolic",
@@ -362,25 +361,38 @@ function tally:createmenu()
 		halign = "END",
 		hexpand = true,
 		valign = "CENTER",
+		sensitive = sensitive,
 	}
 	local popoutrow = Adw.ActionRow {
 		title = _ "Show in a separate window",
 	}
 	popoutrow:add_suffix(popoutbtn)
-	self.row:add_row(popoutrow)
+	row:add_row(popoutrow)
+
+	if not sensitive then return end
+
+	function self.entry.on_changed()
+		if #self.entry.text == 0 then
+			row:add_css_class "error"
+			return
+		end
+		row:remove_css_class "error"
+		self.name = self.entry.text
+		row.title = self.entry.text
+	end
 
 	function upbtn.on_clicked()
-		local rindex = self.row:get_index()
+		local rindex = row:get_index()
 		local tindex = rindex + 1
-		local lbox = self.row.parent
+		local lbox = row.parent
 		while rindex > 0 do
 			rindex = rindex - 1
 			local row = lbox:get_row_at_index(rindex)
 			if row.mapped then
 				table.remove(tallies, tindex)
 				table.insert(tallies, rindex + 1, self)
-				lbox:remove(self.row)
-				lbox:insert(self.row, rindex)
+				lbox:remove(row)
+				lbox:insert(row, rindex)
 				GLib.timeout_add(GLib.PRIORITY_DEFAULT, 20, function() self:scroll() end)
 				return
 			end
@@ -388,17 +400,17 @@ function tally:createmenu()
 	end
 
 	function downbtn.on_clicked()
-		local rindex = self.row:get_index()
+		local rindex = row:get_index()
 		local tindex = rindex + 1
-		local lbox = self.row.parent
+		local lbox = row.parent
 		rindex = rindex + 1
 		while rindex < #tallies do
 			local row = lbox:get_row_at_index(rindex)
 			if row.mapped then
 				table.remove(tallies, tindex)
 				table.insert(tallies, rindex + 1, self)
-				lbox:remove(self.row)
-				lbox:insert(self.row, rindex)
+				lbox:remove(row)
+				lbox:insert(row, rindex)
 				GLib.timeout_add(GLib.PRIORITY_DEFAULT, 20, function() self:scroll() end)
 				return
 			end
@@ -407,20 +419,20 @@ function tally:createmenu()
 	end
 
 	function topbtn.on_clicked()
-		table.remove(tallies, self.row:get_index() + 1)
+		table.remove(tallies, row:get_index() + 1)
 		table.insert(tallies, 1, self)
-		local lbox = self.row.parent
-		lbox:remove(self.row)
-		lbox:prepend(self.row)
+		local lbox = row.parent
+		lbox:remove(row)
+		lbox:prepend(row)
 		GLib.timeout_add(GLib.PRIORITY_DEFAULT, 20, function() self:scroll() end)
 	end
 
 	function bottombtn.on_clicked()
-		table.remove(tallies, self.row:get_index() + 1)
+		table.remove(tallies, row:get_index() + 1)
 		table.insert(tallies, self)
-		local lbox = self.row.parent
-		lbox:remove(self.row)
-		lbox:append(self.row)
+		local lbox = row.parent
+		lbox:remove(row)
+		lbox:append(row)
 		GLib.timeout_add(GLib.PRIORITY_DEFAULT, 20, function() self:scroll() end)
 	end
 
@@ -514,6 +526,7 @@ end
 function tally:duplicate()
 	local spinner = Gtk.SpinButton.new_with_range(0, 1000000, 1)
 	local r = Adw.ExpanderRow()
+	r.expanded = self.row.expanded
 	r:add_suffix(spinner)
 	if self.color then r:add_css_class(self.color) end
 	r.title = self.name
