@@ -577,8 +577,14 @@ local cfgdir = os.getenv "XDG_CONFIG_HOME"
 local tallydir = cfgdir .. "/tally"
 local tallyfile = tallydir .. "/tally"
 
+local app_window
+local saved_data = {}
+
 local function writecfg()
 	local cfg = ""
+	cfg = cfg .. ("width = %d,\n"):format(app_window.default_width)
+	cfg = cfg .. ("height = %d,\n"):format(app_window.default_height)
+	cfg = cfg .. ("maximized = %q,\n"):format(app_window:is_maximized())
 	for _, t in ipairs(tallies) do
 		cfg = cfg .. t:serialize()
 	end
@@ -591,9 +597,9 @@ local function readcfg()
 	local f, err = load(cfg)
 	-- Unable to read saved tallies, so just start the program with an empty list.
 	if not f then return end
-	local saved = f()
-	assert(type(saved) == "table")
-	for _, v in ipairs(saved) do
+	saved_data = f()
+	assert(type(saved_data) == "table")
+	for _, v in ipairs(saved_data) do
 		local t = tally(v)
 		table.insert(tallies, t)
 		tallyrows[t.row] = t
@@ -913,6 +919,13 @@ local function newwin()
 		height_request = 294,
 		width_request = 360,
 	}
+	if saved_data.maximized then
+		window:maximize()
+	end
+	if saved_data.width and saved_data.height then
+		window.default_width = saved_data.width
+		window.default_height = saved_data.height
+	end
 
 	local bpcond = Adw.BreakpointCondition.new_length("MAX_WIDTH", 400, "PX")
 	local breakpoint = Adw.Breakpoint.new(bpcond)
@@ -940,7 +953,7 @@ local function newwin()
 	end
 
 	searchentry:grab_focus()
-	window:present()
+	return window
 end
 
 --[[
@@ -1154,7 +1167,8 @@ function app:on_activate()
 end
 
 function app:on_startup()
-	newwin()
+	app_window = newwin()
+	app_window:present()
 end
 
 function app:on_shutdown()
