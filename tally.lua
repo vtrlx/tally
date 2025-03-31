@@ -99,12 +99,18 @@ local tally = newclass(function(self, param)
 		halign = "END",
 	}
 
-	self.spinbtn = Gtk.SpinButton.new_with_range(0, 1000000, 1)
-	self.spinbtn:get_first_child().xalign = 1
-	self.spinbtn.valign = "CENTER"
 	self.row = Adw.ExpanderRow()
 	self.row:add_css_class "spin"
 	self.row.title = self.name
+	function self.row.on_notify.expanded()
+		if self.row.expanded then
+			GLib.timeout_add(GLib.PRIORITY_DEFAULT, 50, function() self:scroll() end)
+		end
+	end
+
+	self.spinbtn = Gtk.SpinButton.new_with_range(0, 1000000, 1)
+	self.spinbtn:get_first_child().xalign = 1
+	self.spinbtn.valign = "CENTER"
 	self.spinbtn.value = self.value
 	function self.spinbtn.on_notify.value()
 		self.value = self.spinbtn.value
@@ -387,13 +393,14 @@ function tally:createmenu(row, sensitive)
 		local lbox = row.parent
 		while rindex > 0 do
 			rindex = rindex - 1
-			local row = lbox:get_row_at_index(rindex)
-			if row.mapped then
+			local other = lbox:get_row_at_index(rindex)
+			if other.mapped then
+				-- This is the previous visible row, so place above
 				table.remove(tallies, tindex)
 				table.insert(tallies, rindex + 1, self)
 				lbox:remove(row)
 				lbox:insert(row, rindex)
-				GLib.timeout_add(GLib.PRIORITY_DEFAULT, 20, function() self:scroll() end)
+				GLib.timeout_add(GLib.PRIORITY_DEFAULT, 50, function() self:scroll() end)
 				return
 			end
 		end
@@ -405,13 +412,14 @@ function tally:createmenu(row, sensitive)
 		local lbox = row.parent
 		rindex = rindex + 1
 		while rindex < #tallies do
-			local row = lbox:get_row_at_index(rindex)
-			if row.mapped then
+			local other = lbox:get_row_at_index(rindex)
+			if other.mapped then
+				-- This is the next visible row, so place below.
 				table.remove(tallies, tindex)
 				table.insert(tallies, rindex + 1, self)
 				lbox:remove(row)
 				lbox:insert(row, rindex)
-				GLib.timeout_add(GLib.PRIORITY_DEFAULT, 20, function() self:scroll() end)
+				GLib.timeout_add(GLib.PRIORITY_DEFAULT, 50, function() self:scroll() end)
 				return
 			end
 			rindex = rindex + 1
@@ -424,7 +432,7 @@ function tally:createmenu(row, sensitive)
 		local lbox = row.parent
 		lbox:remove(row)
 		lbox:prepend(row)
-		GLib.timeout_add(GLib.PRIORITY_DEFAULT, 20, function() self:scroll() end)
+		GLib.timeout_add(GLib.PRIORITY_DEFAULT, 50, function() self:scroll() end)
 	end
 
 	function bottombtn.on_clicked()
@@ -433,7 +441,7 @@ function tally:createmenu(row, sensitive)
 		local lbox = row.parent
 		lbox:remove(row)
 		lbox:append(row)
-		GLib.timeout_add(GLib.PRIORITY_DEFAULT, 20, function() self:scroll() end)
+		GLib.timeout_add(GLib.PRIORITY_DEFAULT, 50, function() self:scroll() end)
 	end
 
 	function popoutbtn.on_clicked()
