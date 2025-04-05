@@ -665,7 +665,7 @@ local function newwin()
 		tooltip_text = _ "About Tally",
 	}
 	local checkbtn = Gtk.ToggleButton {
-		icon_name = "checkbox-checked-symbolic",
+		icon_name = "selection-mode-symbolic",
 		tooltip_text = _ "Select counters to delete",
 	}
 
