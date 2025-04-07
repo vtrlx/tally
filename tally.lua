@@ -287,7 +287,7 @@ function tally:createmenu(row, sensitive)
 
 	local cbox = self:colorrow()
 	local crow = Adw.ActionRow {
-		title = "Colour",
+		title = "Color",
 		sensitive = sensitive,
 	}
 	crow:add_suffix(cbox)
@@ -658,7 +658,7 @@ local function newwin()
 	delbtn:add_css_class "destructive-action"
 	local searchbtn = Gtk.ToggleButton {
 		icon_name = "system-search-symbolic",
-		tooltip_text = _ "Filter counters by name and/or colour",
+		tooltip_text = _ "Filter counters by name and/or color",
 	}
 	local infobtn = Gtk.Button {
 		icon_name = "help-about-symbolic",
