@@ -14,7 +14,7 @@
 		<release version="0.5" date="2025-03-31">
 			<description>
 <ul>
-<li>Customization options for each counter can now be accessed by expaning the counter rather than using a popover menu.</li>
+<li>Customization options for each counter can now be accessed by expanding the counter rather than using a popover menu.</li>
 <li>Buttons now have explanatory tooltip text and many have also been given labels.</li>
 <li>The application window will remember its previous size and maximized state when reopened.</li>
 </ul>
@@ -74,7 +74,10 @@ Various tweaks have been made to improve the user experience:
 	<keywords>
 		<keyword>GNOME</keyword>
 		<keyword>Gtk</keyword>
-		<keyword>Counter</keyword>
+		<keyword>Adwaita</keyword>
+		<keyword>counter</keyword>
+		<keyword>tally</keyword>
+		<keyword>tally counter</keyword>
 	</keywords>
 
 	<developer id="ca.vlacroix">
