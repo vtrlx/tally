@@ -283,7 +283,7 @@ function tally:createmenu(row, sensitive)
 
 	local cbox = self:colorrow()
 	local crow = Adw.ActionRow {
-		title = "Color",
+		title = _ "Color",
 		sensitive = sensitive,
 	}
 	crow:add_suffix(cbox)

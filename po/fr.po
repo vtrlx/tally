@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-29 12:20-0400\n"
-"PO-Revision-Date: 2025-05-29 14:09-0400\n"
+"POT-Creation-Date: 2025-05-29 16:28-0400\n"
+"PO-Revision-Date: 2025-05-29 16:29-0400\n"
 "Last-Translator: Victoria Lacroix <victoria@vlacroix.ca>\n"
 "Language-Team: French\n"
 "Language: fr_CA\n"
@@ -22,6 +22,10 @@ msgstr ""
 #: tally.lua:280 tally.lua:749
 msgid "Name"
 msgstr "Nom"
+
+#: tally.lua:286
+msgid "Color"
+msgstr "Couleur"
 
 #: tally.lua:295
 msgid "Move to top"

@@ -74,7 +74,9 @@ main()
 	size_t tally_bytecode_len;
 	int lua_result;
 
+	/* This line is enough to tell Adwaita to be French. */
 	setlocale(LC_ALL, "");
+	/* Tells gettext where to look for messages files. Dest should be /app/share/locale/<lang>/LC_MESSAGES/<domain>.mo */
 	bindtextdomain("messages", "/app/share/locale");
 	textdomain("messages");
 
