@@ -2,6 +2,10 @@ PREFIX = /app
 
 CSRCS = tally.c
 LSRCS = tally.lua
+POTFILE = po/MESSAGES.pot
+MSGS = po/fr.po
+CMSGDESTA = $(patsubst po/%.po, $(PREFIX)/share/runtime/locale/%/share/%/messages.mo, $(MSGS))
+CMSGDESTB = $(patsubst po/%.po, $(PREFIX)/share/locale/%/messages.mo, $(MSGS))
 
 BIN = tally
 OBJS = $(patsubst %.lua, %_bytecode.o, $(LSRCS))
@@ -30,12 +34,32 @@ $(BIN): $(CSRCS) $(OBJS)
 %.bytecode: %.lua
 	luac -o $@ -- $^
 
-.PHONY: clean install
+$(PREFIX)/share/runtime/locale/%/share/%/messages.mo: po/%mo
+	@mkdir -p `direname $@`
+	cp $< $@
+
+$(PREFIX)/share/locale/%/messages.mo: po/%.mo
+	@mkdir -p `dirname $@`
+	cp $< $@
+
+po/%.mo: po/%.po
+	msgfmt $< -o $@
+
+po/%.po: $(POTFILE)
+	msgmerge -U $@ $<
+
+po/MESSAGES.pot: $(LSRCS) $(CSRCS)
+	xgettext --from-code utf-8 -o $@ $^
+
+.PHONY: clean genmsgs install
 
 clean:
 	rm -f tally tally_bytecode.o tally.bytecode
 
-install: $(BIN)
+# Updates the .po files with new messages, and should update the .potfile beforehand as well.
+genmsgs: $(MSGS)
+
+install: $(BIN) $(CMSGDESTB) $(CMSGSDESTA)
 	install -D -m 0755 -t $(PREFIX)/bin $<
 	install -D -m 0644 -t $(PREFIX)/share/applications $(DESKTOP_FILE)
 	install -D -m 0644 -t $(PREFIX)/share/icons/hicolor/scalable/apps icons/$(ICON)

@@ -2,8 +2,10 @@
 Categories=Utility
 Name=Tally
 Name[en]=Tally
+Name[fr]=Compteur Manuel
 Comment=Count anything
 Comment[en]=Count anything
+Comment[fr]=Compter tout
 Type=Application
 Exec=tally
 Terminal=false

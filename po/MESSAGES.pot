@@ -1,0 +1,106 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-05-29 12:20-0400\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: tally.lua:280 tally.lua:749
+msgid "Name"
+msgstr ""
+
+#: tally.lua:295
+msgid "Move to top"
+msgstr ""
+
+#: tally.lua:298
+msgid "Move counter to the top of the current list"
+msgstr ""
+
+#: tally.lua:304
+msgid "Move to bottom"
+msgstr ""
+
+#: tally.lua:307
+msgid "Move counter to the bottom of the current list"
+msgstr ""
+
+#: tally.lua:322
+msgid "Move up"
+msgstr ""
+
+#: tally.lua:325
+msgid "Move counter to just above the previous row"
+msgstr ""
+
+#: tally.lua:332
+msgid "Move down"
+msgstr ""
+
+#: tally.lua:335
+msgid "Move counter to just below the next row"
+msgstr ""
+
+#: tally.lua:362
+msgid "Create a new window for this counter"
+msgstr ""
+
+#: tally.lua:369
+msgid "Show in a separate window"
+msgstr ""
+
+#: tally.lua:452 tally.lua:619 tally.lua:665 tally.lua:911
+msgid "Tally"
+msgstr ""
+
+#: tally.lua:628
+msgid "Send a tip!"
+msgstr ""
+
+#: tally.lua:643
+msgid "Create a new counter"
+msgstr ""
+
+#: tally.lua:647
+msgid "Delete selected counters"
+msgstr ""
+
+#: tally.lua:653
+msgid "Filter counters by name and/or color"
+msgstr ""
+
+#: tally.lua:657
+msgid "About Tally"
+msgstr ""
+
+#: tally.lua:661 tally.lua:810
+msgid "Select counters to delete"
+msgstr ""
+
+#: tally.lua:674
+msgid "Filter by name…"
+msgstr ""
+
+#: tally.lua:740
+msgid "Add to list"
+msgstr ""
+
+#: tally.lua:742
+msgid "Add this counter to the list"
+msgstr ""
+
+#: tally.lua:806
+msgid "Stop selecting without deleting anything"
+msgstr ""

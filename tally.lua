@@ -4,10 +4,7 @@ This program is free software: you can redistribute it and/or modify it under th
 This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with this program.  If not, see <https://www.gnu.org/licenses/>. ]]--
 
---[[
-SECTION: Support library
-Functions which will be used throughout the application.
-]]--
+-- SECTION: Support library
 
 local lib = require "tallylib"
 
@@ -55,9 +52,7 @@ local function newclass(init)
 	return setmetatable(c, mt)
 end
 
---[[
-SECTION: Imports and app initialization
-]]--
+-- SECTION: Imports and app initialization
 
 -- Load packages from Flatpak only. If the Flatpak is broken, the application should not even attempt to load libraries from the system.
 package.cpath = "/app/lib/lua/5.4/?.so"
@@ -76,9 +71,7 @@ local app = Adw.Application {
 	application_id = app_id,
 }
 
---[[
-SECTION: Tally counter class
-]]--
+-- SECTION: Tally counter class
 
 local tallies = {} -- Global Lua table containing all tallies.
 local tallyrows = {} -- Global Lua table associating Gtk.ListBoxRow items to their respective tally.
@@ -102,9 +95,12 @@ local tally = newclass(function(self, param)
 	self.row = Adw.ExpanderRow()
 	self.row:add_css_class "spin"
 	self.row.title = self.name
+	local function scroll_in()
+		self:scroll()
+	end
 	function self.row.on_notify.expanded()
 		if self.row.expanded then
-			GLib.timeout_add(GLib.PRIORITY_DEFAULT, 50, function() self:scroll() end)
+			GLib.timeout_add(GLib.PRIORITY_DEFAULT, 50, scroll_in)
 		end
 	end
 
@@ -569,9 +565,7 @@ function tally:serialize()
 	return ("{\n%s},\n"):format(r)
 end
 
---[[
-SECTION: Saving/loading
-]]--
+-- SECTION: Saving/loading
 
 local cfgdir = os.getenv "XDG_CONFIG_HOME"
 local tallydir = cfgdir .. "/tally"
@@ -618,9 +612,7 @@ do -- Initialize configuration if it doesn't exist, load if it does.
 	readcfg()
 end
 
---[[
-SECTION: Window construction
-]]--
+-- SECTION: Window construction
 
 local aboutwin = Adw.AboutDialog {
 	application_icon = app_id,
@@ -960,9 +952,7 @@ local function newwin()
 	return window
 end
 
---[[
-SECTION: Styles
-]]--
+-- SECTION: Styles
 
 local cssbase = [[
 .colorselector checkbutton {
@@ -1162,9 +1152,7 @@ do
 	end
 end
 
---[[
-SECTION: App callbacks
-]]--
+-- SECTION: App callbacks
 
 function app:on_activate()
 	if app.active_window then app.active_window:present() end
