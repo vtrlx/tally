@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-29 16:28-0400\n"
-"PO-Revision-Date: 2025-05-29 16:29-0400\n"
+"POT-Creation-Date: 2025-05-30 10:14-0400\n"
+"PO-Revision-Date: 2025-05-30 10:15-0400\n"
 "Last-Translator: Victoria Lacroix <victoria@vlacroix.ca>\n"
 "Language-Team: French\n"
 "Language: fr_CA\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Generator: Gtranslator 48.0\n"
 
-#: tally.lua:280 tally.lua:749
+#: tally.lua:280 tally.lua:751
 msgid "Name"
 msgstr "Nom"
 
@@ -67,46 +67,54 @@ msgstr "Créer une nouvelle fenêtre pour ce compteur"
 msgid "Show in a separate window"
 msgstr "Montrer dans une autre fenêtre"
 
-#: tally.lua:452 tally.lua:619 tally.lua:665 tally.lua:911
+#: tally.lua:452 tally.lua:621 tally.lua:667 tally.lua:913
 msgid "Tally"
 msgstr "Compteur"
 
-#: tally.lua:628
+#: tally.lua:466
+msgid "Decrement by 1"
+msgstr "Baisser par 1"
+
+#: tally.lua:475
+msgid "Increment by 1"
+msgstr "Augmenter par 1"
+
+#: tally.lua:630
 msgid "Send a tip!"
 msgstr "Envoyer un pourboire!"
 
-#: tally.lua:643
+#: tally.lua:645
 msgid "Create a new counter"
 msgstr "Créer un nouveau compteur"
 
-#: tally.lua:647
+#: tally.lua:649
 msgid "Delete selected counters"
 msgstr "Supprimer compteurs sélectionnés"
 
-#: tally.lua:653
+#: tally.lua:655
 msgid "Filter counters by name and/or color"
 msgstr "Filtrer les compteurs par nom et couleur"
 
-#: tally.lua:657
+#: tally.lua:659
 msgid "About Tally"
 msgstr "À propos Compteur"
 
-#: tally.lua:661 tally.lua:810
+#: tally.lua:663 tally.lua:812
 msgid "Select counters to delete"
 msgstr "Sélectionner des compteurs pour supprimer"
 
-#: tally.lua:674
+#: tally.lua:676
 msgid "Filter by name…"
 msgstr "Filtrer par nom…"
 
-#: tally.lua:740
+#: tally.lua:742
 msgid "Add to list"
 msgstr "Ajouter à la liste"
 
-#: tally.lua:742
+#: tally.lua:744
 msgid "Add this counter to the list"
 msgstr "Ajouter ce compteur à la liste"
 
-#: tally.lua:806
+#: tally.lua:808
 msgid "Stop selecting without deleting anything"
 msgstr "Arrêter la sélection et ne rien supprimer"

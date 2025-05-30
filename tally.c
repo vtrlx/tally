@@ -7,12 +7,10 @@
 #include <lualib.h>
 #include <lauxlib.h>
 
-#ifndef DEVEL
-#define APP_ID "ca.vlacroix.Tally"
-#else
-#define APP_ID "ca.vlacroix.Tally.Devel"
-#endif
-#define APP_VER "0.5"
+#define QUOTE(name) #name
+#define MSTR(macro) QUOTE(macro)
+#define APP_ID MSTR(PACKAGE)
+#define APP_VER MSTR(VERSION)
 
 static int
 lua_get_is_devel(lua_State *L)

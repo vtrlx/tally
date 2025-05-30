@@ -463,6 +463,7 @@ function tally:popout()
 	local decbtn = Gtk.Button {
 		icon_name = "value-decrease-symbolic",
 		sensitive = self.spinbtn.value > 0,
+		tooltip_text = _ "Decrement by 1",
 	}
 	decbtn:add_css_class "circular"
 	function decbtn.on_clicked()
@@ -471,6 +472,7 @@ function tally:popout()
 	local incbtn = Gtk.Button {
 		icon_name = "value-increase-symbolic",
 		sensitive = self.spinbtn.value < 1000000,
+		tooltip_text = _ "Increment by 1",
 	}
 	incbtn:add_css_class "circular"
 	function incbtn.on_clicked()
@@ -696,7 +698,7 @@ local function newwin()
 	}
 	searchbar:connect_entry(searchentry)
 	searchbar:bind_property("search-mode-enabled", searchbtn, "active", "BIDIRECTIONAL")
-	-- Despite mapping property names with underscores and providing a lovely syntax for defining signal event handlers, LGI doesn't do both at the same time.
+	-- Despite mapping property names with underscores and providing a lovely syntax for defining signal event handlers, LGI doesn't do both at the same time, so listening to notify requires this syntax.
 	searchbar.on_notify["search-mode-enabled"] = function()
 		for _, cb in ipairs(searchcolorchecks) do cb.active = false end
 	end
