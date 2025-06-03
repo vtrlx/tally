@@ -3,14 +3,14 @@ VERSION = 0.5
 
 APPID = $(PACKAGE)
 ifdef DEVEL
-CFLAGS += -DDEVEL
+CFLAGS = -DDEVEL
 APPID = $(PACKAGE).Devel
 endif
 
 PREFIX = /app
 
 CSRCS = tally.c
-LSRCS = tally.lua
+LSRCS = tally.lua counter.lua
 POTFILE = po/MESSAGES.pot
 MSGS = po/fr.po
 MSGDEST = $(patsubst po/%.po, $(PREFIX)/share/locale/%/LC_MESSAGES/messages.mo, $(MSGS))
@@ -18,7 +18,7 @@ MSGDEST = $(patsubst po/%.po, $(PREFIX)/share/locale/%/LC_MESSAGES/messages.mo, 
 BIN = tally
 OBJS = $(patsubst %.lua, %_bytecode.o, $(LSRCS))
 LIBS = -llua -ldl -lm -Wl,-E
-CFLAGS = -L$(PREFIX)/lib $(LIBS) -DPACKAGE="$(APPID)" -DVERSION="$(VERSION)"
+CFLAGS += -L$(PREFIX)/lib $(LIBS) -DPACKAGE="$(APPID)" -DVERSION="$(VERSION)"
 
 DESKTOP_FILE = $(APPID).desktop
 ICON = $(APPID).svg

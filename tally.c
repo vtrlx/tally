@@ -54,11 +54,42 @@ lua_gettext(lua_State *L)
 	return 1;
 }
 
+/* Define a Lua function called lua_load_<name> which which returns the results from importing the given module. The same module can be imported from the Lua side as well by calling require("<name>"). The macro assumes that there is Lua bytecode named <name>.bytecode being linked to the main program. */
+#define LUAMOD(name) \
+	extern char _binary_##name##_bytecode_start[]; \
+	extern char _binary_##name##_bytecode_end[]; \
+	static int \
+	lua_load_##name (lua_State *L) \
+	{ \
+		size_t len, stack_size; \
+		int lua_result, num_returns; \
+		len = ((size_t)_binary_##name##_bytecode_end) - \
+			((size_t)_binary_##name##_bytecode_start); \
+		lua_getglobal(L, "package"); \
+		lua_getfield(L, -1, "loaded"); \
+		lua_remove(L, -2); \
+		lua_result = luaL_loadbuffer(L, \
+			_binary_##name##_bytecode_start, \
+			len, \
+			QUOTE(name)); \
+		if (lua_result != LUA_OK) \
+			return 0; \
+		lua_call(L, 0, 1); \
+		lua_pushstring(L, QUOTE(name)); \
+		lua_pushvalue(L, -2); \
+		lua_settable(L, -4); \
+		lua_remove(L, -3); \
+		return 1; \
+	}
+
+LUAMOD(counter)
+
 static const luaL_Reg tallylib[] = {
 	{ "get_is_devel", lua_get_is_devel },
 	{ "get_app_id", lua_get_app_id },
 	{ "get_app_ver", lua_get_app_ver },
 	{ "gettext", lua_gettext },
+	{ "load_counter", lua_load_counter },
 	{ NULL, NULL },
 };
 
