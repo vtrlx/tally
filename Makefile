@@ -9,10 +9,10 @@ endif
 
 PREFIX = /app
 
-CSRCS = tally.c
-LSRCS = tally.lua counter.lua
+CSRCS = $(wildcard *.c)
+LSRCS = $(wildcard *.lua)
 POTFILE = po/MESSAGES.pot
-MSGS = po/fr.po
+MSGS = $(wildcard po/*.po)
 MSGDEST = $(patsubst po/%.po, $(PREFIX)/share/locale/%/LC_MESSAGES/messages.mo, $(MSGS))
 
 BIN = tally
@@ -44,18 +44,16 @@ po/%.mo: po/%.po
 	msgfmt $< -o $@
 
 po/%.po: $(POTFILE)
+	[ -f $@ ] || msginit -i $< -o $@ -l $(patsubst po/%.po,%,$@)
 	msgmerge -U $@ $<
 
 po/MESSAGES.pot: $(LSRCS) $(CSRCS)
 	xgettext --from-code utf-8 -o $@ $^
 
-.PHONY: clean genmsgs install
+.PHONY: clean install
 
 clean:
 	rm -f tally tally_bytecode.o tally.bytecode
-
-# Updates the .po files with new messages, and should update the .pot file beforehand as well.
-genmsgs: $(MSGS)
 
 install: $(BIN) $(MSGDEST)
 	install -D -m 0755 -t $(PREFIX)/bin $<
