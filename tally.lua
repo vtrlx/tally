@@ -120,9 +120,8 @@ aboutwin:add_link(_ "Translate this app!", "https://github.com/vtrlx/tally?tab=r
 aboutwin:add_link(_ "Send a tip!", "https://liberapay.com/vtrlx/")
 aboutwin.release_notes = [[
 <ul>
-<li>Customization options for each counter can now be accessed by expaning the counter rather than using a popover menu.</li>
-<li>Buttons now have explanatory tooltip text and many have also been given labels.</li>
-<li>The application window will remember its previous size and maximized state when reopened.</li>
+<li>A French translation has been added.</li>
+<li>The application icon has been updated.</li>
 </ul>
 ]]
 

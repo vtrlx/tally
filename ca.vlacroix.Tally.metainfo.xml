@@ -11,6 +11,14 @@
 	<content_rating type="oars-1.1" />
 
 	<releases>
+		<release version="0.6" date="2025-06-10">
+			<description>
+<ul>
+<li>A French translation has been added.</li>
+<li>The application icon has been updated.</li>
+</ul>
+			</description>
+		</release>
 		<release version="0.5" date="2025-03-31">
 			<description>
 <ul>
