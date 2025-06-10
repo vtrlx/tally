@@ -11,7 +11,7 @@ local lib = require "tallylib"
 local function fileexists(path)
 	local ok, err, code = os.rename(path, path)
 	if not ok and code == 13 then
-		-- In Linux, error code 13 when moving a file means the it failed because the directory cannot be made its own child. Any other error means the file does not exist.
+		-- In Linux, error code 13 when moving a file means that it failed because the directory cannot be made its own child. Any other error means the file does not exist.
 		return true
 	end
 	return ok
@@ -116,6 +116,7 @@ local aboutwin = Adw.AboutDialog {
 	version = lib.get_app_ver(),
 	website = "https://www.vlacroix.ca/apps/tally/",
 }
+aboutwin:add_link(_ "Translate this app!", "https://github.com/vtrlx/tally?tab=readme-ov-file#localization")
 aboutwin:add_link(_ "Send a tip!", "https://liberapay.com/vtrlx/")
 aboutwin.release_notes = [[
 <ul>

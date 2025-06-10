@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-30 10:14-0400\n"
-"PO-Revision-Date: 2025-05-30 10:15-0400\n"
+"POT-Creation-Date: 2025-06-10 12:01-0400\n"
+"PO-Revision-Date: 2025-06-10 12:02-0400\n"
 "Last-Translator: Victoria Lacroix <victoria@vlacroix.ca>\n"
 "Language-Team: French\n"
 "Language: fr_CA\n"
@@ -19,102 +19,106 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Generator: Gtranslator 48.0\n"
 
-#: tally.lua:280 tally.lua:751
+#: counter.lua:237 tally.lua:240
 msgid "Name"
 msgstr "Nom"
 
-#: tally.lua:286
+#: counter.lua:243
 msgid "Color"
 msgstr "Couleur"
 
-#: tally.lua:295
+#: counter.lua:252
 msgid "Move to top"
 msgstr "Mettre au début"
 
-#: tally.lua:298
+#: counter.lua:255
 msgid "Move counter to the top of the current list"
 msgstr "Mettre ce compteur au début de la liste présente"
 
-#: tally.lua:304
+#: counter.lua:261
 msgid "Move to bottom"
 msgstr "Mettre à la fin"
 
-#: tally.lua:307
+#: counter.lua:264
 msgid "Move counter to the bottom of the current list"
 msgstr "Mettre ce compteur à la fin de la liste présente"
 
-#: tally.lua:322
+#: counter.lua:279
 msgid "Move up"
 msgstr "Mettre dessus"
 
-#: tally.lua:325
+#: counter.lua:282
 msgid "Move counter to just above the previous row"
 msgstr "Mettre ce compteur juste au dessus le compteur précédent"
 
-#: tally.lua:332
+#: counter.lua:289
 msgid "Move down"
 msgstr "Mettre dessous"
 
-#: tally.lua:335
+#: counter.lua:292
 msgid "Move counter to just below the next row"
 msgstr "Mettre ce compteur juste dessous le compteur suivant"
 
-#: tally.lua:362
+#: counter.lua:319
 msgid "Create a new window for this counter"
 msgstr "Créer une nouvelle fenêtre pour ce compteur"
 
-#: tally.lua:369
+#: counter.lua:326
 msgid "Show in a separate window"
 msgstr "Montrer dans une autre fenêtre"
 
-#: tally.lua:452 tally.lua:621 tally.lua:667 tally.lua:913
+#: counter.lua:409 tally.lua:110 tally.lua:156 tally.lua:402
 msgid "Tally"
 msgstr "Compteur"
 
-#: tally.lua:466
+#: counter.lua:423
 msgid "Decrement by 1"
 msgstr "Baisser par 1"
 
-#: tally.lua:475
+#: counter.lua:432
 msgid "Increment by 1"
 msgstr "Augmenter par 1"
 
-#: tally.lua:630
+#: tally.lua:119
+msgid "Translate this app!"
+msgstr "Traduire cette application!"
+
+#: tally.lua:120
 msgid "Send a tip!"
 msgstr "Envoyer un pourboire!"
 
-#: tally.lua:645
+#: tally.lua:134
 msgid "Create a new counter"
 msgstr "Créer un nouveau compteur"
 
-#: tally.lua:649
+#: tally.lua:138
 msgid "Delete selected counters"
 msgstr "Supprimer compteurs sélectionnés"
 
-#: tally.lua:655
+#: tally.lua:144
 msgid "Filter counters by name and/or color"
 msgstr "Filtrer les compteurs par nom et couleur"
 
-#: tally.lua:659
+#: tally.lua:148
 msgid "About Tally"
 msgstr "À propos Compteur"
 
-#: tally.lua:663 tally.lua:812
+#: tally.lua:152 tally.lua:301
 msgid "Select counters to delete"
 msgstr "Sélectionner des compteurs pour supprimer"
 
-#: tally.lua:676
+#: tally.lua:165
 msgid "Filter by name…"
 msgstr "Filtrer par nom…"
 
-#: tally.lua:742
+#: tally.lua:231
 msgid "Add to list"
 msgstr "Ajouter à la liste"
 
-#: tally.lua:744
+#: tally.lua:233
 msgid "Add this counter to the list"
 msgstr "Ajouter ce compteur à la liste"
 
-#: tally.lua:808
+#: tally.lua:297
 msgid "Stop selecting without deleting anything"
 msgstr "Arrêter la sélection et ne rien supprimer"

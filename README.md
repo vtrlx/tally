@@ -30,17 +30,19 @@ flatpak run ca.vlacroix.Tally.Devel
 
 Tally uses [gettext](https://www.gnu.org/software/gettext) for localization. These instructions assume you have it installed on your system.
 
-To begin, create a message file using `msginit`. Execute this command in a terminal from Tally's root folder:
+To create a message file for your desired language, execute this command in a terminal from Tally's root folder:
 
 ```sh
 make po/<LANG>.po
 ```
 
-Both instances of <LANG> should be replaced by the two-letter language code for the language you're translating the app to, optionally followed by an underscore `_` character and a two-letter country code in ALL-CAPS i.e. `fr` for French or `fr_CA` for Canadian French.
+`<LANG>` should be replaced by the two-letter language code for the language you're translating the app to, optionally followed by an underscore `_` character and a two-letter country code in ALL-CAPS i.e. `fr` for French or `fr_CA` for Canadian French.
 
-Next, edit the `<LANG>.po` file you made in the `po/` folder. I recommend using [Translation Editor](https://flathub.org/apps/org.gnome.Gtranslator) for this.
+This command creates a file in the `po/` folder named `<LANG>.po`.
 
-Once finished, commit the finished `<LANG>.po` file to git, push to your branch, and open a pull request.
+Next, edit the `<LANG>.po` file and add your translated strings. I recommend using [Translation Editor](https://flathub.org/apps/org.gnome.Gtranslator) for this.
+
+Once finished, try running Tally in your language using the [testing instructions](https://github.com/vtrlx/tally?tab=readme-ov-file#building) above. If all the strings appear to have been translated, commit your finished `<LANG>.po` file to Git, push the commit to a branch under your control, and submit a pull request [on GitHub](https://github.com/vtrlx/tally/pulls).
 
 ### Updating a Localization
 
