@@ -1,4 +1,4 @@
-/* tally.c — support library for Tally */
+/* main.c (Executable entry point, and support library for Tally) */
 
 #include <libintl.h>
 #include <locale.h>
@@ -7,8 +7,10 @@
 #include <lualib.h>
 #include <lauxlib.h>
 
+/* The first macro quotes the argument name as a string. The second allows the passing of a macro value to be quoted instead. */
 #define QUOTE(name) #name
 #define MSTR(macro) QUOTE(macro)
+/* Environment variables passed from the Makefile, whose values are made into C strings. */
 #define APP_ID MSTR(PACKAGE)
 #define APP_VER MSTR(VERSION)
 
@@ -84,7 +86,7 @@ lua_gettext(lua_State *L)
 
 LUAMOD(counter)
 
-static const luaL_Reg tallylib[] = {
+static const luaL_Reg mainlib[] = {
 	{ "get_is_devel", lua_get_is_devel },
 	{ "get_app_id", lua_get_app_id },
 	{ "get_app_ver", lua_get_app_ver },
@@ -93,14 +95,14 @@ static const luaL_Reg tallylib[] = {
 	{ NULL, NULL },
 };
 
-extern char _binary_tally_bytecode_start[];
-extern char _binary_tally_bytecode_end[];
+extern char _binary_main_bytecode_start[];
+extern char _binary_main_bytecode_end[];
 
 int
 main()
 {
 	lua_State *L;
-	size_t tally_bytecode_len;
+	size_t main_bytecode_len;
 	int lua_result;
 
 	/* This line is enough to tell Adwaita to be French. */
@@ -109,26 +111,27 @@ main()
 	bindtextdomain("messages", "/app/share/locale");
 	textdomain("messages");
 
+	/* Create a new Lua instance, and make the native C functions available through "mainlib". */
 	L = luaL_newstate();
 	luaL_openlibs(L);
 	lua_getglobal(L, "package");
 	lua_getfield(L, -1, "loaded");
 	lua_remove(L, -2);
-	lua_pushstring(L, "tallylib");
-	luaL_newlib(L, tallylib);
+	lua_pushstring(L, "mainlib");
+	luaL_newlib(L, mainlib);
 	lua_settable(L, -3);
 	lua_remove(L, -1);
 
-	tally_bytecode_len = ((size_t)_binary_tally_bytecode_end) - ((size_t)_binary_tally_bytecode_start);
+	main_bytecode_len = ((size_t)_binary_main_bytecode_end) - ((size_t)_binary_main_bytecode_start);
 
-	lua_result = luaL_loadbuffer(L, _binary_tally_bytecode_start, tally_bytecode_len, APP_ID);
+	lua_result = luaL_loadbuffer(L, _binary_main_bytecode_start, main_bytecode_len, APP_ID);
 	switch (lua_result) {
 	case LUA_OK:
 		lua_call(L, 0, 0);
 		return 0;
 	default:
 		/* FIXME: Handle each error case individually. */
-		fprintf(stderr, "An unrecoverable error occurred when loading Tally, preventing the program from starting.\n");
+		fprintf(stderr, gettext("An unrecoverable error occurred when loading Tally, preventing the program from starting.\n"));
 		return lua_result;
 	}
 }

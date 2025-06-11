@@ -1,6 +1,6 @@
 --[[ counter.lua (Tally counter class) ]]--
 
-local lib = require "tallylib"
+local lib = require "mainlib"
 
 local _ = lib.gettext
 

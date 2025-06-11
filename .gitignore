@@ -1,6 +1,6 @@
-DONE.md
 .*
 tally
 icons/*.Source.svg
 *.o
 *.bytecode
+repo
