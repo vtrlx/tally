@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-18 11:59-0400\n"
+"POT-Creation-Date: 2025-06-18 12:17-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: counter.lua:240 main.lua:320
+#: counter.lua:240 main.lua:317
 msgid "Name"
 msgstr ""
 
@@ -65,7 +65,7 @@ msgstr ""
 msgid "Show in a separate window"
 msgstr ""
 
-#: counter.lua:412 main.lua:140 main.lua:234 main.lua:488
+#: counter.lua:412 main.lua:140 main.lua:231 main.lua:485
 msgid "Tally"
 msgstr ""
 
@@ -113,63 +113,70 @@ msgstr ""
 msgid "Send a tip!"
 msgstr ""
 
-#: main.lua:159
+#: main.lua:151
+msgid ""
+"<p>Various enhancements have been made to allow Tally to be used with a "
+"screen reader. Keyboard shortcuts for closing counter windows have been "
+"added.</p>\n"
+msgstr ""
+
+#: main.lua:156
 msgid "Main Window"
 msgstr ""
 
-#: main.lua:162 main.lua:179
+#: main.lua:159 main.lua:176
 msgid "Quit Application"
 msgstr ""
 
-#: main.lua:167 main.lua:202
+#: main.lua:164 main.lua:199
 msgid "Keyboard Shortcuts"
 msgstr ""
 
-#: main.lua:172 main.lua:203
+#: main.lua:169 main.lua:200
 msgid "About Tally"
 msgstr ""
 
-#: main.lua:176
+#: main.lua:173
 msgid "Counter Window"
 msgstr ""
 
-#: main.lua:184
+#: main.lua:181
 msgid "Close Window"
 msgstr ""
 
-#: main.lua:211
+#: main.lua:208
 msgid "Create a new counter"
 msgstr ""
 
-#: main.lua:215
+#: main.lua:212
 msgid "Delete selected counters"
 msgstr ""
 
-#: main.lua:221
+#: main.lua:218
 msgid "Filter counters by name and/or color"
 msgstr ""
 
-#: main.lua:226
+#: main.lua:223
 msgid "Menu"
 msgstr ""
 
-#: main.lua:230 main.lua:386
+#: main.lua:227 main.lua:383
 msgid "Select counters to delete"
 msgstr ""
 
-#: main.lua:243
+#: main.lua:240
 msgid "Filter by name…"
 msgstr ""
 
-#: main.lua:311
+#: main.lua:308
 msgid "Add to list"
 msgstr ""
 
-#: main.lua:313
+#: main.lua:310
 msgid "Add this counter to the list"
 msgstr ""
 
-#: main.lua:382
+#: main.lua:379
 msgid "Stop selecting without deleting anything"
 msgstr ""
 
