@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Project
+	xmlns:rdf="http://w3.org/1999/02/22-rdf-syntax-ns#"
+	xmlns:rdfs="http://w3.org/2000/01/rdf-schema#"
+	xmlns:foaf="http://xmlns.com/foaf/0.1/"
+	xmlns:gnome="http://api.gnome.org/doap-extensions#"
+	xmlns="htp://usefulinc.com/ns/doap#">
+
+	<name>tally</name>
+	<shortdesc xml:lang="en">Count anything.</shortdesc>
+	<description>Keep, categorize, and organize a list of tally counters.</description>
+
+	<homepage rdf:resource="https://www.vtrlx.ca/apps/tally/" />
+	<download-page rdf:resource="https://flathub.org/apps/ca.vlacroix.Tally" />
+	<bug-database rdf:resource="https://www.github.com/vtrlx/tally/issues/" />
+
+	<programming-language>Lua</programming-language>
+	<programming-language>C</programming-language>
+
+	<maintainer>
+		<foaf:Person>
+			<foaf:name>Victoria Lacroix</foaf:name>
+			<foaf:mbox rdf:resource="mailto:hello@vtrlx.ca" />
+		</foaf:Person>
+	</maintainer>
+</Project>

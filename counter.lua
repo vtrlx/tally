@@ -2,6 +2,7 @@
 
 local lib = require "mainlib"
 
+-- Make gettext available through the name expected by xgettext.
 local _ = lib.gettext
 
 local lgi = require "lgi"
@@ -10,6 +11,7 @@ local Gtk = lgi.require "Gtk"
 local Gdk = lgi.require "Gdk"
 local GObject = lgi.require "GObject"
 local GLib = lgi.require "GLib"
+local Gio = lgi.require "Gio"
 
 local counters = {} -- Lua table containing all counters.
 local counterrows = {} -- Lua table associating Gtk.ListBoxRow items to their respective counter.
@@ -205,6 +207,7 @@ end
 function counter:gencolorcheck(color, group)
 	local checkbtn = Gtk.CheckButton {
 		group = group,
+		tooltip_text = lib.getcolorname(color),
 	}
 	if color then checkbtn:add_css_class(color) end
 	function checkbtn.on_notify.active()
@@ -472,8 +475,8 @@ function counter:popout()
 		width_request = 300,
 	}
 	content:add_top_bar(headerbar)
-	self.zoomwin = Adw.Window {
-		application = app,
+	self.zoomwin = Adw.ApplicationWindow {
+		application = lib.app,
 		content = content,
 		hide_on_close = true,
 		default_width = 400,
@@ -481,6 +484,16 @@ function counter:popout()
 		height_request = 294,
 		width_request = 360,
 	}
+	function self.zoomwin.on_close_request()
+		self.zoomwin:destroy()
+		self.zoomwin = nil
+	end
+	local close_action = Gio.SimpleAction.new "close"
+	function close_action.on_activate()
+		self.zoomwin:close()
+	end
+	close_action.enabled = true
+	self.zoomwin:add_action(close_action)
 	if self.color then content:add_css_class(self.color) end
 	if is_devel then self.zoomwin:add_css_class "devel" end
 	return self.zoomwin

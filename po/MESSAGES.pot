@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-10 12:01-0400\n"
+"POT-Creation-Date: 2025-06-18 11:59-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,106 +17,165 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: counter.lua:237 tally.lua:240
+#: counter.lua:240 main.lua:320
 msgid "Name"
 msgstr ""
 
-#: counter.lua:243
+#: counter.lua:246
 msgid "Color"
 msgstr ""
 
-#: counter.lua:252
+#: counter.lua:255
 msgid "Move to top"
 msgstr ""
 
-#: counter.lua:255
+#: counter.lua:258
 msgid "Move counter to the top of the current list"
 msgstr ""
 
-#: counter.lua:261
+#: counter.lua:264
 msgid "Move to bottom"
 msgstr ""
 
-#: counter.lua:264
+#: counter.lua:267
 msgid "Move counter to the bottom of the current list"
 msgstr ""
 
-#: counter.lua:279
+#: counter.lua:282
 msgid "Move up"
 msgstr ""
 
-#: counter.lua:282
+#: counter.lua:285
 msgid "Move counter to just above the previous row"
 msgstr ""
 
-#: counter.lua:289
+#: counter.lua:292
 msgid "Move down"
 msgstr ""
 
-#: counter.lua:292
+#: counter.lua:295
 msgid "Move counter to just below the next row"
 msgstr ""
 
-#: counter.lua:319
+#: counter.lua:322
 msgid "Create a new window for this counter"
 msgstr ""
 
-#: counter.lua:326
+#: counter.lua:329
 msgid "Show in a separate window"
 msgstr ""
 
-#: counter.lua:409 tally.lua:110 tally.lua:156 tally.lua:402
+#: counter.lua:412 main.lua:140 main.lua:234 main.lua:488
 msgid "Tally"
 msgstr ""
 
-#: counter.lua:423
+#: counter.lua:426
 msgid "Decrement by 1"
 msgstr ""
 
-#: counter.lua:432
+#: counter.lua:435
 msgid "Increment by 1"
 msgstr ""
 
-#: tally.lua:119
+#: main.lua:37
+msgid "No color"
+msgstr ""
+
+#: main.lua:39
+msgid "Red"
+msgstr ""
+
+#: main.lua:41
+msgid "Orange"
+msgstr ""
+
+#: main.lua:43
+msgid "Yellow"
+msgstr ""
+
+#: main.lua:45
+msgid "Green"
+msgstr ""
+
+#: main.lua:47
+msgid "Blue"
+msgstr ""
+
+#: main.lua:49
+msgid "Purple"
+msgstr ""
+
+#: main.lua:149
 msgid "Translate this app!"
 msgstr ""
 
-#: tally.lua:120
+#: main.lua:150
 msgid "Send a tip!"
 msgstr ""
 
-#: tally.lua:134
-msgid "Create a new counter"
+#: main.lua:159
+msgid "Main Window"
 msgstr ""
 
-#: tally.lua:138
-msgid "Delete selected counters"
+#: main.lua:162 main.lua:179
+msgid "Quit Application"
 msgstr ""
 
-#: tally.lua:144
-msgid "Filter counters by name and/or color"
+#: main.lua:167 main.lua:202
+msgid "Keyboard Shortcuts"
 msgstr ""
 
-#: tally.lua:148
+#: main.lua:172 main.lua:203
 msgid "About Tally"
 msgstr ""
 
-#: tally.lua:152 tally.lua:301
+#: main.lua:176
+msgid "Counter Window"
+msgstr ""
+
+#: main.lua:184
+msgid "Close Window"
+msgstr ""
+
+#: main.lua:211
+msgid "Create a new counter"
+msgstr ""
+
+#: main.lua:215
+msgid "Delete selected counters"
+msgstr ""
+
+#: main.lua:221
+msgid "Filter counters by name and/or color"
+msgstr ""
+
+#: main.lua:226
+msgid "Menu"
+msgstr ""
+
+#: main.lua:230 main.lua:386
 msgid "Select counters to delete"
 msgstr ""
 
-#: tally.lua:165
+#: main.lua:243
 msgid "Filter by name…"
 msgstr ""
 
-#: tally.lua:231
+#: main.lua:311
 msgid "Add to list"
 msgstr ""
 
-#: tally.lua:233
+#: main.lua:313
 msgid "Add this counter to the list"
 msgstr ""
 
-#: tally.lua:297
+#: main.lua:382
 msgid "Stop selecting without deleting anything"
+msgstr ""
+
+#: main.c:134
+#, c-format
+msgid ""
+"An unrecoverable error occurred when loading Tally, preventing the program "
+"from starting.\n"
 msgstr ""

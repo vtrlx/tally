@@ -29,8 +29,25 @@ local function mkdir(path)
 	os.execute(cmd)
 end
 
-local function _(...)
-	return lib.gettext(...)
+-- Make gettext available through the name expected by xgettext.
+local _ = lib.gettext
+
+function lib.getcolorname(color)
+	if not color or color == "system" then
+		return _ "No color"
+	elseif color == "red" then
+		return _ "Red"
+	elseif color == "orange" then
+		return _ "Orange"
+	elseif color == "yellow" then
+		return _ "Yellow"
+	elseif color == "green" then
+		return _ "Green"
+	elseif color == "blue" then
+		return _ "Blue"
+	elseif color == "purple" then
+		return _ "Purple"
+	end
 end
 
 -- SECTION: Imports and app initialization
@@ -45,12 +62,25 @@ local Gtk = lgi.require "Gtk"
 local Gdk = lgi.require "Gdk"
 local GObject = lgi.require "GObject"
 local GLib = lgi.require "GLib"
+local Gio = lgi.require "Gio"
 
 local app_id = lib.get_app_id()
 local is_devel = lib.get_is_devel()
-local app = Adw.Application {
+lib.app = Adw.Application {
 	application_id = app_id,
 }
+local app = lib.app
+app:set_accels_for_action("win.shortcuts", { "<Ctrl><Shift>question" })
+app:set_accels_for_action("win.about", { "F1" })
+app:set_accels_for_action("win.close", { "<Ctrl>W" })
+app:set_accels_for_action("app.quit", { "<Ctrl>Q" })
+
+local quit_action = Gio.SimpleAction.new "quit"
+function quit_action:on_activate()
+	app:quit()
+end
+quit_action.enabled = true
+app:add_action(quit_action)
 
 -- SECTION: Tally counter class
 
@@ -125,6 +155,53 @@ aboutwin.release_notes = [[
 </ul>
 ]]
 
+local function newshortcutwindow(parent)
+	local maingroup = Gtk.ShortcutsGroup { title = _ "Main Window" }
+	maingroup:add_shortcut(Gtk.ShortcutsShortcut {
+		action_name = "app.quit",
+		title = _ "Quit Application",
+		accelerator = "<Ctrl>Q",
+	})
+	maingroup:add_shortcut(Gtk.ShortcutsShortcut {
+		action_name = "win.shortcuts",
+		title = _ "Keyboard Shortcuts",
+		accelerator = "<Ctrl><Shift>question",
+	})
+	maingroup:add_shortcut(Gtk.ShortcutsShortcut {
+		action_name = "app.about",
+		title = _ "About Tally",
+		accelerator = "F1",
+	})
+
+	local countergroup = Gtk.ShortcutsGroup { title = _ "Counter Window" }
+	countergroup:add_shortcut(Gtk.ShortcutsShortcut {
+		action_name = "app.quit",
+		title = _ "Quit Application",
+		accelerator = "<Ctrl>Q",
+	})
+	countergroup:add_shortcut(Gtk.ShortcutsShortcut {
+		action_name = "win.close",
+		title = _ "Close Window",
+		accelerator = "<Ctrl>W",
+	})
+
+	local shortsection = Gtk.ShortcutsSection { title = app_title }
+	shortsection:add_group(maingroup)
+	shortsection:add_group(countergroup)
+
+	local shortcutwin = Gtk.ShortcutsWindow()
+	shortcutwin:add_section(shortsection)
+	shortcutwin.transient_for = parent
+	shortcutwin.modal = true
+	shortcutwin.application = app
+
+	return shortcutwin
+end
+
+local tallymenu = Gio.Menu()
+tallymenu:append(_ "Keyboard Shortcuts", "win.shortcuts")
+tallymenu:append(_ "About Tally", "win.about")
+
 local function newwin()
 	-- Force the window to be unique.
 	if app.active_window then return app.active_window end
@@ -143,9 +220,10 @@ local function newwin()
 		icon_name = "system-search-symbolic",
 		tooltip_text = _ "Filter counters by name and/or color",
 	}
-	local infobtn = Gtk.Button {
-		icon_name = "help-about-symbolic",
-		tooltip_text = _ "About Tally",
+	local menubtn = Gtk.MenuButton {
+		icon_name = "open-menu-symbolic",
+		menu_model = tallymenu,
+		tooltip_text = _ "Menu",
 	}
 	local checkbtn = Gtk.ToggleButton {
 		icon_name = "selection-mode-symbolic",
@@ -158,7 +236,7 @@ local function newwin()
 	header:pack_start(newbtn)
 	header:pack_start(delbtn)
 	header:pack_start(checkbtn)
-	header:pack_end(infobtn)
+	header:pack_end(menubtn)
 	header:pack_end(searchbtn)
 
 	local searchentry = Gtk.SearchEntry {
@@ -212,7 +290,9 @@ local function newwin()
 		return showcolor and (title:find(entry, 1, true))
 	end)
 	for _, c in ipairs { "system", "red", "orange", "yellow", "green", "blue", "purple" } do
-		local checkbtn = Gtk.CheckButton()
+		local checkbtn = Gtk.CheckButton {
+			tooltip_text = lib.getcolorname(c),
+		}
 		checkbtn:add_css_class(c)
 		function checkbtn.on_notify.active()
 			filtcolors[c] = checkbtn.active
@@ -254,13 +334,18 @@ local function newwin()
 		spacing = 6,
 	}
 	tallycolorbox:add_css_class "colorselector"
-	local newsystemcheckbtn = Gtk.CheckButton {}
+	local newsystemcheckbtn = Gtk.CheckButton {
+		tooltip_text = lib.getcolorname(), -- Defaults to "No color"
+	}
 	tallycolorbox:append(newsystemcheckbtn)
 	function newsystemcheckbtn.on_notify.active()
 		newtallycolor = nil
 	end
 	for _, c in ipairs { "red", "orange", "yellow", "green", "blue", "purple" } do
-		local checkbtn = Gtk.CheckButton { group = newsystemcheckbtn }
+		local checkbtn = Gtk.CheckButton {
+			group = newsystemcheckbtn,
+			tooltip_text = lib.getcolorname(c),
+		}
 		checkbtn:add_css_class(c)
 		function checkbtn.on_notify.active()
 			if checkbtn.active then
@@ -369,6 +454,7 @@ local function newwin()
 		if not lbox.visible then lbox.visible = true end
 		GLib.timeout_add(GLib.PRIORITY_DEFAULT, 20, scroll_to_bottom)
 		popover:popdown()
+		t.row:grab_focus()
 	end
 	nameentry.on_activate = do_create
 	createbtn.on_clicked = do_create
@@ -420,10 +506,6 @@ local function newwin()
 	breakpoint.on_unapply = enlarge
 	window:add_breakpoint(breakpoint)
 
-	function infobtn.on_clicked()
-		aboutwin:present(window)
-	end
-
 	searchbar.key_capture_widget = window
 	if is_devel then
 		window:add_css_class "devel"
@@ -433,13 +515,25 @@ local function newwin()
 		for _, t in ipairs(tallies) do
 			if t.zoomwin then
 				t.zoomwin:close()
-				t.zoomwin:destroy()
-				t.zoomwin = nil
 			end
 		end
 	end
 
-	searchentry:grab_focus()
+	local shortcuts_action = Gio.SimpleAction.new "shortcuts"
+	function shortcuts_action.on_activate()
+		newshortcutwindow(window):present()
+	end
+	shortcuts_action.enabled = true
+	window:add_action(shortcuts_action)
+
+	local about_action = Gio.SimpleAction.new "about"
+	function about_action.on_activate()
+		aboutwin:present(window)
+	end
+	about_action.enabled = true
+	window:add_action(about_action)
+
+	menubtn:grab_focus()
 	return window
 end
 
