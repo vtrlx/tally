@@ -304,11 +304,16 @@ function counter:createmenu(row, sensitive)
 	udbox:append(upbtn)
 	udbox:append(downbtn)
 
-	local mbox = Gtk.Box {
+	local mbox = Adw.WrapBox {
 		orientation = "HORIZONTAL",
-		spacing = 12,
-		hexpand = true,
-		homogeneous = true,
+		margin_start = 18,
+		margin_end = 18,
+		margin_top = 6,
+		margin_bottom = 6,
+		child_spacing = 12,
+		line_spacing = 6,
+		justify = "FILL",
+		justify_last_line = true,
 		halign = "CENTER",
 		valign = "CENTER",
 	}

@@ -138,7 +138,7 @@ msgstr "Pintasan Keyboard"
 
 #: main.lua:169 main.lua:200
 msgid "About Tally"
-msgstr "Tentang Tally"
+msgstr "Tentang Penghitung"
 
 #: main.lua:173
 msgid "Counter Window"
