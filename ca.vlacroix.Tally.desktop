@@ -1,11 +1,14 @@
 [Desktop Entry]
-Categories=Utility
+Categories=Utility;
 Name=Tally
 Name[en]=Tally
 Name[fr]=Compteur
 Comment=Count anything
 Comment[en]=Count anything
 Comment[fr]=Compter tout
+Keywords=tally;counter;tally counter;
+Keywords[en]=tally;counter;tally counter;
+Keywords[fr]=tally;compteur;compteur manuel;
 Type=Application
 Exec=tally
 Terminal=false
