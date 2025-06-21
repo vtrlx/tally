@@ -1,0 +1,194 @@
+# Indonesian translations for PACKAGE package.
+# Copyright (C) 2025 THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# Proficiency <proficiency@xmail.net>, 2025.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: 0.6.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-06-18 12:17-0400\n"
+"PO-Revision-Date: 2025-06-21 19:25+0700\n"
+"Last-Translator: Proficiency <proficiency@xmail.net>\n"
+"Language-Team: Indonesian <gnome-l10n-id@googlegroups.com>\n"
+"Language: id\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Gtranslator 48.0\n"
+
+#: counter.lua:240 main.lua:317
+msgid "Name"
+msgstr "Name"
+
+#: counter.lua:246
+msgid "Color"
+msgstr "Warna"
+
+#: counter.lua:255
+msgid "Move to top"
+msgstr "Pindah ke paling atas"
+
+#: counter.lua:258
+msgid "Move counter to the top of the current list"
+msgstr "Pindahkan penghitung ke baris teratas pada list ini"
+
+#: counter.lua:264
+msgid "Move to bottom"
+msgstr "Pindah ke paling bawah"
+
+#: counter.lua:267
+msgid "Move counter to the bottom of the current list"
+msgstr "Pindahkan penghitung ke baris terbawah pada list ini"
+
+#: counter.lua:282
+msgid "Move up"
+msgstr "Geser ke atas"
+
+#: counter.lua:285
+msgid "Move counter to just above the previous row"
+msgstr "Pindahkan penghitung ke tepat di atas baris sebelumnya"
+
+#: counter.lua:292
+msgid "Move down"
+msgstr "Geser ke bawah"
+
+#: counter.lua:295
+msgid "Move counter to just below the next row"
+msgstr "Pindahkan penghitung ke tepat di bawah baris selanjutnya"
+
+#: counter.lua:322
+msgid "Create a new window for this counter"
+msgstr "Buat jendela baru untuk penghitung ini"
+
+#: counter.lua:329
+msgid "Show in a separate window"
+msgstr "Tampilkan di jendela terpisah"
+
+#: counter.lua:412 main.lua:140 main.lua:231 main.lua:485
+msgid "Tally"
+msgstr "Tally"
+
+#: counter.lua:426
+msgid "Decrement by 1"
+msgstr "Kurangi 1"
+
+#: counter.lua:435
+msgid "Increment by 1"
+msgstr "Tambahkan 1"
+
+#: main.lua:37
+msgid "No color"
+msgstr "Tak berwarna"
+
+#: main.lua:39
+msgid "Red"
+msgstr "Merah"
+
+#: main.lua:41
+msgid "Orange"
+msgstr "Oranye"
+
+#: main.lua:43
+msgid "Yellow"
+msgstr "Kuning"
+
+#: main.lua:45
+msgid "Green"
+msgstr "Hijau"
+
+#: main.lua:47
+msgid "Blue"
+msgstr "Biru"
+
+#: main.lua:49
+msgid "Purple"
+msgstr "Ungu"
+
+#: main.lua:149
+msgid "Translate this app!"
+msgstr "Terjemahkan aplikasi ini!"
+
+#: main.lua:150
+msgid "Send a tip!"
+msgstr "Kirimkan tip!"
+
+#: main.lua:151
+msgid ""
+"<p>Various enhancements have been made to allow Tally to be used with a "
+"screen reader. Keyboard shortcuts for closing counter windows have been "
+"added.</p>\n"
+msgstr ""
+"<p>Berbagai penyempurnaan telah dilakukan agar Tally dapat digunakan dengan "
+"pembaca layar. Pintasan keyboard untuk menutup jendela penghitung juga telah "
+"ditambahkan.</p>\n"
+
+#: main.lua:156
+msgid "Main Window"
+msgstr "Jendela Utama"
+
+#: main.lua:159 main.lua:176
+msgid "Quit Application"
+msgstr "Tutup Aplikasi"
+
+#: main.lua:164 main.lua:199
+msgid "Keyboard Shortcuts"
+msgstr "Pintasan Keyboard"
+
+#: main.lua:169 main.lua:200
+msgid "About Tally"
+msgstr "Tentang Tally"
+
+#: main.lua:173
+msgid "Counter Window"
+msgstr "Jendela Penghitung"
+
+#: main.lua:181
+msgid "Close Window"
+msgstr "Tutup Jendela"
+
+#: main.lua:208
+msgid "Create a new counter"
+msgstr "Buat penghitung baru"
+
+#: main.lua:212
+msgid "Delete selected counters"
+msgstr "Hapus penghitung yang dipilih"
+
+#: main.lua:218
+msgid "Filter counters by name and/or color"
+msgstr "Saring penghitung berdasarkan nama dan/atau warna"
+
+#: main.lua:223
+msgid "Menu"
+msgstr "Menu"
+
+#: main.lua:227 main.lua:383
+msgid "Select counters to delete"
+msgstr "Pilih penghitung yang akan dihapus"
+
+#: main.lua:240
+msgid "Filter by name…"
+msgstr "Saring dengan nama…"
+
+#: main.lua:308
+msgid "Add to list"
+msgstr "Tambahkan ke list"
+
+#: main.lua:310
+msgid "Add this counter to the list"
+msgstr "Tambahkan penghitung ini ke list"
+
+#: main.lua:379
+msgid "Stop selecting without deleting anything"
+msgstr "Berhenti memilih tanpa menghapus apa pun"
+
+#: main.c:134
+#, c-format
+msgid ""
+"An unrecoverable error occurred when loading Tally, preventing the program "
+"from starting.\n"
+msgstr ""
+"Terjadi kesalahan tak terpulihkan saat memuat Tally, sehingga program tidak "
+"bisa dimulai.\n"
