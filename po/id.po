@@ -68,7 +68,7 @@ msgstr "Tampilkan di jendela terpisah"
 
 #: counter.lua:412 main.lua:140 main.lua:231 main.lua:485
 msgid "Tally"
-msgstr "Tally"
+msgstr "Penghitung"
 
 #: counter.lua:426
 msgid "Decrement by 1"
