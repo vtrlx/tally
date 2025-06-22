@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-18 12:17-0400\n"
+"POT-Creation-Date: 2025-06-21 14:51-0400\n"
 "PO-Revision-Date: 2025-06-18 12:22-0400\n"
 "Last-Translator: Victoria Lacroix <victoria@vlacroix.ca>\n"
 "Language-Team: French\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Generator: Gtranslator 48.0\n"
 
-#: counter.lua:240 main.lua:317
+#: counter.lua:240 main.lua:318
 msgid "Name"
 msgstr "Nom"
 
@@ -59,23 +59,23 @@ msgstr "Mettre dessous"
 msgid "Move counter to just below the next row"
 msgstr "Mettre ce compteur juste dessous le compteur suivant"
 
-#: counter.lua:322
+#: counter.lua:327
 msgid "Create a new window for this counter"
 msgstr "Créer une nouvelle fenêtre pour ce compteur"
 
-#: counter.lua:329
+#: counter.lua:334
 msgid "Show in a separate window"
 msgstr "Ouvrir une fenêtre individuelle pour ce compteur"
 
-#: counter.lua:412 main.lua:140 main.lua:231 main.lua:485
+#: counter.lua:417 main.lua:140 main.lua:232 main.lua:486
 msgid "Tally"
 msgstr "Compteur"
 
-#: counter.lua:426
+#: counter.lua:431
 msgid "Decrement by 1"
 msgstr "Baisser par 1"
 
-#: counter.lua:435
+#: counter.lua:440
 msgid "Increment by 1"
 msgstr "Augmenter par 1"
 
@@ -107,15 +107,19 @@ msgstr "Bleu"
 msgid "Purple"
 msgstr "Violet"
 
-#: main.lua:149
+#: main.lua:146
+msgid "translator-credits"
+msgstr ""
+
+#: main.lua:150
 msgid "Translate this app!"
 msgstr "Traduire cette application!"
 
-#: main.lua:150
+#: main.lua:151
 msgid "Send a tip!"
 msgstr "Envoyer un pourboire!"
 
-#: main.lua:151
+#: main.lua:152
 msgid ""
 "<p>Various enhancements have been made to allow Tally to be used with a "
 "screen reader. Keyboard shortcuts for closing counter windows have been "
@@ -125,63 +129,63 @@ msgstr ""
 "l'utilisation d'un lecteur d'écran. Des raccourcis clavier ont étés ajoutés."
 "</p>\n"
 
-#: main.lua:156
+#: main.lua:157
 msgid "Main Window"
 msgstr "Fenêtre principale"
 
-#: main.lua:159 main.lua:176
+#: main.lua:160 main.lua:177
 msgid "Quit Application"
 msgstr "Quitter l'application"
 
-#: main.lua:164 main.lua:199
+#: main.lua:165 main.lua:200
 msgid "Keyboard Shortcuts"
 msgstr "Raccourcis clavier"
 
-#: main.lua:169 main.lua:200
+#: main.lua:170 main.lua:201
 msgid "About Tally"
 msgstr "À propos Compteur"
 
-#: main.lua:173
+#: main.lua:174
 msgid "Counter Window"
 msgstr "Fenêtre individuel"
 
-#: main.lua:181
+#: main.lua:182
 msgid "Close Window"
 msgstr "Fermer la fenêtre"
 
-#: main.lua:208
+#: main.lua:209
 msgid "Create a new counter"
 msgstr "Créer un nouveau compteur"
 
-#: main.lua:212
+#: main.lua:213
 msgid "Delete selected counters"
 msgstr "Supprimer compteurs sélectionnés"
 
-#: main.lua:218
+#: main.lua:219
 msgid "Filter counters by name and/or color"
 msgstr "Filtrer les compteurs par nom et couleur"
 
-#: main.lua:223
+#: main.lua:224
 msgid "Menu"
 msgstr "Menu"
 
-#: main.lua:227 main.lua:383
+#: main.lua:228 main.lua:384
 msgid "Select counters to delete"
 msgstr "Sélectionner des compteurs pour supprimer"
 
-#: main.lua:240
+#: main.lua:241
 msgid "Filter by name…"
 msgstr "Filtrer par nom…"
 
-#: main.lua:308
+#: main.lua:309
 msgid "Add to list"
 msgstr "Ajouter à la liste"
 
-#: main.lua:310
+#: main.lua:311
 msgid "Add this counter to the list"
 msgstr "Ajouter ce compteur à la liste"
 
-#: main.lua:379
+#: main.lua:380
 msgid "Stop selecting without deleting anything"
 msgstr "Arrêter la sélection et ne rien supprimer"
 

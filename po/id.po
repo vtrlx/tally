@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.6.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-18 12:17-0400\n"
+"POT-Creation-Date: 2025-06-21 14:51-0400\n"
 "PO-Revision-Date: 2025-06-21 19:25+0700\n"
 "Last-Translator: Proficiency <proficiency@xmail.net>\n"
 "Language-Team: Indonesian <gnome-l10n-id@googlegroups.com>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Gtranslator 48.0\n"
 
-#: counter.lua:240 main.lua:317
+#: counter.lua:240 main.lua:318
 msgid "Name"
 msgstr "Name"
 
@@ -58,23 +58,23 @@ msgstr "Geser ke bawah"
 msgid "Move counter to just below the next row"
 msgstr "Pindahkan penghitung ke tepat di bawah baris selanjutnya"
 
-#: counter.lua:322
+#: counter.lua:327
 msgid "Create a new window for this counter"
 msgstr "Buat jendela baru untuk penghitung ini"
 
-#: counter.lua:329
+#: counter.lua:334
 msgid "Show in a separate window"
 msgstr "Tampilkan di jendela terpisah"
 
-#: counter.lua:412 main.lua:140 main.lua:231 main.lua:485
+#: counter.lua:417 main.lua:140 main.lua:232 main.lua:486
 msgid "Tally"
 msgstr "Penghitung"
 
-#: counter.lua:426
+#: counter.lua:431
 msgid "Decrement by 1"
 msgstr "Kurangi 1"
 
-#: counter.lua:435
+#: counter.lua:440
 msgid "Increment by 1"
 msgstr "Tambahkan 1"
 
@@ -106,15 +106,19 @@ msgstr "Biru"
 msgid "Purple"
 msgstr "Ungu"
 
-#: main.lua:149
+#: main.lua:146
+msgid "translator-credits"
+msgstr "Proficiency <proficiency@xmail.net>"
+
+#: main.lua:150
 msgid "Translate this app!"
 msgstr "Terjemahkan aplikasi ini!"
 
-#: main.lua:150
+#: main.lua:151
 msgid "Send a tip!"
 msgstr "Kirimkan tip!"
 
-#: main.lua:151
+#: main.lua:152
 msgid ""
 "<p>Various enhancements have been made to allow Tally to be used with a "
 "screen reader. Keyboard shortcuts for closing counter windows have been "
@@ -124,63 +128,63 @@ msgstr ""
 "pembaca layar. Pintasan keyboard untuk menutup jendela penghitung juga telah "
 "ditambahkan.</p>\n"
 
-#: main.lua:156
+#: main.lua:157
 msgid "Main Window"
 msgstr "Jendela Utama"
 
-#: main.lua:159 main.lua:176
+#: main.lua:160 main.lua:177
 msgid "Quit Application"
 msgstr "Tutup Aplikasi"
 
-#: main.lua:164 main.lua:199
+#: main.lua:165 main.lua:200
 msgid "Keyboard Shortcuts"
 msgstr "Pintasan Keyboard"
 
-#: main.lua:169 main.lua:200
+#: main.lua:170 main.lua:201
 msgid "About Tally"
 msgstr "Tentang Penghitung"
 
-#: main.lua:173
+#: main.lua:174
 msgid "Counter Window"
 msgstr "Jendela Penghitung"
 
-#: main.lua:181
+#: main.lua:182
 msgid "Close Window"
 msgstr "Tutup Jendela"
 
-#: main.lua:208
+#: main.lua:209
 msgid "Create a new counter"
 msgstr "Buat penghitung baru"
 
-#: main.lua:212
+#: main.lua:213
 msgid "Delete selected counters"
 msgstr "Hapus penghitung yang dipilih"
 
-#: main.lua:218
+#: main.lua:219
 msgid "Filter counters by name and/or color"
 msgstr "Saring penghitung berdasarkan nama dan/atau warna"
 
-#: main.lua:223
+#: main.lua:224
 msgid "Menu"
 msgstr "Menu"
 
-#: main.lua:227 main.lua:383
+#: main.lua:228 main.lua:384
 msgid "Select counters to delete"
 msgstr "Pilih penghitung yang akan dihapus"
 
-#: main.lua:240
+#: main.lua:241
 msgid "Filter by name…"
 msgstr "Saring dengan nama…"
 
-#: main.lua:308
+#: main.lua:309
 msgid "Add to list"
 msgstr "Tambahkan ke list"
 
-#: main.lua:310
+#: main.lua:311
 msgid "Add this counter to the list"
 msgstr "Tambahkan penghitung ini ke list"
 
-#: main.lua:379
+#: main.lua:380
 msgid "Stop selecting without deleting anything"
 msgstr "Berhenti memilih tanpa menghapus apa pun"
 

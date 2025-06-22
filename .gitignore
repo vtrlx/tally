@@ -4,3 +4,4 @@ icons/*.Source.svg
 *.o
 *.bytecode
 repo
+po/*.po~

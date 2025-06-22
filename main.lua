@@ -143,6 +143,7 @@ local aboutwin = Adw.AboutDialog {
 	issue_url = "https://github.com/vtrlx/tally/issues/",
 	license_type = "GPL_3_0",
 	release_notes_version = lib.get_app_ver(),
+	translator_credits = _ "translator-credits",
 	version = lib.get_app_ver(),
 	website = "https://www.vlacroix.ca/apps/tally/",
 }
