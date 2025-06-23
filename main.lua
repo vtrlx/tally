@@ -149,8 +149,8 @@ local aboutwin = Adw.AboutDialog {
 }
 aboutwin:add_link(_ "Translate this app!", "https://github.com/vtrlx/tally?tab=readme-ov-file#localization")
 aboutwin:add_link(_ "Send a tip!", "https://liberapay.com/vtrlx/")
-aboutwin.release_notes = _ [[
-<p>Various enhancements have been made to allow Tally to be used with a screen reader. Keyboard shortcuts for closing counter windows have been added.</p>
+aboutwin.release_notes = [[
+<p>An Indonesian translation has been added.</p>
 ]]
 
 local function newshortcutwindow(parent)

@@ -11,6 +11,11 @@
 	<content_rating type="oars-1.1" />
 
 	<releases>
+		<release version="0.6.2" date="2025-06-23">
+			<description>
+				<p>An Indonesian translation has been added.</p>
+			</description>
+		</release>
 		<release version="0.6.1" date="2025-06-18">
 			<description>
 				<p>Various enhancements have been made to allow Tally to be used with a screen reader. Keyboard shortcuts for closing counter windows have been added.</p>
