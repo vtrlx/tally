@@ -110,7 +110,7 @@ local counter = newclass(function(self, param)
 		self.drag_widget:append(dragrow)
 		self.drag_widget:drag_highlight_row(dragrow)
 
-		self:createmenu(dragrow, false)
+		self:createmenu(dragrow)
 
 		local drag_icon = Gtk.DragIcon.get_for_drag(drag)
 		drag_icon.child = self.drag_widget
@@ -148,7 +148,7 @@ local counter = newclass(function(self, param)
 	self.row:add_suffix(self.countlabel)
 	self.row:add_suffix(self.spinbtn)
 
-	self:createmenu(self.row, true)
+	self:createmenu(self.row)
 
 	-- Force the contents of the suffix box to align right when the spinbutton is made invisible.
 	local suffixbox = self.row.child:get_last_child()
@@ -234,17 +234,22 @@ function counter:colorrow()
 	return box
 end
 
-function counter:createmenu(row, sensitive)
-	self.entry = Adw.EntryRow {
+function counter:createmenu(row)
+	-- If self.entry already exists, then this menu won't actually control the counter and is just as a display when drag-and-dropping. For added security, if it's a duplicate menu
+	local duplicate = self.entry ~= nil
+
+	local entry = Adw.EntryRow {
 		text = self.name,
 		title = _ "Name",
+		sensitive = not duplicate,
 	}
-	row:add_row(self.entry)
+	if not self.entry then self.entry = entry end
+	row:add_row(entry)
 
 	local cbox = self:colorrow()
 	local crow = Adw.ActionRow {
 		title = _ "Color",
-		sensitive = sensitive,
+		sensitive = not duplicate,
 	}
 	crow:add_suffix(cbox)
 	row:add_row(crow)
@@ -256,7 +261,7 @@ function counter:createmenu(row, sensitive)
 			halign = "START",
 		},
 		tooltip_text = _ "Move counter to the top of the current list",
-		sensitive = sensitive,
+		sensitive = not duplicate,
 	}
 	local bottombtn = Gtk.Button {
 		child = Adw.ButtonContent {
@@ -265,7 +270,7 @@ function counter:createmenu(row, sensitive)
 			halign = "START",
 		},
 		tooltip_text = _ "Move counter to the bottom of the current list",
-		sensitive = sensitive,
+		sensitive = not duplicate,
 	}
 	local tbbox = Gtk.Box {
 		orientation = "VERTICAL",
@@ -284,7 +289,7 @@ function counter:createmenu(row, sensitive)
 		},
 		tooltip_text = _ "Move counter to just above the previous row",
 		valign = "CENTER",
-		sensitive = sensitive,
+		sensitive = not duplicate,
 	}
 	local downbtn = Gtk.Button {
 		child = Adw.ButtonContent {
@@ -293,7 +298,7 @@ function counter:createmenu(row, sensitive)
 			halign = "START",
 		},
 		tooltip_text = _ "Move counter to just below the next row",
-		sensitive = sensitive,
+		sensitive = not duplicate,
 	}
 	local udbox = Gtk.Box {
 		orientation = "VERTICAL",
@@ -328,7 +333,7 @@ function counter:createmenu(row, sensitive)
 		halign = "END",
 		hexpand = true,
 		valign = "CENTER",
-		sensitive = sensitive,
+		sensitive = not duplicate,
 	}
 	local popoutrow = Adw.ActionRow {
 		title = _ "Show in a separate window",
@@ -336,16 +341,16 @@ function counter:createmenu(row, sensitive)
 	popoutrow:add_suffix(popoutbtn)
 	row:add_row(popoutrow)
 
-	if not sensitive then return end
+	if duplicate then return end
 
-	function self.entry.on_changed()
-		if #self.entry.text == 0 then
+	function entry.on_changed()
+		if #entry.text == 0 then
 			row:add_css_class "error"
 			return
 		end
 		row:remove_css_class "error"
-		self.name = self.entry.text
-		row.title = self.entry.text
+		self.name = entry.text
+		row.title = entry.text
 	end
 
 	function upbtn.on_clicked()
