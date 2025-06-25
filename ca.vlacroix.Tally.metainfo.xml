@@ -11,6 +11,11 @@
 	<content_rating type="oars-1.1" />
 
 	<releases>
+		<release version="0.6.3" date="2025-06-25">
+			<description>
+				<p>Fixed a bug preventing a counter from being renamed after dragging and dropping it to another place in the list.</p>
+			</description>
+		</release>
 		<release version="0.6.2" date="2025-06-23">
 			<description>
 				<p>An Indonesian translation has been added.</p>

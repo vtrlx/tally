@@ -150,7 +150,7 @@ local aboutwin = Adw.AboutDialog {
 aboutwin:add_link(_ "Translate this app!", "https://github.com/vtrlx/tally?tab=readme-ov-file#localization")
 aboutwin:add_link(_ "Send a tip!", "https://liberapay.com/vtrlx/")
 aboutwin.release_notes = [[
-<p>An Indonesian translation has been added.</p>
+<p>Fixed a bug preventing a counter from being renamed after dragging and dropping it to another place in the list.</p>
 ]]
 
 local function newshortcutwindow(parent)
