@@ -56,13 +56,13 @@ end
 package.cpath = "/app/lib/lua/5.4/?.so"
 package.path = "/app/share/lua/5.4/?.lua"
 
-local lgi = require "lgi"
-local Adw = lgi.require "Adw"
-local Gtk = lgi.require "Gtk"
-local Gdk = lgi.require "Gdk"
-local GObject = lgi.require "GObject"
-local GLib = lgi.require "GLib"
-local Gio = lgi.require "Gio"
+local LuaGObject = require "LuaGObject"
+local Adw = LuaGObject.require "Adw"
+local Gtk = LuaGObject.require "Gtk"
+local Gdk = LuaGObject.require "Gdk"
+local GObject = LuaGObject.require "GObject"
+local GLib = LuaGObject.require "GLib"
+local Gio = LuaGObject.require "Gio"
 
 local app_id = lib.get_app_id()
 local is_devel = lib.get_is_devel()

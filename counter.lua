@@ -5,13 +5,13 @@ local lib = require "mainlib"
 -- Make gettext available through the name expected by xgettext.
 local _ = lib.gettext
 
-local lgi = require "lgi"
-local Adw = lgi.require "Adw"
-local Gtk = lgi.require "Gtk"
-local Gdk = lgi.require "Gdk"
-local GObject = lgi.require "GObject"
-local GLib = lgi.require "GLib"
-local Gio = lgi.require "Gio"
+local LuaGObject = require "LuaGObject"
+local Adw = LuaGObject.require "Adw"
+local Gtk = LuaGObject.require "Gtk"
+local Gdk = LuaGObject.require "Gdk"
+local GObject = LuaGObject.require "GObject"
+local GLib = LuaGObject.require "GLib"
+local Gio = LuaGObject.require "Gio"
 
 local counters = {} -- Lua table containing all counters.
 local counterrows = {} -- Lua table associating Gtk.ListBoxRow items to their respective counter.
