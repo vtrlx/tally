@@ -221,8 +221,8 @@ function counter:colorrow()
 		orientation = "HORIZONTAL",
 		spacing = 6,
 		valign = "CENTER",
+		css_classes = { "colorselector" },
 	}
-	box:add_css_class "colorselector"
 	local system = self:gencolorcheck()
 	box:append(system)
 	for _, color in ipairs { "red", "orange", "yellow", "green", "blue", "purple" } do
@@ -246,12 +246,11 @@ function counter:createmenu(row)
 	if not self.entry then self.entry = entry end
 	row:add_row(entry)
 
-	local cbox = self:colorrow()
 	local crow = Adw.ActionRow {
 		title = _ "Color",
 		sensitive = not duplicate,
+		suffixes = self:colorrow(),
 	}
-	crow:add_suffix(cbox)
 	row:add_row(crow)
 
 	local topbtn = Gtk.Button {
@@ -276,10 +275,10 @@ function counter:createmenu(row)
 		orientation = "VERTICAL",
 		margin_top = 6,
 		margin_bottom = 6,
+		css_classes = { "linked", "vertical" },
+		topbtn,
+		bottombtn,
 	}
-	tbbox:add_css_class "linked"
-	tbbox:append(topbtn)
-	tbbox:append(bottombtn)
 
 	local upbtn = Gtk.Button {
 		child = Adw.ButtonContent {
@@ -304,10 +303,10 @@ function counter:createmenu(row)
 		orientation = "VERTICAL",
 		margin_top = 6,
 		margin_bottom = 6,
+		css_classes = { "linked", "vertical" },
+		upbtn,
+		downbtn,
 	}
-	udbox:add_css_class "linked"
-	udbox:append(upbtn)
-	udbox:append(downbtn)
 
 	local mbox = Adw.WrapBox {
 		orientation = "HORIZONTAL",
@@ -321,10 +320,12 @@ function counter:createmenu(row)
 		justify_last_line = true,
 		halign = "CENTER",
 		valign = "CENTER",
+		css_classes = { "header" },
+		tbbox,
+		udbox,
+		mbox,
 	}
-	mbox:add_css_class "header"
-	mbox:append(tbbox)
-	mbox:append(udbox)
+
 	row:add_row(mbox)
 
 	local popoutbtn = Gtk.Button {
@@ -360,7 +361,7 @@ function counter:createmenu(row)
 		while rindex > 0 do
 			rindex = rindex - 1
 			local other = lbox:get_row_at_index(rindex)
-			if other.mapped then
+			if other:get_mapped() then
 				-- This is the previous visible row, so place above
 				table.remove(counters, tindex)
 				table.insert(counters, rindex + 1, self)
@@ -379,7 +380,7 @@ function counter:createmenu(row)
 		rindex = rindex + 1
 		while rindex < #counters do
 			local other = lbox:get_row_at_index(rindex)
-			if other.mapped then
+			if other:get_mapped() then
 				-- This is the next visible row, so place below.
 				table.remove(counters, tindex)
 				table.insert(counters, rindex + 1, self)
@@ -420,34 +421,34 @@ function counter:popout()
 		return self.zoomwin
 	end
 	local title = Adw.WindowTitle.new(self.name, _ "Tally")
+	self.entry:bind_property("text", title, "title", "BIDIRECTIONAL")
 	local headerbar = Adw.HeaderBar {
 		title_widget = title,
 	}
-	self.entry:bind_property("text", title, "title", "BIDIRECTIONAL")
 	local countlabel = Gtk.Label {
 		label = ("%d"):format(self.spinbtn.value),
 		width_request = 240,
 		halign = "CENTER",
+		css_classes = { "numeric" },
 	}
-	countlabel:add_css_class "numeric"
 	local decbtn = Gtk.Button {
 		icon_name = "value-decrease-symbolic",
 		sensitive = self.spinbtn.value > 0,
 		tooltip_text = _ "Decrement by 1",
+		css_classes = { "circular" },
+		on_clicked = function()
+			self.spinbtn.value = self.spinbtn.value - 1
+		end,
 	}
-	decbtn:add_css_class "circular"
-	function decbtn.on_clicked()
-		self.spinbtn.value = self.spinbtn.value - 1
-	end
 	local incbtn = Gtk.Button {
 		icon_name = "value-increase-symbolic",
 		sensitive = self.spinbtn.value < 1000000,
 		tooltip_text = _ "Increment by 1",
+		css_classes = { "circular" },
+		on_clicked = function()
+			self.spinbtn.value = self.spinbtn.value + 1
+		end,
 	}
-	incbtn:add_css_class "circular"
-	function incbtn.on_clicked()
-		self.spinbtn.value = self.spinbtn.value + 1
-	end
 	function self.spinbtn.on_notify.value()
 		countlabel.label = ("%d"):format(self.spinbtn.value)
 		decbtn.sensitive = self.spinbtn.value > 0
@@ -458,17 +459,17 @@ function counter:popout()
 		spacing = 48,
 		valign = "CENTER",
 		halign = "CENTER",
+		decbtn,
+		incbtn,
 	}
-	countbox:append(decbtn)
-	countbox:append(incbtn)
 	local numbox = Gtk.Box {
 		orientation = "VERTICAL",
 		spacing = 24,
 		valign = "CENTER",
+		css_classes = { "popout" },
+		countlabel,
+		countbox,
 	}
-	numbox:append(countlabel)
-	numbox:append(countbox)
-	numbox:add_css_class "popout"
 	local box = Gtk.Box {
 		orientation = "VERTICAL",
 		spacing = 36,
@@ -478,13 +479,13 @@ function counter:popout()
 		margin_end = 24,
 		valign = "CENTER",
 		halign = "CENTER",
+		numbox,
 	}
-	box:append(numbox)
 	local content = Adw.ToolbarView {
 		content = box,
 		width_request = 300,
+		top_bars = headerbar,
 	}
-	content:add_top_bar(headerbar)
 	self.zoomwin = Adw.ApplicationWindow {
 		application = lib.app,
 		content = content,

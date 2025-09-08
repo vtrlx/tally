@@ -66,9 +66,7 @@ local Gio = LuaGObject.require "Gio"
 
 local app_id = lib.get_app_id()
 local is_devel = lib.get_is_devel()
-lib.app = Adw.Application {
-	application_id = app_id,
-}
+lib.app = Adw.Application.new(app_id)
 local app = lib.app
 app:set_accels_for_action("win.shortcuts", { "<Ctrl><Shift>question" })
 app:set_accels_for_action("win.about", { "F1" })
@@ -95,6 +93,12 @@ local tallyfile = tallydir .. "/tally"
 local app_window
 local saved_data = {}
 
+local cfg_pattern = [[
+return {
+	%s
+}
+]]
+
 local function writecfg()
 	local cfg = ""
 	cfg = cfg .. ("width = %d,\n"):format(app_window.default_width)
@@ -103,7 +107,7 @@ local function writecfg()
 	for _, t in ipairs(tallies) do
 		cfg = cfg .. t:serialize()
 	end
-	cfg = ("return {\n%s\n}"):format(cfg)
+	cfg = cfg_pattern:format(cfg)
 	io.open(tallyfile, "w"):write(cfg):close()
 end
 
@@ -212,8 +216,8 @@ local function newwin()
 		icon_name = "edit-delete-symbolic",
 		tooltip_text = _ "Delete selected counters",
 		visible = false,
+		css_classes = { "destructive-action" },
 	}
-	delbtn:add_css_class "destructive-action"
 	local searchbtn = Gtk.ToggleButton {
 		icon_name = "system-search-symbolic",
 		tooltip_text = _ "Filter counters by name and/or color",
@@ -244,8 +248,9 @@ local function newwin()
 	local searchcolorbox = Gtk.Box {
 		orientation = "HORIZONTAL",
 		spacing = 6,
+		css_classes = { "colorselector" },
 	}
-	searchcolorbox:add_css_class "colorselector"
+
 	local filtcolors = {}
 	local searchcolorchecks = {}
 
@@ -254,9 +259,9 @@ local function newwin()
 		spacing = 6,
 		margin_top = 6,
 		margin_bottom = 6,
+		searchentry,
+		searchcolorbox,
 	}
-	searchbox:append(searchentry)
-	searchbox:append(searchcolorbox)
 
 	local searchbar = Gtk.SearchBar {
 		child = searchbox,
@@ -272,9 +277,8 @@ local function newwin()
 		selection_mode = "NONE",
 		valign = "START",
 		visible = false,
+		css_classes = { "tally-list", "boxed-list" },
 	}
-	lbox:add_css_class "tally-list"
-	lbox:add_css_class "boxed-list"
 	lbox:set_filter_func(function(row)
 		if not searchbar.search_mode_enabled then return true end
 		if #searchentry.text == 0 and not filtcolors.active then return true end
@@ -310,9 +314,9 @@ local function newwin()
 		},
 		tooltip_text = _ "Add this counter to the list",
 		halign = "CENTER",
+		sensitive = false,
+		css_classes = { "suggested-action" },
 	}
-	createbtn:add_css_class "suggested-action"
-	createbtn.sensitive = false
 
 	local nameentry = Gtk.Entry {
 		placeholder_text = _ "Name",
@@ -330,8 +334,8 @@ local function newwin()
 	local tallycolorbox = Gtk.Box {
 		orientation = "HORIZONTAL",
 		spacing = 6,
+		css_classes = { "colorselector" },
 	}
-	tallycolorbox:add_css_class "colorselector"
 	local newsystemcheckbtn = Gtk.CheckButton {
 		tooltip_text = lib.getcolorname(), -- Defaults to "No color"
 	}
