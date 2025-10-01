@@ -186,7 +186,8 @@ local aboutwin = Adw.AboutDialog {
 aboutwin:add_link(_ "Translate this app!", "https://github.com/vtrlx/tally?tab=readme-ov-file#localization")
 aboutwin:add_link(_ "Send a tip!", "https://liberapay.com/vtrlx/")
 aboutwin.release_notes = [[
-<p>Fixed a bug preventing a counter from being renamed after dragging and dropping it to another place in the list.</p>
+<p>Tally's state is now saved whenever changes are made, instead of when the app is closed. This fixes an issue where changes to counters would be reverted when shutting down the computer without closing the app first.</p>
+<p>This update also brings Tally to version 49 of the GNOME platform.</p>
 ]]
 
 local function newshortcutwindow(parent)
