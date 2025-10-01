@@ -52,9 +52,11 @@ end
 
 -- SECTION: Imports and app initialization
 
--- Load packages from Flatpak only. If the Flatpak is broken, the application should not even attempt to load libraries from the system.
-package.cpath = "/app/lib/lua/5.4/?.so"
-package.path = "/app/share/lua/5.4/?.lua"
+do -- Update package paths so they only use Flatpak
+	local vernum = _VERSION:gsub("Lua ", "")
+	package.cpath = ("/app/lib/lua/%s/?.so"):format(vernum)
+	package.path = ("/app/share/lua/%s/?.lua;/app/share/lua/%s/?/init.lua"):format(vernum, vernum)
+end
 
 local LuaGObject = require "LuaGObject"
 local Adw = LuaGObject.require "Adw"
@@ -89,9 +91,11 @@ local tally, tallies, tallyrows = table.unpack(lib.load_counter())
 local cfgdir = os.getenv "XDG_CONFIG_HOME"
 local tallydir = cfgdir .. "/tally"
 local tallyfile = tallydir .. "/tally"
+local tallynext = tallydir .. "/tallynext"
 
 local app_window
 local saved_data = {}
+local queued_write_count = 0
 
 local cfg_pattern = [[
 return {
@@ -100,6 +104,7 @@ return {
 ]]
 
 local function writecfg()
+	queued_write_count = 0
 	local cfg = ""
 	cfg = cfg .. ("width = %d,\n"):format(app_window.default_width)
 	cfg = cfg .. ("height = %d,\n"):format(app_window.default_height)
@@ -108,14 +113,41 @@ local function writecfg()
 		cfg = cfg .. t:serialize()
 	end
 	cfg = cfg_pattern:format(cfg)
-	io.open(tallyfile, "w"):write(cfg):close()
+	-- Write to a backup file first…
+	io.open(tallynext, "w"):write(cfg):close()
+	-- …then, move the backup to the destination. This is a clean operation which should prevent unfinished disk writes from clobbering data. In practice, this doesn't matter.
+	os.rename(tallynext, tallyfile)
+end
+
+-- Writes the config file 10 seconds from when this function is called. If another write is queued or if a write is successful, this also aborts.
+function lib.queuewrite()
+	queued_write_count = queued_write_count + 1
+	-- Try to write in 1 second, if another write hasn't already been queued.
+	GLib.timeout_add(GLib.PRIORITY_DEFAULT, 1000, function()
+		-- Already wrote, no need to write again.
+		if queued_write_count == 0 then return end
+		queued_write_count = queued_write_count - 1
+		if queued_write_count == 0 then
+			writecfg()
+		end
+	end)
 end
 
 local function readcfg()
-	local cfg = io.open(tallyfile):read "a"
-	local f, err = load(cfg)
-	-- Unable to read saved tallies, so just start the program with an empty list.
-	if not f then return end
+	local cfg, f, err
+	-- If temporary config still exists, try reading from it first.
+	if fileexists(tallynext) then
+		cfg = io.open(tallynext):read "a"
+		f, err = load(cfg)
+		-- If there's a syntax error, then the config is broken, so the old config should be loaded instead.
+		if not f then cfg = nil end
+	end
+	if not cfg then
+		cfg = io.open(tallyfile):read "a"
+		f, err = load(cfg)
+		-- If the config file doesn't exist, return.
+		if not f then return end
+	end
 	saved_data = f()
 	assert(type(saved_data) == "table")
 	for _, v in ipairs(saved_data) do
@@ -216,7 +248,7 @@ local function newwin()
 		icon_name = "edit-delete-symbolic",
 		tooltip_text = _ "Delete selected counters",
 		visible = false,
-		css_classes = { "destructive-action" },
+		extra_css_classes = { "destructive-action" },
 	}
 	local searchbtn = Gtk.ToggleButton {
 		icon_name = "system-search-symbolic",
@@ -248,7 +280,7 @@ local function newwin()
 	local searchcolorbox = Gtk.Box {
 		orientation = "HORIZONTAL",
 		spacing = 6,
-		css_classes = { "colorselector" },
+		extra_css_classes = { "colorselector" },
 	}
 
 	local filtcolors = {}
@@ -277,7 +309,7 @@ local function newwin()
 		selection_mode = "NONE",
 		valign = "START",
 		visible = false,
-		css_classes = { "tally-list", "boxed-list" },
+		extra_css_classes = { "tally-list", "boxed-list" },
 	}
 	lbox:set_filter_func(function(row)
 		if not searchbar.search_mode_enabled then return true end
@@ -315,7 +347,7 @@ local function newwin()
 		tooltip_text = _ "Add this counter to the list",
 		halign = "CENTER",
 		sensitive = false,
-		css_classes = { "suggested-action" },
+		extra_css_classes = { "suggested-action" },
 	}
 
 	local nameentry = Gtk.Entry {
@@ -334,7 +366,7 @@ local function newwin()
 	local tallycolorbox = Gtk.Box {
 		orientation = "HORIZONTAL",
 		spacing = 6,
-		css_classes = { "colorselector" },
+		extra_css_classes = { "colorselector" },
 	}
 	local newsystemcheckbtn = Gtk.CheckButton {
 		tooltip_text = lib.getcolorname(), -- Defaults to "No color"
@@ -401,6 +433,7 @@ local function newwin()
 			local t = tallies[idx]
 			if t.checked then t:delete() end
 		end
+		writecfg()
 		checkbtn.active = false
 	end
 	function searchentry:on_search_changed()
@@ -457,6 +490,7 @@ local function newwin()
 		GLib.timeout_add(GLib.PRIORITY_DEFAULT, 20, scroll_to_bottom)
 		popover:popdown()
 		t.row:grab_focus()
+		writecfg()
 	end
 	nameentry.on_activate = do_create
 	createbtn.on_clicked = do_create

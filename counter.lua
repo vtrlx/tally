@@ -70,6 +70,7 @@ local counter = newclass(function(self, param)
 	function self.spinbtn.on_notify.value()
 		self.value = self.spinbtn.value
 		self.countlabel.label = ("%d"):format(self.value)
+		lib.queuewrite()
 	end
 	if param and param.color then
 		self:setcolor(param.color)
@@ -136,6 +137,7 @@ local counter = newclass(function(self, param)
 		table.remove(counters, source_position + 1)
 		local sourcetally = counterrows[widget]
 		table.insert(counters, target_position + 1, sourcetally)
+		lib.queuewrite()
 		return true
 	end
 
@@ -153,9 +155,6 @@ local counter = newclass(function(self, param)
 	-- Force the contents of the suffix box to align right when the spinbutton is made invisible.
 	local suffixbox = self.row.child:get_last_child()
 	suffixbox.hexpand = true
---	suffixbox.halign = "END"
-
-	self:read()
 end)
 
 function counter:read()
@@ -208,10 +207,12 @@ function counter:gencolorcheck(color, group)
 	local checkbtn = Gtk.CheckButton {
 		group = group,
 		tooltip_text = lib.getcolorname(color),
+		active = (color or "system") == self:getcolor(),
 	}
 	if color then checkbtn:add_css_class(color) end
 	function checkbtn.on_notify.active()
 		self:setcolor(color)
+		lib.queuewrite()
 	end
 	return checkbtn
 end
@@ -221,14 +222,12 @@ function counter:colorrow()
 		orientation = "HORIZONTAL",
 		spacing = 6,
 		valign = "CENTER",
-		css_classes = { "colorselector" },
+		extra_css_classes = { "colorselector" },
 	}
 	local system = self:gencolorcheck()
 	box:append(system)
 	for _, color in ipairs { "red", "orange", "yellow", "green", "blue", "purple" } do
-		local check = self:gencolorcheck(color, system)
-		if self.color == color then check.active = true end
-		box:append(check)
+		box:append(self:gencolorcheck(color, system))
 	end
 	if not self.color then system.active = true end
 	return box
@@ -275,7 +274,7 @@ function counter:createmenu(row)
 		orientation = "VERTICAL",
 		margin_top = 6,
 		margin_bottom = 6,
-		css_classes = { "linked", "vertical" },
+		extra_css_classes = { "linked", "vertical" },
 		topbtn,
 		bottombtn,
 	}
@@ -303,7 +302,7 @@ function counter:createmenu(row)
 		orientation = "VERTICAL",
 		margin_top = 6,
 		margin_bottom = 6,
-		css_classes = { "linked", "vertical" },
+		extra_css_classes = { "linked", "vertical" },
 		upbtn,
 		downbtn,
 	}
@@ -320,7 +319,7 @@ function counter:createmenu(row)
 		justify_last_line = true,
 		halign = "CENTER",
 		valign = "CENTER",
-		css_classes = { "header" },
+		extra_css_classes = { "header" },
 		tbbox,
 		udbox,
 		mbox,
@@ -352,6 +351,7 @@ function counter:createmenu(row)
 		row:remove_css_class "error"
 		self.name = entry.text
 		row.title = entry.text
+		lib.queuewrite()
 	end
 
 	function upbtn.on_clicked()
@@ -367,6 +367,7 @@ function counter:createmenu(row)
 				table.insert(counters, rindex + 1, self)
 				lbox:remove(row)
 				lbox:insert(row, rindex)
+				lib.queuewrite()
 				GLib.timeout_add(GLib.PRIORITY_DEFAULT, 50, function() self:scroll() end)
 				return
 			end
@@ -386,6 +387,7 @@ function counter:createmenu(row)
 				table.insert(counters, rindex + 1, self)
 				lbox:remove(row)
 				lbox:insert(row, rindex)
+				lib.queuewrite()
 				GLib.timeout_add(GLib.PRIORITY_DEFAULT, 50, function() self:scroll() end)
 				return
 			end
@@ -399,6 +401,7 @@ function counter:createmenu(row)
 		local lbox = row.parent
 		lbox:remove(row)
 		lbox:prepend(row)
+		lib.queuewrite()
 		GLib.timeout_add(GLib.PRIORITY_DEFAULT, 50, function() self:scroll() end)
 	end
 
@@ -408,6 +411,7 @@ function counter:createmenu(row)
 		local lbox = row.parent
 		lbox:remove(row)
 		lbox:append(row)
+		lib.queuewrite()
 		GLib.timeout_add(GLib.PRIORITY_DEFAULT, 50, function() self:scroll() end)
 	end
 
@@ -429,13 +433,13 @@ function counter:popout()
 		label = ("%d"):format(self.spinbtn.value),
 		width_request = 240,
 		halign = "CENTER",
-		css_classes = { "numeric" },
+		extra_css_classes = { "numeric" },
 	}
 	local decbtn = Gtk.Button {
 		icon_name = "value-decrease-symbolic",
 		sensitive = self.spinbtn.value > 0,
 		tooltip_text = _ "Decrement by 1",
-		css_classes = { "circular" },
+		extra_css_classes = { "circular" },
 		on_clicked = function()
 			self.spinbtn.value = self.spinbtn.value - 1
 		end,
@@ -444,7 +448,7 @@ function counter:popout()
 		icon_name = "value-increase-symbolic",
 		sensitive = self.spinbtn.value < 1000000,
 		tooltip_text = _ "Increment by 1",
-		css_classes = { "circular" },
+		extra_css_classes = { "circular" },
 		on_clicked = function()
 			self.spinbtn.value = self.spinbtn.value + 1
 		end,
@@ -466,7 +470,7 @@ function counter:popout()
 		orientation = "VERTICAL",
 		spacing = 24,
 		valign = "CENTER",
-		css_classes = { "popout" },
+		extra_css_classes = { "popout" },
 		countlabel,
 		countbox,
 	}
@@ -535,6 +539,7 @@ function counter:delete()
 	if not lbox then return end
 	table.remove(counters, self.row:get_index() + 1)
 	lbox:remove(self.row)
+	lib.queuewrite()
 	if not lbox:get_row_at_index(0) then lbox.visible = false end
 end
 
