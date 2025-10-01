@@ -57,21 +57,17 @@ lua_gettext(lua_State *L)
 }
 
 /* Define a Lua function called lua_load_<name> which which returns the results from importing the given module. The same module can be imported from the Lua side as well by calling require("<name>"). The macro assumes that there is Lua bytecode named <name>.bytecode being linked to the main program. */
-#define LUAMOD(name) \
-	extern char _binary_##name##_bytecode_start[]; \
-	extern char _binary_##name##_bytecode_end[]; \
+#define LUAMOD(name, code, len) \
 	static int \
 	lua_load_##name (lua_State *L) \
 	{ \
-		size_t len, stack_size; \
+		size_t stack_size; \
 		int lua_result, num_returns; \
-		len = ((size_t)_binary_##name##_bytecode_end) - \
-			((size_t)_binary_##name##_bytecode_start); \
 		lua_getglobal(L, "package"); \
 		lua_getfield(L, -1, "loaded"); \
 		lua_remove(L, -2); \
 		lua_result = luaL_loadbuffer(L, \
-			_binary_##name##_bytecode_start, \
+			code, \
 			len, \
 			QUOTE(name)); \
 		if (lua_result != LUA_OK) \
@@ -84,7 +80,11 @@ lua_gettext(lua_State *L)
 		return 1; \
 	}
 
-LUAMOD(counter)
+/* Unfortunately, #embed must be used outside the macro. */
+static const char counter_bytecode[] = {
+#embed "counter.bytecode"
+};
+LUAMOD(counter, counter_bytecode, sizeof (counter_bytecode))
 
 static const luaL_Reg mainlib[] = {
 	{ "get_is_devel", lua_get_is_devel },
@@ -95,17 +95,16 @@ static const luaL_Reg mainlib[] = {
 	{ NULL, NULL },
 };
 
-extern char _binary_main_bytecode_start[];
-extern char _binary_main_bytecode_end[];
+const char main_bytecode[] = {
+#embed "main.bytecode"
+};
 
 int
 main()
 {
 	lua_State *L;
-	size_t main_bytecode_len;
 	int lua_result;
 
-	/* This line is enough to tell Adwaita to be French. */
 	setlocale(LC_ALL, "");
 	/* Tells gettext where to look for messages files. Dest should be /app/share/locale/<lang>/LC_MESSAGES/<domain>.mo */
 	bindtextdomain("messages", "/app/share/locale");
@@ -122,9 +121,7 @@ main()
 	lua_settable(L, -3);
 	lua_remove(L, -1);
 
-	main_bytecode_len = ((size_t)_binary_main_bytecode_end) - ((size_t)_binary_main_bytecode_start);
-
-	lua_result = luaL_loadbuffer(L, _binary_main_bytecode_start, main_bytecode_len, APP_ID);
+	lua_result = luaL_loadbuffer(L, main_bytecode, sizeof (main_bytecode), APP_ID);
 	switch (lua_result) {
 	case LUA_OK:
 		lua_call(L, 0, 0);

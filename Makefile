@@ -12,11 +12,14 @@ PREFIX = /app
 CSRCS = $(wildcard *.c)
 LSRCS = $(wildcard *.lua)
 POTFILE = po/MESSAGES.pot
-MSGS = $(wildcard po/*.po)
-MSGDEST = $(patsubst po/%.po, $(PREFIX)/share/locale/%/LC_MESSAGES/messages.mo, $(MSGS))
+POFILES = $(wildcard po/*.po)
+MOFILES = \
+	$(patsubst po/%.po, \
+	locale/%/LC_MESSAGES/messages.mo, \
+	$(POFILES))
 
 BIN = tally
-OBJS = $(patsubst %.lua, %_bytecode.o, $(LSRCS))
+BYTECODE = $(patsubst %.lua, %.bytecode, $(LSRCS))
 LIBS = -llua -ldl -lm -Wl,-E
 CFLAGS += -L$(PREFIX)/lib $(LIBS) -DPACKAGE="$(APPID)" -DVERSION="$(VERSION)"
 
@@ -27,20 +30,14 @@ METAINFO = $(APPID).metainfo.xml
 
 all: $(BIN)
 
-$(BIN): $(CSRCS) $(OBJS)
-	cc -o $@ $^ -L/app/lib $(CFLAGS)
-
-%_bytecode.o: %.bytecode
-	ld -r -b binary -o $@ $^
+$(BIN): $(CSRCS) $(BYTECODE)
+	cc -o $@ $(CSRCS) -L/app/lib $(CFLAGS)
 
 %.bytecode: %.lua
 	luac -o $@ -- $^
 
-$(PREFIX)/share/locale/%/LC_MESSAGES/messages.mo: po/%.mo
+locale/%/LC_MESSAGES/messages.mo: po/%.po
 	@mkdir -p `dirname $@`
-	cp $< $@
-
-po/%.mo: po/%.po
 	msgfmt $< -o $@
 
 po/%.po: $(POTFILE)
@@ -53,10 +50,12 @@ po/MESSAGES.pot: $(LSRCS) $(CSRCS)
 .PHONY: clean install
 
 clean:
+	rm -rf locale
 	rm -f tally tally_bytecode.o tally.bytecode
 
-install: $(BIN) $(MSGDEST)
+install: $(BIN) $(MOFILES)
 	install -D -m 0755 -t $(PREFIX)/bin $<
+	cp -r locale $(PREFIX)/share
 	install -D -m 0644 -t $(PREFIX)/share/applications $(DESKTOP_FILE)
 	install -D -m 0644 -t $(PREFIX)/share/icons/hicolor/scalable/apps icons/$(ICON)
 	install -D -m 0644 -t $(PREFIX)/share/icons/hicolor/symbolic/apps icons/$(SYMBOLIC)
