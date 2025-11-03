@@ -351,6 +351,9 @@ function counter:createmenu(row)
 		row:remove_css_class "error"
 		self.name = entry.text
 		row.title = entry.text
+		if self.zoomwin then
+			self.zoomwin.title = entry.text .. " — " .. lib.gettext "Tally"
+		end
 		lib.queuewrite()
 	end
 
@@ -496,6 +499,7 @@ function counter:popout()
 	self.zoomwin = Adw.ApplicationWindow {
 		application = lib.app,
 		content = content,
+		title = self.name .. " — " .. _ "Tally",
 		hide_on_close = true,
 		default_width = 400,
 		default_height = 300,
