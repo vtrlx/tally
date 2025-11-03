@@ -485,8 +485,11 @@ function counter:popout()
 		halign = "CENTER",
 		numbox,
 	}
+	local handle = Gtk.WindowHandle {
+		child = box,
+	}
 	local content = Adw.ToolbarView {
-		content = box,
+		content = handle,
 		width_request = 300,
 		top_bars = headerbar,
 	}
