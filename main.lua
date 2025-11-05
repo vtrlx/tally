@@ -186,8 +186,10 @@ local aboutwin = Adw.AboutDialog {
 aboutwin:add_link(_ "Translate this app!", "https://github.com/vtrlx/tally?tab=readme-ov-file#localization")
 aboutwin:add_link(_ "Send a tip!", "https://liberapay.com/vtrlx/")
 aboutwin.release_notes = [[
-<p>Tally's state is now saved whenever changes are made, instead of when the app is closed. This fixes an issue where changes to counters would be reverted when shutting down the computer without closing the app first.</p>
-<p>This update also brings Tally to version 49 of the GNOME platform.</p>
+<ul>
+<li>Standalone counter windows can now be dragged from anywhere within the window, instead of only the title bar.</li>
+<li>Standalone counter windows now display a suitable title in the GNOME overview.</li>
+</ul>
 ]]
 
 local function newshortcutwindow(parent)

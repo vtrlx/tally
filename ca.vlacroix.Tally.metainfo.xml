@@ -11,6 +11,14 @@
 	<content_rating type="oars-1.1" />
 
 	<releases>
+		<release version="0.7.1" date="2025-11-05">
+			<description>
+				<ul>
+<li>Standalone counter windows can now be dragged from anywhere within the window, instead of only the title bar.</li>
+<li>Standalone counter windows now display a suitable title in the GNOME overview.</li>
+				</ul>
+			</description>
+		</release>
 		<release version="0.7" date="2025-10-01">
 			<description>
 				<p>Tally's state is now saved whenever changes are made, instead of when the app is closed. This fixes an issue where changes to counters would be reverted when shutting down the computer without closing the app first.</p>

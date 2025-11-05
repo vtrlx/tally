@@ -1,5 +1,5 @@
 PACKAGE = ca.vlacroix.Tally
-VERSION = 0.7
+VERSION = 0.7.1
 
 APPID = $(PACKAGE)
 ifdef DEVEL
