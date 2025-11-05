@@ -10,6 +10,16 @@ This application is a tally counter for the GNOME desktop on Linux.
 
 [![Get it on Flathub](https://flathub.org/api/badge?svg&locale=en)](https://flathub.org/apps/ca.vlacroix.Tally)
 
+## Contributing
+
+When interacting with this project, please follow the [GNOME Code of Conduct](https://conduct.gnome.org/).
+
+Issues with the app can be reported [on GitHub](https://github.com/vtrlx/tally/issues) or [via email](mailto:issue@vtrlx.ca?subject=Issue with Tally app).
+
+Code submissions may be done as Pull Requests [on GitHub](https://github.com/vtrlx/tally/pulls).
+
+Additionally, please do not spam this repository with ChatGPT, Copilot, or similar software.
+
 ## Building
 
 Build with [Flatpak Builder](https://docs.flatpak.org/en/latest/flatpak-builder.html).
