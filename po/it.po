@@ -1,0 +1,196 @@
+# ITALIAN TRANSLATION.  
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER  
+# This file is distributed under the same license as the PACKAGE package.  
+# ALBANO BATTISTELLA <albanobattistella@gmail.com>, 2025.  
+#  
+msgid ""  
+msgstr ""  
+"Project-Id-Version: PACKAGE VERSION\n"  
+"Report-Msgid-Bugs-To: \n"  
+"POT-Creation-Date: 2025-06-21 14:51-0400\n"  
+"PO-Revision-Date: 2025-11-06 20:30+0200\n"  
+"Last-Translator: Albano Battistella <albanobattistella@gmail.com>\n"  
+"Language-Team: Italian <LL@li.org>\n"  
+"Language: it\n"  
+"MIME-Version: 1.0\n"  
+"Content-Type: text/plain; charset=UTF-8\n"  
+"Content-Transfer-Encoding: 8bit\n"  
+   
+#: counter.lua:240 main.lua:318  
+msgid "Name"  
+msgstr "Nome"  
+   
+#: counter.lua:246  
+msgid "Color"  
+msgstr "Colore"  
+   
+#: counter.lua:255  
+msgid "Move to top"  
+msgstr "Sposta in cima"  
+   
+#: counter.lua:258  
+msgid "Move counter to the top of the current list"  
+msgstr "Sposta il contatore in cima alla lista corrente"  
+   
+#: counter.lua:264  
+msgid "Move to bottom"  
+msgstr "Sposta in fondo"  
+   
+#: counter.lua:267  
+msgid "Move counter to the bottom of the current list"  
+msgstr "Sposta il contatore in fondo alla lista corrente"  
+   
+#: counter.lua:282  
+msgid "Move up"  
+msgstr "Sposta su"  
+   
+#: counter.lua:285  
+msgid "Move counter to just above the previous row"  
+msgstr "Sposta il contatore appena sopra la riga precedente"  
+   
+#: counter.lua:292  
+msgid "Move down"  
+msgstr "Sposta giù"  
+   
+#: counter.lua:295  
+msgid "Move counter to just below the next row"  
+msgstr "Sposta il contatore appena sotto la riga successiva"  
+   
+#: counter.lua:327  
+msgid "Create a new window for this counter"  
+msgstr "Crea una nuova finestra per questo contatore"  
+   
+#: counter.lua:334  
+msgid "Show in a separate window"  
+msgstr "Mostra in una finestra separata"  
+   
+#: counter.lua:417 main.lua:140 main.lua:232 main.lua:486  
+msgid "Tally"  
+msgstr "Contatore"  
+   
+#: counter.lua:431  
+msgid "Decrement by 1"  
+msgstr "Decrementa di 1"  
+   
+#: counter.lua:440  
+msgid "Increment by 1"  
+msgstr "Incrementa di 1"  
+   
+#: main.lua:37  
+msgid "No color"  
+msgstr "Nessun colore"  
+   
+#: main.lua:39  
+msgid "Red"  
+msgstr "Rosso"  
+   
+#: main.lua:41  
+msgid "Orange"  
+msgstr "Arancione"  
+   
+#: main.lua:43  
+msgid "Yellow"  
+msgstr "Giallo"  
+   
+#: main.lua:45  
+msgid "Green"  
+msgstr "Verde"  
+   
+#: main.lua:47  
+msgid "Blue"  
+msgstr "Blu"  
+   
+#: main.lua:49  
+msgid "Purple"  
+msgstr "Viola"  
+   
+#: main.lua:146  
+msgid "translator-credits"  
+msgstr "Albano Battistella"  
+   
+#: main.lua:150  
+msgid "Translate this app!"  
+msgstr "Traduci questa app!"  
+   
+#: main.lua:151  
+msgid "Send a tip!"  
+msgstr "Invia una mancia!"  
+   
+#: main.lua:152  
+msgid ""  
+"<p>Various enhancements have been made to allow Tally to be used with a "  
+"screen reader. Keyboard shortcuts for closing counter windows have been "  
+"added.</p>\n"  
+msgstr ""  
+"<p>Sono stati apportati diversi miglioramenti per consentire l'utilizzo di "  
+"Tally con un lettore di schermo. Sono state aggiunte scorciatoie da tastiera "  
+"per chiudere le finestre dei contatori.</p>\n"  
+   
+#: main.lua:157  
+msgid "Main Window"  
+msgstr "Finestra Principale"  
+   
+#: main.lua:160 main.lua:177  
+msgid "Quit Application"  
+msgstr "Esci dall'applicazione"  
+   
+#: main.lua:165 main.lua:200  
+msgid "Keyboard Shortcuts"  
+msgstr "Scorciatoie da Tastiera"  
+   
+#: main.lua:170 main.lua:201  
+msgid "About Tally"  
+msgstr "Informazioni su Tally"  
+   
+#: main.lua:174  
+msgid "Counter Window"  
+msgstr "Finestra Contatore"  
+   
+#: main.lua:182  
+msgid "Close Window"  
+msgstr "Chiudi Finestra"  
+   
+#: main.lua:209  
+msgid "Create a new counter"  
+msgstr "Crea un nuovo contatore"  
+   
+#: main.lua:213  
+msgid "Delete selected counters"  
+msgstr "Elimina i contatori selezionati"  
+   
+#: main.lua:219  
+msgid "Filter counters by name and/or color"  
+msgstr "Filtra i contatori per nome e/o colore"  
+   
+#: main.lua:224  
+msgid "Menu"  
+msgstr "Menu"  
+   
+#: main.lua:228 main.lua:384  
+msgid "Select counters to delete"  
+msgstr "Seleziona i contatori da eliminare"  
+   
+#: main.lua:241  
+msgid "Filter by name…"  
+msgstr "Filtra per nome…"  
+   
+#: main.lua:309  
+msgid "Add to list"  
+msgstr "Aggiungi alla lista"  
+   
+#: main.lua:311  
+msgid "Add this counter to the list"  
+msgstr "Aggiungi questo contatore alla lista"  
+   
+#: main.lua:380  
+msgid "Stop selecting without deleting anything"  
+msgstr "Interrompi la selezione senza eliminare nulla"  
+   
+#: main.c:134  
+#, c-format  
+msgid ""  
+"An unrecoverable error occurred when loading Tally, preventing the program "  
+"from starting.\n"  
+msgstr ""  
+"Si è verificato un errore irrecuperabile durante il caricamento di Tally, "  
+"impedendo l'avvio del programma.\n"  
