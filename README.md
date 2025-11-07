@@ -52,7 +52,7 @@ This command creates a file in the `po/` folder named `<LANG>.po`.
 
 Next, edit the `<LANG>.po` file and add your translated strings. I recommend using [Translation Editor](https://flathub.org/apps/org.gnome.Gtranslator) for this.
 
-The last strings to localize are for the `ca.vlacroix.Tally.desktop` file. Add new lines for the `Comment`, `Keywords`, and (if applicable) `Name` keys. Be sure to keep the translated lines in alphabetical order with respect to the language codes.
+The last strings to localize are for the **ca.vlacroix.Tally.desktop** and **ca.vlacroix.Tally.Devel.desktop** files. Add new lines for the `Comment`, `Keywords`, and (if applicable) `Name` keys. Be sure to keep the translated lines in alphabetical order with respect to the language codes.
 
 Once finished, try running Tally in your language using the [testing instructions](https://github.com/vtrlx/tally?tab=readme-ov-file#building) above. If all the strings appear to have been translated, commit your finished `<LANG>.po` file to Git, push the commit to a branch under your control, and submit a pull request [on GitHub](https://github.com/vtrlx/tally/pulls).
 
