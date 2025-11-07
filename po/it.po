@@ -123,7 +123,7 @@ msgid ""
 "added.</p>\n"  
 msgstr ""  
 "<p>Sono stati apportati diversi miglioramenti per consentire l'utilizzo di "  
-"Tally con un lettore di schermo. Sono state aggiunte scorciatoie da tastiera "  
+"Contatore con un lettore di schermo. Sono state aggiunte scorciatoie da tastiera "  
 "per chiudere le finestre dei contatori.</p>\n"  
    
 #: main.lua:157  
@@ -140,7 +140,7 @@ msgstr "Scorciatoie da Tastiera"
    
 #: main.lua:170 main.lua:201  
 msgid "About Tally"  
-msgstr "Informazioni su Tally"  
+msgstr "Informazioni su Contatore"  
    
 #: main.lua:174  
 msgid "Counter Window"  
@@ -192,5 +192,5 @@ msgid ""
 "An unrecoverable error occurred when loading Tally, preventing the program "  
 "from starting.\n"  
 msgstr ""  
-"Si è verificato un errore irrecuperabile durante il caricamento di Tally, "  
+"Si è verificato un errore irrecuperabile durante il caricamento di Contatore, "  
 "impedendo l'avvio del programma.\n"  
