@@ -186,10 +186,7 @@ local aboutwin = Adw.AboutDialog {
 aboutwin:add_link(_ "Translate this app!", "https://github.com/vtrlx/tally?tab=readme-ov-file#localization")
 aboutwin:add_link(_ "Send a tip!", "https://liberapay.com/vtrlx/")
 aboutwin.release_notes = [[
-<ul>
-<li>Standalone counter windows can now be dragged from anywhere within the window, instead of only the title bar.</li>
-<li>Standalone counter windows now display a suitable title in the GNOME overview.</li>
-</ul>
+<p>An Italian translation has been added.</p>
 ]]
 
 local function newshortcutwindow(parent)
