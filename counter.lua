@@ -88,7 +88,7 @@ local counter = newclass(function(self, param)
 		end
 	end
 
-	self.draghdl = Gtk.Image.new_from_icon_name "list-drag-handle-symbolic"
+	self.draghdl = Gtk.Image.new_from_icon_name "drag-handle-symbolic"
 	self.draghdl:add_css_class "drag-handle"
 
 	local src = Gtk.DragSource {
@@ -254,7 +254,7 @@ function counter:createmenu(row)
 
 	local topbtn = Gtk.Button {
 		child = Adw.ButtonContent {
-			icon_name = "go-top-symbolic",
+			icon_name = "move-top-symbolic",
 			label = _ "Move to top",
 			halign = "START",
 		},
@@ -263,7 +263,7 @@ function counter:createmenu(row)
 	}
 	local bottombtn = Gtk.Button {
 		child = Adw.ButtonContent {
-			icon_name = "go-bottom-symbolic",
+			icon_name = "move-bottom-symbolic",
 			label = _ "Move to bottom",
 			halign = "START",
 		},
@@ -281,7 +281,7 @@ function counter:createmenu(row)
 
 	local upbtn = Gtk.Button {
 		child = Adw.ButtonContent {
-			icon_name = "go-up-symbolic",
+			icon_name = "move-up-symbolic",
 			label = _ "Move up",
 			halign = "START",
 		},
@@ -291,7 +291,7 @@ function counter:createmenu(row)
 	}
 	local downbtn = Gtk.Button {
 		child = Adw.ButtonContent {
-			icon_name = "go-down-symbolic",
+			icon_name = "move-down-symbolic",
 			label = _ "Move down",
 			halign = "START",
 		},
@@ -328,7 +328,7 @@ function counter:createmenu(row)
 	row:add_row(mbox)
 
 	local popoutbtn = Gtk.Button {
-		icon_name = "window-new-symbolic",
+		icon_name = "pop-out-symbolic",
 		tooltip_text = _ "Create a new window for this counter",
 		halign = "END",
 		hexpand = true,
@@ -439,7 +439,7 @@ function counter:popout()
 		extra_css_classes = { "numeric" },
 	}
 	local decbtn = Gtk.Button {
-		icon_name = "value-decrease-symbolic",
+		icon_name = "minus-symbolic",
 		sensitive = self.spinbtn.value > 0,
 		tooltip_text = _ "Decrement by 1",
 		extra_css_classes = { "circular" },
@@ -448,7 +448,7 @@ function counter:popout()
 		end,
 	}
 	local incbtn = Gtk.Button {
-		icon_name = "value-increase-symbolic",
+		icon_name = "plus-symbolic",
 		sensitive = self.spinbtn.value < 1000000,
 		tooltip_text = _ "Increment by 1",
 		extra_css_classes = { "circular" },
@@ -529,7 +529,7 @@ function counter:duplicate()
 	if self.color then r:add_css_class(self.color) end
 	r.title = self.name
 	spinner.value = self.value
-	local img = Gtk.Image.new_from_icon_name "list-drag-handle-symbolic"
+	local img = Gtk.Image.new_from_icon_name "drag-handle-symbolic"
 	img:add_css_class "drag-handle"
 	r:add_prefix(img)
 	return r

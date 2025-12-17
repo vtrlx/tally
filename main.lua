@@ -68,7 +68,10 @@ local Gio = LuaGObject.require "Gio"
 
 local app_id = lib.get_app_id()
 local is_devel = lib.get_is_devel()
-lib.app = Adw.Application.new(app_id)
+lib.app = Adw.Application {
+	application_id = app_id,
+	resource_base_path = "/ca/vlacroix/Tally", -- Needs to be hardcoded.
+}
 local app = lib.app
 app:set_accels_for_action("win.shortcuts", { "<Ctrl><Shift>question" })
 app:set_accels_for_action("win.about", { "F1" })
@@ -81,6 +84,17 @@ function quit_action:on_activate()
 end
 quit_action.enabled = true
 app:add_action(quit_action)
+
+-- SECTION: GResources
+
+do -- Load and register GResource.
+	local resource, err = Gio.Resource.load "/app/data/tally.gresource"
+	if resource then
+		Gio.resources_register(resource)
+	else
+		print("Failed to load resource", err)
+	end
+end -- Load and register GResource.
 
 -- SECTION: Tally counter class
 
@@ -241,26 +255,26 @@ local function newwin()
 	if app.active_window then return app.active_window end
 
 	local newbtn = Gtk.MenuButton {
-		icon_name = "list-add-symbolic",
+		icon_name = "plus-large-symbolic",
 		tooltip_text = _ "Create a new counter",
 	}
 	local delbtn = Gtk.Button {
-		icon_name = "edit-delete-symbolic",
+		icon_name = "cross-large-circle-outline-symbolic",
 		tooltip_text = _ "Delete selected counters",
 		visible = false,
 		extra_css_classes = { "destructive-action" },
 	}
 	local searchbtn = Gtk.ToggleButton {
-		icon_name = "system-search-symbolic",
+		icon_name = "loupe-large-symbolic",
 		tooltip_text = _ "Filter counters by name and/or color",
 	}
 	local menubtn = Gtk.MenuButton {
-		icon_name = "open-menu-symbolic",
+		icon_name = "menu-large-symbolic",
 		menu_model = tallymenu,
 		tooltip_text = _ "Menu",
 	}
 	local checkbtn = Gtk.ToggleButton {
-		icon_name = "selection-mode-symbolic",
+		icon_name = "check-round-outline-symbolic",
 		tooltip_text = _ "Select counters to delete",
 	}
 
@@ -341,7 +355,7 @@ local function newwin()
 	local newtallycolor
 	local createbtn = Gtk.Button {
 		child = Adw.ButtonContent {
-			icon_name = "list-add-symbolic",
+			icon_name = "plus-large-symbolic",
 			label = _ "Add to list",
 		},
 		tooltip_text = _ "Add this counter to the list",
@@ -599,7 +613,7 @@ local cssbase = [[
 	padding: 2px;
 }
 .colorselector checkbutton radio:checked, .colorselector checkbutton check:checked {
-	-gtk-icon-source: -gtk-icontheme("object-select-symbolic");
+	-gtk-icon-source: -gtk-icontheme("check-mark-symbolic");
 	background-color: @accent_bg_color;
 	color: @accent_fg_color;
 }

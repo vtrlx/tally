@@ -11,6 +11,8 @@ PREFIX = /app
 
 CSRCS = $(wildcard *.c)
 LSRCS = $(wildcard *.lua)
+RESXML = data/tally.gresource.xml
+RES = $(patsubst %.xml, %, $(RESXML))
 POTFILE = po/MESSAGES.pot
 POFILES = $(wildcard po/*.po)
 MOFILES = \
@@ -33,6 +35,9 @@ all: $(BIN)
 $(BIN): $(CSRCS) $(BYTECODE)
 	cc -o $@ $(CSRCS) -L/app/lib $(CFLAGS)
 
+%.gresource: %.gresource.xml
+	glib-compile-resources --target=$@ --sourcedir=data $^
+
 %.bytecode: %.lua
 	luac -o $@ -- $^
 
@@ -53,9 +58,10 @@ clean:
 	rm -rf locale
 	rm -f tally tally_bytecode.o tally.bytecode
 
-install: $(BIN) $(MOFILES)
+install: $(BIN) $(RES) $(MOFILES)
 	install -D -m 0755 -t $(PREFIX)/bin $<
 	cp -r locale $(PREFIX)/share
+	install -D -m 0644 -t $(PREFIX)/data $(RES)
 	install -D -m 0644 -t $(PREFIX)/share/applications $(DESKTOP_FILE)
 	install -D -m 0644 -t $(PREFIX)/share/icons/hicolor/scalable/apps icons/$(ICON)
 	install -D -m 0644 -t $(PREFIX)/share/icons/hicolor/symbolic/apps icons/$(SYMBOLIC)

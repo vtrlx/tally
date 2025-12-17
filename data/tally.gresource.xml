@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+	<gresource prefix="/ca/vlacroix/Tally">
+		<file preprocess="xml-stripblanks">icons/scalable/actions/check-mark-symbolic.svg</file>
+		<file preprocess="xml-stripblanks">icons/scalable/actions/check-round-outline-symbolic.svg</file>
+		<file preprocess="xml-stripblanks">icons/scalable/actions/cross-large-circle-outline-symbolic.svg</file>
+		<file preprocess="xml-stripblanks">icons/scalable/actions/drag-handle-symbolic.svg</file>
+		<file preprocess="xml-stripblanks">icons/scalable/actions/loupe-large-symbolic.svg</file>
+		<file preprocess="xml-stripblanks">icons/scalable/actions/menu-large-symbolic.svg</file>
+		<file preprocess="xml-stripblanks">icons/scalable/actions/minus-symbolic.svg</file>
+		<file preprocess="xml-stripblanks">icons/scalable/actions/move-bottom-symbolic.svg</file>
+		<file preprocess="xml-stripblanks">icons/scalable/actions/move-down-symbolic.svg</file>
+		<file preprocess="xml-stripblanks">icons/scalable/actions/move-top-symbolic.svg</file>
+		<file preprocess="xml-stripblanks">icons/scalable/actions/move-up-symbolic.svg</file>
+		<file preprocess="xml-stripblanks">icons/scalable/actions/plus-large-symbolic.svg</file>
+		<file preprocess="xml-stripblanks">icons/scalable/actions/plus-symbolic.svg</file>
+		<file preprocess="xml-stripblanks">icons/scalable/actions/pop-out-symbolic.svg</file>
+	</gresource>
+</gresources>
