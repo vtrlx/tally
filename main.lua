@@ -184,7 +184,7 @@ local aboutwin = Adw.AboutDialog {
 	website = "https://www.vlacroix.ca/apps/tally/",
 }
 aboutwin:add_link(_ "Translate this app!", "https://github.com/vtrlx/tally?tab=readme-ov-file#localization")
-aboutwin:add_link(_ "Send a tip!", "https://liberapay.com/vtrlx/")
+aboutwin:add_link(_ "Support this app!", "https://liberapay.com/vtrlx/")
 aboutwin.release_notes = [[
 <p>An Italian translation has been added.</p>
 ]]

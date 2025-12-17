@@ -109,7 +109,7 @@ msgstr "Violet"
 
 #: main.lua:146
 msgid "translator-credits"
-msgstr ""
+msgstr "Victoria Lacroix <victoria@vtrlx.ca>"
 
 #: main.lua:150
 msgid "Translate this app!"
