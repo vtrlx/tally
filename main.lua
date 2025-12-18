@@ -200,7 +200,7 @@ local aboutwin = Adw.AboutDialog {
 aboutwin:add_link(_ "Translate this app!", "https://github.com/vtrlx/tally?tab=readme-ov-file#localization")
 aboutwin:add_link(_ "Support this app!", "https://liberapay.com/vtrlx/")
 aboutwin.release_notes = [[
-<p>An Italian translation has been added.</p>
+<p>In-app icons are now supplied by Tally, fixing a bug where icons would not be shown if not provided by the user's operating system.</p>
 ]]
 
 local function newshortcutwindow(parent)

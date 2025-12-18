@@ -12,6 +12,11 @@
 	<content_rating type="oars-1.1" />
 
 	<releases>
+		<release version="0.7.3" date="2025-12-18">
+			<description>
+				<p>In-app icons are now supplied by Tally, fixing a bug where icons would not be shown if not provided by the user's operating system.</p>
+			</description>
+		</release>
 		<release version="0.7.2" date="2025-11-07">
 			<description>
 				<p>An Italian translation has been added.</p>
