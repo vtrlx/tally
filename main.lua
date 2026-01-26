@@ -1,5 +1,5 @@
 --[[ main.lua (Tally counter GNOME app)
-Copyright © 2024–2025 Victoria Lacroix
+Copyright © 2024–2026 Victoria Lacroix
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with this program.  If not, see <https://www.gnu.org/licenses/>. ]]--
@@ -48,6 +48,25 @@ function lib.getcolorname(color)
 	elseif color == "purple" then
 		return _ "Purple"
 	end
+end
+
+-- Simple class implementation without inheritance.
+function lib.newclass(init)
+	local c = {}
+	local mt = {}
+	c.__index = c
+
+	function mt:__call(...)
+		local obj = setmetatable({}, c)
+		init(obj, ...)
+		return obj
+	end
+
+	function c:isa(klass)
+		return getmetatable(self) == klass
+	end
+
+	return setmetatable(c, mt)
 end
 
 -- SECTION: Imports and app initialization
@@ -119,10 +138,13 @@ return {
 
 local function writecfg()
 	queued_write_count = 0
+	local width = app_window.window.default_width
+	local height = app_window.window.default_height
+	local maximized = app_window.window:is_maximized()
 	local cfg = ""
-	cfg = cfg .. ("width = %d,\n"):format(app_window.default_width)
-	cfg = cfg .. ("height = %d,\n"):format(app_window.default_height)
-	cfg = cfg .. ("maximized = %q,\n"):format(app_window:is_maximized())
+	cfg = cfg .. ("width = %d,\n"):format(width)
+	cfg = cfg .. ("height = %d,\n"):format(height)
+	cfg = cfg .. ("maximized = %q,\n"):format(maximized)
 	for _, t in ipairs(tallies) do
 		cfg = cfg .. t:serialize()
 	end
@@ -250,9 +272,11 @@ local tallymenu = Gio.Menu()
 tallymenu:append(_ "Keyboard Shortcuts", "win.shortcuts")
 tallymenu:append(_ "About Tally", "win.about")
 
-local function newwin()
+local window = lib.newclass(function(self)
 	-- Force the window to be unique.
 	if app.active_window then return app.active_window end
+
+	local refreshtoolbar -- Callback which will be defined later.
 
 	local newbtn = Gtk.MenuButton {
 		icon_name = "plus-large-symbolic",
@@ -314,7 +338,7 @@ local function newwin()
 	}
 	searchbar:connect_entry(searchentry)
 	searchbar:bind_property("search-mode-enabled", searchbtn, "active", "BIDIRECTIONAL")
-	-- Despite mapping property names with underscores and providing a lovely syntax for defining signal event handlers, LGI doesn't do both at the same time, so listening to notify requires this syntax.
+	-- Despite mapping property names with underscores and providing a lovely syntax for defining signal event handlers, LuaGObject doesn't do both at the same time, so listening to notify requires this syntax.
 	searchbar.on_notify["search-mode-enabled"] = function()
 		for _, cb in ipairs(searchcolorchecks) do cb.active = false end
 	end
@@ -356,7 +380,7 @@ local function newwin()
 	local createbtn = Gtk.Button {
 		child = Adw.ButtonContent {
 			icon_name = "plus-large-symbolic",
-			label = _ "Add to list",
+			label = _ "Add to List",
 		},
 		tooltip_text = _ "Add this counter to the list",
 		halign = "CENTER",
@@ -449,6 +473,7 @@ local function newwin()
 		end
 		writecfg()
 		checkbtn.active = false
+		self:refreshtoolbar()
 	end
 	function searchentry:on_search_changed()
 		lbox:invalidate_filter()
@@ -483,12 +508,13 @@ local function newwin()
 	multi:add_layout(biglayout)
 	multi:add_layout(smalllayout)
 
-	local scroll = Gtk.ScrolledWindow {
+	self.scrolledwin = Gtk.ScrolledWindow {
 		hscrollbar_policy = "NEVER",
 		child = multi,
 	}
 	local function scroll_to_bottom()
-		scroll.vadjustment.value = scroll.vadjustment.upper
+		self.scrolledwin.vadjustment.value =
+			self.scrolledwin.vadjustment.upper
 	end
 	local function do_create()
 		if #nameentry.text == 0 then return end
@@ -496,7 +522,7 @@ local function newwin()
 			name = nameentry.text,
 			color = newtallycolor,
 		}
-		t.viewport = scroll:get_child()
+		t.viewport = self.scrolledwin:get_child()
 		table.insert(tallies, t)
 		tallyrows[t.row] = t
 		lbox:append(t.row)
@@ -505,63 +531,69 @@ local function newwin()
 		popover:popdown()
 		t.row:grab_focus()
 		writecfg()
+		self:refreshtoolbar()
 	end
 	nameentry.on_activate = do_create
 	createbtn.on_clicked = do_create
 
 	for _, t in ipairs(tallies) do
-		t.viewport = scroll:get_child()
+		t.viewport = self.scrolledwin:get_child()
 	end
 
-	local tbview = Adw.ToolbarView {
-		content = scroll,
+	self.statuspage = Adw.StatusPage {
+		title = _ "No Counters",
+		description = _ "Press the + button above to get started.",
 	}
-	tbview:add_top_bar(header)
-	tbview:add_top_bar(searchbar)
+
+	self.toolbarview = Adw.ToolbarView {
+		content = self.scrolledwin,
+	}
+	self.toolbarview:add_top_bar(header)
+	self.toolbarview:add_top_bar(searchbar)
 
 	local function enlarge()
 		multi.layout = biglayout
 		lbox:remove_css_class "separators"
 		lbox:add_css_class "boxed-list"
-		tbview.top_bar_style = "FLAT"
+		self.toolbarview.top_bar_style = "FLAT"
 	end
 
 	local function shrink()
 		multi.layout = smalllayout
 		lbox:remove_css_class "boxed-list"
 		lbox:add_css_class "separators"
-		tbview.top_bar_style = "RAISED_BORDER"
+		self.toolbarview.top_bar_style = "RAISED_BORDER"
 	end
 
-	local window = Adw.ApplicationWindow {
+	self.window = Adw.ApplicationWindow {
 		application = app,
 		title = _ "Tally",
-		content = tbview,
+		content = self.toolbarview,
 		default_height = 600,
 		default_width = 500,
 		height_request = 294,
 		width_request = 360,
 	}
 	if saved_data.maximized then
-		window:maximize()
+		self.window:maximize()
 	end
 	if saved_data.width and saved_data.height then
-		window.default_width = saved_data.width
-		window.default_height = saved_data.height
+		self.window.default_width = saved_data.width
+		self.window.default_height = saved_data.height
 	end
 
 	local bpcond = Adw.BreakpointCondition.new_length("MAX_WIDTH", 400, "PX")
 	local breakpoint = Adw.Breakpoint.new(bpcond)
 	breakpoint.on_apply = shrink
 	breakpoint.on_unapply = enlarge
-	window:add_breakpoint(breakpoint)
+	self.window:add_breakpoint(breakpoint)
 
 	searchbar.key_capture_widget = window
 	if is_devel then
-		window:add_css_class "devel"
+		self.window:add_css_class "devel"
 	end
 
-	function window:on_close_request()
+	function self.window:on_close_request()
 		for _, t in ipairs(tallies) do
 			if t.zoomwin then
 				t.zoomwin:close()
@@ -571,20 +603,30 @@ local function newwin()
 
 	local shortcuts_action = Gio.SimpleAction.new "shortcuts"
 	function shortcuts_action.on_activate()
-		newshortcutwindow(window):present()
+		newshortcutwindow(self.window):present()
 	end
 	shortcuts_action.enabled = true
-	window:add_action(shortcuts_action)
+	self.window:add_action(shortcuts_action)
 
 	local about_action = Gio.SimpleAction.new "about"
 	function about_action.on_activate()
-		aboutwin:present(window)
+		aboutwin:present(self.window)
 	end
 	about_action.enabled = true
-	window:add_action(about_action)
+	self.window:add_action(about_action)
 
+	self:refreshtoolbar()
 	menubtn:grab_focus()
-	return window
+end)
+
+function window:refreshtoolbar()
+	if #tallies == 0 then
+		self.toolbarview.top_bar_style = "FLAT"
+		self.toolbarview.content = self.statuspage
+	else
+		self.toolbarview.top_bar_style = "RAISED_BORDER"
+		self.toolbarview.content = self.scrolledwin
+	end
 end
 
 -- SECTION: Styles
@@ -794,8 +836,8 @@ function app:on_activate()
 end
 
 function app:on_startup()
-	app_window = newwin()
-	app_window:present()
+	app_window = window()
+	app_window.window:present()
 end
 
 function app:on_shutdown()

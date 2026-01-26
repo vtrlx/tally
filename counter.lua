@@ -16,26 +16,7 @@ local Gio = LuaGObject.require "Gio"
 local counters = {} -- Lua table containing all counters.
 local counterrows = {} -- Lua table associating Gtk.ListBoxRow items to their respective counter.
 
--- Simple class implementation without inheritance.
-local function newclass(init)
-	local c = {}
-	local mt = {}
-	c.__index = c
-
-	function mt:__call(...)
-		local obj = setmetatable({}, c)
-		init(obj, ...)
-		return obj
-	end
-
-	function c:isa(klass)
-		return getmetatable(self) == klass
-	end
-
-	return setmetatable(c, mt)
-end
-
-local counter = newclass(function(self, param)
+local counter = lib.newclass(function(self, param)
 	self.name = "unnamed"
 	self.value = 0
 	if type(param) == "table" then
@@ -253,79 +234,45 @@ function counter:createmenu(row)
 	row:add_row(crow)
 
 	local topbtn = Gtk.Button {
-		child = Adw.ButtonContent {
-			icon_name = "move-top-symbolic",
-			label = _ "Move to top",
-			halign = "START",
-		},
+		icon_name = "move-top-symbolic",
 		tooltip_text = _ "Move counter to the top of the current list",
 		sensitive = not duplicate,
 	}
 	local bottombtn = Gtk.Button {
-		child = Adw.ButtonContent {
-			icon_name = "move-bottom-symbolic",
-			label = _ "Move to bottom",
-			halign = "START",
-		},
+		icon_name = "move-bottom-symbolic",
 		tooltip_text = _ "Move counter to the bottom of the current list",
 		sensitive = not duplicate,
 	}
-	local tbbox = Gtk.Box {
-		orientation = "VERTICAL",
-		margin_top = 6,
-		margin_bottom = 6,
-		extra_css_classes = { "linked", "vertical" },
-		topbtn,
-		bottombtn,
-	}
 
 	local upbtn = Gtk.Button {
-		child = Adw.ButtonContent {
-			icon_name = "move-up-symbolic",
-			label = _ "Move up",
-			halign = "START",
-		},
+		icon_name = "move-up-symbolic",
 		tooltip_text = _ "Move counter to just above the previous row",
 		valign = "CENTER",
 		sensitive = not duplicate,
 	}
 	local downbtn = Gtk.Button {
-		child = Adw.ButtonContent {
-			icon_name = "move-down-symbolic",
-			label = _ "Move down",
-			halign = "START",
-		},
+		icon_name = "move-down-symbolic",
 		tooltip_text = _ "Move counter to just below the next row",
 		sensitive = not duplicate,
 	}
-	local udbox = Gtk.Box {
-		orientation = "VERTICAL",
-		margin_top = 6,
-		margin_bottom = 6,
-		extra_css_classes = { "linked", "vertical" },
+
+	local orderbox = Gtk.Box {
+		orientation = "HORIZONTAL",
+		spacing = 6,
+		halign = "END",
+		valign = "CENTER",
+		topbtn,
 		upbtn,
 		downbtn,
+		bottombtn,
 	}
 
-	local mbox = Adw.WrapBox {
-		orientation = "HORIZONTAL",
-		margin_start = 18,
-		margin_end = 18,
-		margin_top = 6,
-		margin_bottom = 6,
-		child_spacing = 12,
-		line_spacing = 6,
-		justify = "FILL",
-		justify_last_line = true,
-		halign = "CENTER",
-		valign = "CENTER",
-		extra_css_classes = { "header" },
-		tbbox,
-		udbox,
-		mbox,
+	local orderrow = Adw.ActionRow {
+		title = _ "Reorder in List",
+		suffixes = { orderbox },
 	}
 
-	row:add_row(mbox)
+	row:add_row(orderrow)
 
 	local popoutbtn = Gtk.Button {
 		icon_name = "pop-out-symbolic",
@@ -336,7 +283,7 @@ function counter:createmenu(row)
 		sensitive = not duplicate,
 	}
 	local popoutrow = Adw.ActionRow {
-		title = _ "Show in a separate window",
+		title = _ "Show in a Separate Window",
 	}
 	popoutrow:add_suffix(popoutbtn)
 	row:add_row(popoutrow)
