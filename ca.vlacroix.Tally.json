@@ -28,7 +28,7 @@
 		"sources": [{
 			"type": "git",
 			"url": "https://github.com/vtrlx/LuaGObject",
-			"tag": "0.10.2"
+			"tag": "0.10.4"
 		}]
 	}, {
 		"name": "tally",

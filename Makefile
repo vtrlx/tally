@@ -3,7 +3,7 @@ VERSION = 0.7.3
 
 APPID = $(PACKAGE)
 ifdef DEVEL
-CFLAGS = -DDEVEL
+CFLAGS += -DDEVEL
 APPID = $(PACKAGE).Devel
 endif
 
