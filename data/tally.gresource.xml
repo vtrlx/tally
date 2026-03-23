@@ -4,6 +4,7 @@
 		<file preprocess="xml-stripblanks">icons/scalable/actions/check-mark-symbolic.svg</file>
 		<file preprocess="xml-stripblanks">icons/scalable/actions/check-round-outline-symbolic.svg</file>
 		<file preprocess="xml-stripblanks">icons/scalable/actions/cross-large-circle-outline-symbolic.svg</file>
+		<file preprocess="xml-stripblanks">icons/scalable/actions/delete-symbolic.svg</file>
 		<file preprocess="xml-stripblanks">icons/scalable/actions/drag-handle-symbolic.svg</file>
 		<file preprocess="xml-stripblanks">icons/scalable/actions/loupe-large-symbolic.svg</file>
 		<file preprocess="xml-stripblanks">icons/scalable/actions/menu-large-symbolic.svg</file>
@@ -15,5 +16,6 @@
 		<file preprocess="xml-stripblanks">icons/scalable/actions/plus-large-symbolic.svg</file>
 		<file preprocess="xml-stripblanks">icons/scalable/actions/plus-symbolic.svg</file>
 		<file preprocess="xml-stripblanks">icons/scalable/actions/pop-out-symbolic.svg</file>
+		<file preprocess="xml-stripblanks">icons/scalable/actions/tally-symbolic.svg</file>
 	</gresource>
 </gresources>

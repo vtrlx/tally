@@ -276,14 +276,12 @@ local window = lib.newclass(function(self)
 	-- Force the window to be unique.
 	if app.active_window then return app.active_window end
 
-	local refreshtoolbar -- Callback which will be defined later.
-
 	local newbtn = Gtk.MenuButton {
 		icon_name = "plus-large-symbolic",
 		tooltip_text = _ "Create a new counter",
 	}
 	local delbtn = Gtk.Button {
-		icon_name = "cross-large-circle-outline-symbolic",
+		icon_name = "delete-symbolic",
 		tooltip_text = _ "Delete selected counters",
 		visible = false,
 		extra_css_classes = { "destructive-action" },
@@ -297,7 +295,7 @@ local window = lib.newclass(function(self)
 		menu_model = tallymenu,
 		tooltip_text = _ "Menu",
 	}
-	local checkbtn = Gtk.ToggleButton {
+	self.checkbtn = Gtk.ToggleButton {
 		icon_name = "check-round-outline-symbolic",
 		tooltip_text = _ "Select counters to delete",
 	}
@@ -307,7 +305,7 @@ local window = lib.newclass(function(self)
 	}
 	header:pack_start(newbtn)
 	header:pack_start(delbtn)
-	header:pack_start(checkbtn)
+	header:pack_start(self.checkbtn)
 	header:pack_end(menubtn)
 	header:pack_end(searchbtn)
 
@@ -343,13 +341,13 @@ local window = lib.newclass(function(self)
 		for _, cb in ipairs(searchcolorchecks) do cb.active = false end
 	end
 
-	local lbox = Gtk.ListBox {
+	self.lbox = Gtk.ListBox {
 		selection_mode = "NONE",
 		valign = "START",
 		visible = false,
 		extra_css_classes = { "tally-list", "boxed-list" },
 	}
-	lbox:set_filter_func(function(row)
+	self.lbox:set_filter_func(function(row)
 		if not searchbar.search_mode_enabled then return true end
 		if #searchentry.text == 0 and not filtcolors.active then return true end
 		local t = tallyrows[row]
@@ -370,7 +368,7 @@ local window = lib.newclass(function(self)
 			filtcolors[c] = checkbtn.active
 			filtcolors.active = filtcolors.system or filtcolors.red or filtcolors.orange or
 				filtcolors.yellow or filtcolors.green or filtcolors.blue or filtcolors.purple
-			lbox:invalidate_filter()
+			self.lbox:invalidate_filter()
 		end
 		table.insert(searchcolorchecks, checkbtn)
 		searchcolorbox:append(checkbtn)
@@ -449,22 +447,22 @@ local window = lib.newclass(function(self)
 	end
 	newbtn.popover = popover
 
-	function checkbtn.on_notify.active()
-		if checkbtn.active then
-			checkbtn.tooltip_text = _ "Stop selecting without deleting anything"
+	function self.checkbtn.on_notify.active()
+		if self.checkbtn.active then
+			self.checkbtn.tooltip_text = _ "Stop selecting without deleting anything"
 			newbtn.visible = false
 			delbtn.visible = true
 		else
-			checkbtn.tooltip_text = _ "Select counters to delete"
+			self.checkbtn.tooltip_text = _ "Select counters to delete"
 			newbtn.visible = true
 			delbtn.visible = false
 		end
 		for _, t in ipairs(tallies) do
-			t:setcheckmode(checkbtn.active)
+			t:setcheckmode(self.checkbtn.active)
 		end
 	end
-	function delbtn:on_clicked()
-		if not checkbtn.active then return end
+	function delbtn.on_clicked()
+		if not self.checkbtn.active then return end
 		local count = #tallies -- Cache the length because it's about to shrink.
 		for i = 1, count do
 			local idx = 1 + count - i
@@ -472,13 +470,13 @@ local window = lib.newclass(function(self)
 			if t.checked then t:delete() end
 		end
 		writecfg()
-		checkbtn.active = false
+		self.checkbtn.active = false
 		self:refreshtoolbar()
 	end
 	function searchentry:on_search_changed()
-		lbox:invalidate_filter()
+		self.lbox:invalidate_filter()
 	end
-	function lbox:on_row_activated(row)
+	function self.lbox:on_row_activated(row)
 		local t = tallyrows[row]
 		if t.checkmode then
 			t.checkbox.active = t.checkbox.active ~= true
@@ -487,9 +485,9 @@ local window = lib.newclass(function(self)
 
 	-- Place loaded tallies into the list.
 	for _, t in ipairs(tallies) do
-		lbox:append(t.row)
+		self.lbox:append(t.row)
 	end
-	if #tallies > 0 then lbox.visible = true end
+	if #tallies > 0 then self.lbox.visible = true end
 
 	local clamp = Adw.Clamp {
 		child = Adw.LayoutSlot.new "list",
@@ -504,7 +502,7 @@ local window = lib.newclass(function(self)
 	local smalllayout = Adw.Layout.new(Adw.LayoutSlot.new "list")
 
 	local multi = Adw.MultiLayoutView()
-	multi:set_child("list", lbox)
+	multi:set_child("list", self.lbox)
 	multi:add_layout(biglayout)
 	multi:add_layout(smalllayout)
 
@@ -525,8 +523,8 @@ local window = lib.newclass(function(self)
 		t.viewport = self.scrolledwin:get_child()
 		table.insert(tallies, t)
 		tallyrows[t.row] = t
-		lbox:append(t.row)
-		if not lbox.visible then lbox.visible = true end
+		self.lbox:append(t.row)
+		if not self.lbox.visible then self.lbox.visible = true end
 		GLib.timeout_add(GLib.PRIORITY_DEFAULT, 20, scroll_to_bottom)
 		popover:popdown()
 		t.row:grab_focus()
@@ -542,6 +540,7 @@ local window = lib.newclass(function(self)
 
 	self.statuspage = Adw.StatusPage {
 		title = _ "No Counters",
+		icon_name = "tally-symbolic",
 		description = _ "Press the + button above to get started.",
 	}
 
@@ -553,15 +552,15 @@ local window = lib.newclass(function(self)
 
 	local function enlarge()
 		multi.layout = biglayout
-		lbox:remove_css_class "separators"
-		lbox:add_css_class "boxed-list"
+		self.lbox:remove_css_class "separators"
+		self.lbox:add_css_class "boxed-list"
 		self.toolbarview.top_bar_style = "FLAT"
 	end
 
 	local function shrink()
 		multi.layout = smalllayout
-		lbox:remove_css_class "boxed-list"
-		lbox:add_css_class "separators"
+		self.lbox:remove_css_class "boxed-list"
+		self.lbox:add_css_class "separators"
 		self.toolbarview.top_bar_style = "RAISED_BORDER"
 	end
 
@@ -621,9 +620,11 @@ end)
 
 function window:refreshtoolbar()
 	if #tallies == 0 then
+		self.checkbtn.visible = false
 		self.toolbarview.top_bar_style = "FLAT"
 		self.toolbarview.content = self.statuspage
 	else
+		self.checkbtn.visible = true
 		self.toolbarview.top_bar_style = "RAISED_BORDER"
 		self.toolbarview.content = self.scrolledwin
 	end
