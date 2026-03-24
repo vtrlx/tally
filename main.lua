@@ -276,9 +276,10 @@ local window = lib.newclass(function(self)
 	-- Force the window to be unique.
 	if app.active_window then return app.active_window end
 
-	local newbtn = Gtk.MenuButton {
+	local newbtn = Gtk.Button {
 		icon_name = "plus-large-symbolic",
 		tooltip_text = _ "Create a new counter",
+		on_clicked = function() self:tallydialog() end,
 	}
 	local delbtn = Gtk.Button {
 		icon_name = "delete-symbolic",
@@ -374,79 +375,6 @@ local window = lib.newclass(function(self)
 		searchcolorbox:append(checkbtn)
 	end
 
-	local newtallycolor
-	local createbtn = Gtk.Button {
-		child = Adw.ButtonContent {
-			icon_name = "plus-large-symbolic",
-			label = _ "Add to List",
-		},
-		tooltip_text = _ "Add this counter to the list",
-		halign = "CENTER",
-		sensitive = false,
-		extra_css_classes = { "suggested-action" },
-	}
-
-	local nameentry = Gtk.Entry {
-		placeholder_text = _ "Name",
-		halign = "FILL",
-	}
-	function nameentry:on_changed()
-		if #self.text == 0 then
-			self:add_css_class "error"
-			createbtn.sensitive = false
-		else
-			self:remove_css_class "error"
-			createbtn.sensitive = true
-		end
-	end
-	local tallycolorbox = Gtk.Box {
-		orientation = "HORIZONTAL",
-		spacing = 6,
-		extra_css_classes = { "colorselector" },
-	}
-	local newsystemcheckbtn = Gtk.CheckButton {
-		tooltip_text = lib.getcolorname(), -- Defaults to "No color"
-	}
-	tallycolorbox:append(newsystemcheckbtn)
-	function newsystemcheckbtn.on_notify.active()
-		newtallycolor = nil
-	end
-	for _, c in ipairs { "red", "orange", "yellow", "green", "blue", "purple" } do
-		local checkbtn = Gtk.CheckButton {
-			group = newsystemcheckbtn,
-			tooltip_text = lib.getcolorname(c),
-		}
-		checkbtn:add_css_class(c)
-		function checkbtn.on_notify.active()
-			if checkbtn.active then
-				newtallycolor = c
-			end
-		end
-		tallycolorbox:append(checkbtn)
-	end
-
-	local pbox = Gtk.Box {
-		orientation = "VERTICAL",
-		spacing = 12,
-		margin_top = 12,
-		margin_bottom = 12,
-		margin_start = 12,
-		margin_end = 12,
-	}
-	pbox:append(nameentry)
-	pbox:append(tallycolorbox)
-	pbox:append(createbtn)
-	local popover = Gtk.Popover {
-		child = pbox,
-	}
-	function popover.on_notify.visible()
-		nameentry.text = ""
-		-- Prevent showing the error CSS when popping up the popover.
-		nameentry:remove_css_class "error"
-		newsystemcheckbtn.active = true
-	end
-	newbtn.popover = popover
-
 	function self.checkbtn.on_notify.active()
 		if self.checkbtn.active then
 			self.checkbtn.tooltip_text = _ "Stop selecting without deleting anything"
@@ -510,29 +438,6 @@ local window = lib.newclass(function(self)
 		hscrollbar_policy = "NEVER",
 		child = multi,
 	}
-	local function scroll_to_bottom()
-		self.scrolledwin.vadjustment.value =
-			self.scrolledwin.vadjustment.upper
-	end
-	local function do_create()
-		if #nameentry.text == 0 then return end
-		local t = tally {
-			name = nameentry.text,
-			color = newtallycolor,
-		}
-		t.viewport = self.scrolledwin:get_child()
-		table.insert(tallies, t)
-		tallyrows[t.row] = t
-		self.lbox:append(t.row)
-		if not self.lbox.visible then self.lbox.visible = true end
-		GLib.timeout_add(GLib.PRIORITY_DEFAULT, 20, scroll_to_bottom)
-		popover:popdown()
-		t.row:grab_focus()
-		writecfg()
-		self:refreshtoolbar()
-	end
-	nameentry.on_activate = do_create
-	createbtn.on_clicked = do_create
 
 	for _, t in ipairs(tallies) do
 		t.viewport = self.scrolledwin:get_child()
@@ -541,7 +446,15 @@ local window = lib.newclass(function(self)
 	self.statuspage = Adw.StatusPage {
 		title = _ "No Counters",
 		icon_name = "tally-symbolic",
-		description = _ "Press the + button above to get started.",
+		child = Gtk.Button {
+			extra_css_classes = { "suggested-action", "pill" },
+			label = _ "Create Counter",
+			margin_start = 40,
+			margin_end = 40,
+			on_clicked = function()
+				self:tallydialog()
+			end,
+		},
 	}
 
 	self.toolbarview = Adw.ToolbarView {
@@ -617,6 +530,107 @@ local window = lib.newclass(function(self)
 	self:refreshtoolbar()
 	menubtn:grab_focus()
 end)
+
+function window:scrollbottom()
+	GLib.timeout_add(GLib.PRIORITY_DEFAULT, 20, function()
+		self.scrolledwin.vadjustment.value =
+			self.scrolledwin.vadjustment.upper
+	end)
+end
+
+function window:tallydialog()
+	local newtallycolor
+	local createbtn = Gtk.Button {
+		child = Adw.ButtonContent {
+			icon_name = "plus-large-symbolic",
+			label = _ "Add to List",
+		},
+		tooltip_text = _ "Add this counter to the list",
+		halign = "CENTER",
+		sensitive = false,
+		extra_css_classes = { "suggested-action" },
+	}
+
+	local nameentry = Gtk.Entry {
+		placeholder_text = _ "Name",
+		halign = "FILL",
+	}
+	function nameentry:on_changed()
+		if #self.text == 0 then
+			self:add_css_class "error"
+			createbtn.sensitive = false
+		else
+			self:remove_css_class "error"
+			createbtn.sensitive = true
+		end
+	end
+	local tallycolorbox = Gtk.Box {
+		orientation = "HORIZONTAL",
+		spacing = 6,
+		extra_css_classes = { "colorselector" },
+	}
+	local newsystemcheckbtn = Gtk.CheckButton {
+		tooltip_text = lib.getcolorname(), -- Defaults to "No color"
+	}
+	tallycolorbox:append(newsystemcheckbtn)
+	function newsystemcheckbtn.on_notify.active()
+		newtallycolor = nil
+	end
+	for _, c in ipairs { "red", "orange", "yellow", "green", "blue", "purple" } do
+		local checkbtn = Gtk.CheckButton {
+			group = newsystemcheckbtn,
+			tooltip_text = lib.getcolorname(c),
+		}
+		checkbtn:add_css_class(c)
+		function checkbtn.on_notify.active()
+			if checkbtn.active then
+				newtallycolor = c
+			end
+		end
+		tallycolorbox:append(checkbtn)
+	end
+
+	local pbox = Gtk.Box {
+		orientation = "VERTICAL",
+		spacing = 12,
+		margin_top = 12,
+		margin_bottom = 12,
+		margin_start = 12,
+		margin_end = 12,
+		nameentry,
+		tallycolorbox,
+		createbtn,
+	}
+
+	local toolbarview = Adw.ToolbarView {
+		content = pbox,
+		top_bars = { Adw.HeaderBar() },
+	}
+	local dialog = Adw.Dialog {
+		child = toolbarview,
+		title = _ "New Counter",
+	}
+	local function do_create()
+		if #nameentry.text == 0 then return end
+		local t = tally {
+			name = nameentry.text,
+			color = newtallycolor,
+		}
+		t.viewport = self.scrolledwin:get_child()
+		table.insert(tallies, t)
+		tallyrows[t.row] = t
+		writecfg()
+		self.lbox:append(t.row)
+		if not self.lbox.visible then self.lbox.visible = true end
+		self:scrollbottom()
+		t.row:grab_focus()
+		self:refreshtoolbar()
+		dialog:close()
+	end
+	createbtn.on_clicked = do_create
+
+	dialog:present(self.window)
+end
 
 function window:refreshtoolbar()
 	if #tallies == 0 then
