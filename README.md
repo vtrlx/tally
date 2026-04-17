@@ -1,3 +1,9 @@
+# [MOVED TO CODEBERG](https://codeberg.org/vtrlx/tally)
+
+Development of Tally continues [in its Codeberg repository](https://codeberg.org/vtrlx/tally). Please submit issues and pull requests there.
+
+---
+
 ![tally](tally.png)
 
 # Tally
